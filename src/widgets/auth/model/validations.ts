@@ -13,6 +13,10 @@ export const registrationValidation = yup.object({
 	password: yup
 		.string()
 		.min(8, 'Минимум 8 символов')
+		.matches(
+			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[^\s]*$/,
+			'Пароль должен содержать заглавные и строчные буквы, цифры и специальные символы, без пробелов'
+		)
 		.required('Пароль обязателен'),
 	confirmPassword: yup
 		.string()
