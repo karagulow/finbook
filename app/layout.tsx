@@ -19,7 +19,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='ru'>
-			<body className={`${manropeSans.variable} antialiased`}>{children}</body>
+			<body className={`${manropeSans.variable} antialiased`}>
+				<div className='bg-[var(--background-primary)]'>{children}</div>
+			</body>
 		</html>
 	);
 }
