@@ -28,8 +28,6 @@ export const useAuthStore = create<AuthState>(set => ({
 		set({ token, user });
 	},
 	logout: () => {
-		Cookies.remove('authToken');
-		Cookies.remove('userEmail');
 		set({ token: null, user: null });
 	},
 }));
