@@ -1,4 +1,5 @@
 import { Menu } from '@/widgets/menu';
+import { Tabbar } from '@/widgets/tabbar';
 
 export default function UserLayout({
 	children,
@@ -8,7 +9,7 @@ export default function UserLayout({
 	return (
 		<div className='flex flex-row gap-[30px] w-full max-w-[1440px] min-h-screen mx-auto px-4 sm:px-5 '>
 			<Menu />
-			{/* <Tabbar /> */}
+			<Tabbar />
 			<div className='py-5 mt-10 mb-14 lg:mt-0 lg:mb-0 w-full'>{children}</div>
 		</div>
 	);
