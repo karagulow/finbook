@@ -13,6 +13,201 @@ model User {
   email     String   @unique
   password  String
 
+  currency  Currency @relation(fields: [currencyId], references: [id])
+  currencyId String
+
+  accounts  Account[]
+  categories Category[]
+  goals     Goal[]
+  debts     Debt[]
+  transactions Transaction[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id        String   @id @default(uuid())
+
+  name      String
+  balance   Float
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  currency  Currency @relation(fields: [currencyId], references: [id])
+  currencyId String
+
+  transactions        Transaction[] @relation("TransactionAccount")
+  transactionsFrom    Transaction[] @relation("TransactionFrom")
+  transactionsTo      Transaction[] @relation("TransactionTo")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String   @id @default(uuid())
+
+  name      String
+  type      CategoryType
+  icon      String
+  color     String
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  transactions Transaction[]
+  subcategories Subcategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subcategory {
+  id        String   @id @default(uuid())
+
+  name      String
+
+  transactions Transaction[]
+
+  category  Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+
+  type      TransactionType
+  date      DateTime
+  description String?
+
+  // INCOME / EXPENSE
+  account     Account?         @relation("TransactionAccount", fields: [accountId], references: [id])
+  accountId   String?
+  category    Category?        @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  subcategory Subcategory?     @relation(fields: [subcategoryId], references: [id])
+  subcategoryId String?
+  amount      Float?
+
+  // TRANSFER
+  accountFrom Account?         @relation("TransactionFrom", fields: [accountIdFrom], references: [id])
+  accountIdFrom String?
+  accountTo   Account?         @relation("TransactionTo", fields: [accountIdTo], references: [id])
+  accountIdTo String?
+  amountFrom  Float?
+  amountTo    Float?
+
+  // GOAL / DEBT
+  goal      Goal?        @relation(fields: [goalId], references: [id])
+  goalId    String?
+  goalType  GoalTransactionType?
+
+  debt      Debt?        @relation(fields: [debtId], references: [id])
+  debtId    String?
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Currency {
+  id        String   @id @default(uuid())
+
+  name      String
+  code      String   @unique
+  symbol    String?
+
+  users     User[]
+  accounts  Account[]
+
+  exchangeRatesFrom ExchangeRate[] @relation("FromCurrency")
+  exchangeRatesTo   ExchangeRate[] @relation("ToCurrency")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ExchangeRate {
+  id          String   @id @default(uuid())
+  from        Currency @relation("FromCurrency", fields: [fromId], references: [id])
+  fromId      String
+  to          Currency @relation("ToCurrency", fields: [toId], references: [id])
+  toId        String
+  rate        Float
+  date        DateTime @default(now())
+
+  @@unique([fromId, toId, date])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Goal {
+  id        String   @id @default(uuid())
+
+  name      String
+  target_amount Float
+  saved_amount Float
+  deadline   DateTime
+  description String?
+  icon      String
+
+  transactions Transaction[]
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Debt {
+  id        String   @id @default(uuid())
+
+  name      String
+  target_amount Float
+  saved_amount Float
+  deadline   DateTime
+  paid      Boolean
+  type      DebtType
+  description String?
+
+  transactions Transaction[]
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+  GOAL
+  DEBT
+}
+
+enum DebtType {
+  OWED_TO_ME
+  OWED_BY_ME
+}
+
+enum GoalTransactionType {
+  DEPOSIT
+  WITHDRAW
 }
