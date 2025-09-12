@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, CategoryType } from '@prisma/client';
+import { baseCategories } from '@constants/base-categories';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -24,8 +25,53 @@ export async function POST(req: Request) {
 		}
 
 		const hashedPassword = await bcrypt.hash(password, 10);
+
+		const defaultCurrency = await prisma.currency.findUnique({
+			where: { code: 'RUB' },
+		});
+
+		if (!defaultCurrency) {
+			return NextResponse.json(
+				{ message: 'Произошла ошибка с валютами' },
+				{ status: 500 }
+			);
+		}
+
 		const user = await prisma.user.create({
-			data: { email, password: hashedPassword },
+			data: {
+				email,
+				password: hashedPassword,
+				currencyId: defaultCurrency.id,
+				accounts: {
+					create: {
+						name: 'Наличные',
+						balance: 0,
+						currencyId: defaultCurrency.id,
+					},
+				},
+				categories: {
+					create: [
+						...baseCategories.INCOME.map(cat => ({
+							name: cat.name,
+							type: CategoryType.INCOME,
+							icon: cat.icon,
+							color: cat.color,
+							subcategories: {
+								create: cat.subcategories.map(name => ({ name })),
+							},
+						})),
+						...baseCategories.EXPENSE.map(cat => ({
+							name: cat.name,
+							type: CategoryType.EXPENSE,
+							icon: cat.icon,
+							color: cat.color,
+							subcategories: {
+								create: cat.subcategories.map(name => ({ name })),
+							},
+						})),
+					],
+				},
+			},
 		});
 
 		const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
