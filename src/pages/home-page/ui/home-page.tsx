@@ -1,7 +1,7 @@
 'use client';
 
-import { Button, CategoryDoughnutChart } from '@/shared/ui';
-import { Balance } from '@/entities/balance';
+import { Button, CategoryDoughnutChart } from '@/src/shared/ui';
+import { Balance } from '@/src/entities/balance';
 
 export const HomePage: React.FC = () => {
 	const incomes = [
