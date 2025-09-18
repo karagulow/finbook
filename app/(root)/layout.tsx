@@ -1,5 +1,5 @@
-import { Menu } from '@/widgets/menu';
-import { Tabbar } from '@/widgets/tabbar';
+import { Menu } from '@/src/widgets/menu';
+import { Tabbar } from '@/src/widgets/tabbar';
 
 export default function UserLayout({
 	children,

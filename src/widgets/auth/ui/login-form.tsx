@@ -10,9 +10,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import { LoginFormData } from '../model/types';
 import { loginValidation } from '../model/validations';
-import { toastOptions } from '@/shared/lib';
-import { Button, Input } from '@/shared/ui';
-import { useAuthStore } from '@/shared/store/authStore';
+import { toastOptions } from '@/src/shared/lib';
+import { Button, Input } from '@/src/shared/ui';
+import { useAuthStore } from '@/src/shared/store/authStore';
 
 export const LoginForm: React.FC = () => {
 	const [loading, setLoading] = useState(false);

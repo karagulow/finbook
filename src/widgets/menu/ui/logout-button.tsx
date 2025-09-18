@@ -8,7 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { LogOut } from 'lucide-react';
 
 import { toastOptions } from '../../../shared/lib';
-import { useAuthStore } from '@/shared/store/authStore';
+import { useAuthStore } from '@/src/shared/store/authStore';
 
 export const LogoutButton: React.FC = () => {
 	const { logout } = useAuthStore();

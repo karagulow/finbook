@@ -1,4 +1,4 @@
-import { RegistrationForm } from '@/widgets/auth';
+import { RegistrationForm } from '@/src/widgets/auth';
 import type { Metadata } from 'next';
 import React from 'react';
 

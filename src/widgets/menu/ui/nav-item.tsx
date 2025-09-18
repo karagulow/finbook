@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/shared/lib';
+import { cn } from '@/src/shared/lib';
 
 interface NavItemProps {
 	icon: React.ReactNode;

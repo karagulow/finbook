@@ -10,9 +10,9 @@ import axios from 'axios';
 
 import { RegistrationFormData } from '../model/types';
 import { registrationValidation } from '../model/validations';
-import { toastOptions } from '@/shared/lib';
-import { Button, Input } from '@/shared/ui';
-import { useAuthStore } from '@/shared/store/authStore';
+import { toastOptions } from '@/src/shared/lib';
+import { Button, Input } from '@/src/shared/ui';
+import { useAuthStore } from '@/src/shared/store/authStore';
 
 export const RegistrationForm: React.FC = () => {
 	const [loading, setLoading] = useState(false);
