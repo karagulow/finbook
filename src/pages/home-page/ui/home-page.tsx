@@ -1,12 +1,14 @@
 'use client';
 
+import { useTransactionsByCategory } from '../hooks/use-transactions-by-category';
+
 import {
 	Button,
 	CategoryDoughnutChart,
 	CategoryDoughnutChartSkeleton,
 } from '@/src/shared/ui';
 import { Balance } from '@/src/entities/balance';
-import { useTransactionsByCategory } from '../hooks/use-transactions-by-category';
+import { AccountOverview } from '@/src/widgets/account-overview';
 
 export const HomePage: React.FC = () => {
 	const { incomes, expenses, loading } = useTransactionsByCategory();
@@ -17,6 +19,8 @@ export const HomePage: React.FC = () => {
 				<Balance />
 				<Button className='w-full sm:w-auto'>Добавить транзакцию</Button>
 			</div>
+
+			<AccountOverview />
 
 			<div className='flex flex-col gap-5 md:flex-row md:gap-7.5'>
 				{loading ? (

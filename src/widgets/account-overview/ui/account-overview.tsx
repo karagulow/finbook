@@ -1,0 +1,86 @@
+import React from 'react';
+
+import { useAccountSlider } from '../hooks/use-account-slider';
+
+import { CreateAccountButton } from './actions/create-account-button';
+import { ViewAllAccountsButton } from './actions/view-all-accounts-button';
+import { ArrowButton } from './actions/arrow-button';
+import { AccountCard } from './account-card';
+import { SliderDots } from './slider-dots';
+import { AccountCardSkeleton } from './account-card-skeleton';
+
+import { useAccounts } from '../hooks/use-accounts';
+import { useBalance } from '@/src/entities/balance';
+
+export const AccountOverview: React.FC = () => {
+	const { accounts, totalBalance, currencyCode, currencySymbol, loading } =
+		useAccounts();
+
+	const extendedAccounts = [
+		{
+			id: 'all',
+			name: 'Все счета',
+			balance: totalBalance,
+			currency: currencySymbol || currencyCode,
+		},
+		...accounts,
+	];
+	const {
+		currentIndex,
+		totalItems,
+		itemsPerView,
+		canGoNext,
+		canGoPrev,
+		next,
+		prev,
+		goTo,
+	} = useAccountSlider(extendedAccounts);
+
+	return (
+		<div className='flex flex-row gap-2.5 w-full'>
+			<div className='flex flex-col flex-1 min-w-0 gap-3'>
+				<div className='relative overflow-hidden w-full'>
+					{loading ? (
+						<AccountCardSkeleton />
+					) : (
+						<div
+							className='flex gap-2.5 transition-transform duration-300 ease-in-out'
+							style={{
+								transform: `translateX(-${
+									(currentIndex * 100) / itemsPerView
+								}%)`,
+							}}
+						>
+							{extendedAccounts.map((account, idx) => (
+								<AccountCard
+									key={account.id}
+									currentIndex={currentIndex}
+									itemsPerView={itemsPerView}
+									totalItems={totalItems}
+									idx={idx}
+									account={account}
+								/>
+							))}
+						</div>
+					)}
+				</div>
+
+				{totalItems > itemsPerView && (
+					<SliderDots
+						totalItems={totalItems}
+						itemsPerView={itemsPerView}
+						currentIndex={currentIndex}
+						goTo={goTo}
+					/>
+				)}
+			</div>
+
+			<div className='grid grid-cols-2 gap-1.5 size-[100px] flex-shrink-0'>
+				<CreateAccountButton />
+				<ViewAllAccountsButton />
+				<ArrowButton direction='left' disabled={!canGoPrev} onClick={prev} />
+				<ArrowButton direction='right' disabled={!canGoNext} onClick={next} />
+			</div>
+		</div>
+	);
+};

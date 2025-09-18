@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getTransactionsByMonth } from '../lib/get-transactions-by-month';
+import { useSelectedAccount } from '@/src/widgets/account-overview/hooks/use-selected-account';
 
 type CategoryStat = {
 	id: string;
@@ -15,10 +16,12 @@ export const useTransactionsByCategory = () => {
 	const [expenses, setExpenses] = useState<CategoryStat[]>([]);
 	const [loading, setLoading] = useState(true);
 
+	const { selectedAccountId } = useSelectedAccount();
+
 	useEffect(() => {
 		(async () => {
 			try {
-				const transactions = await getTransactionsByMonth();
+				const transactions = await getTransactionsByMonth(selectedAccountId);
 
 				const incomeMap = new Map<string, CategoryStat>();
 				const expenseMap = new Map<string, CategoryStat>();
@@ -43,7 +46,7 @@ export const useTransactionsByCategory = () => {
 
 					targetMap.set(tx.category.id, {
 						...prev,
-						amount: prev.amount + (tx.amount ?? 0),
+						amount: prev.amount + (tx.amountInUserCurrency ?? 0),
 					});
 				}
 
@@ -53,7 +56,7 @@ export const useTransactionsByCategory = () => {
 				setLoading(false);
 			}
 		})();
-	}, []);
+	}, [selectedAccountId]);
 
 	return { incomes, expenses, loading };
 };
