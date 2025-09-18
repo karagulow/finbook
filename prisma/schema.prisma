@@ -13,6 +13,8 @@ model User {
   email     String   @unique
   password  String
 
+  refreshToken String?
+
   currency  Currency @relation(fields: [currencyId], references: [id])
   currencyId String
 
