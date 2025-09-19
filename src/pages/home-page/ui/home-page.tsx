@@ -14,27 +14,29 @@ export const HomePage: React.FC = () => {
 	const { incomes, expenses, loading } = useTransactionsByCategory();
 
 	return (
-		<div className='flex flex-col gap-5 sm:gap-[30px]'>
-			<div className='flex flex-col items-start gap-2.5 sm:flex-row sm:justify-between sm:items-center'>
-				<Balance />
-				<Button className='w-full sm:w-auto'>Добавить транзакцию</Button>
-			</div>
+		<>
+			<div className='flex flex-col gap-5 sm:gap-[30px]'>
+				<div className='flex flex-col items-start gap-2.5 sm:flex-row sm:justify-between sm:items-center'>
+					<Balance />
+					<Button className='w-full sm:w-auto'>Добавить транзакцию</Button>
+				</div>
 
-			<AccountOverview />
+				<AccountOverview />
 
-			<div className='flex flex-col gap-5 md:flex-row md:gap-7.5'>
-				{loading ? (
-					<>
-						<CategoryDoughnutChartSkeleton />
-						<CategoryDoughnutChartSkeleton />
-					</>
-				) : (
-					<>
-						<CategoryDoughnutChart title='Доходы' categories={incomes} />
-						<CategoryDoughnutChart title='Расходы' categories={expenses} />
-					</>
-				)}
+				<div className='flex flex-col gap-5 md:flex-row md:gap-7.5'>
+					{loading ? (
+						<>
+							<CategoryDoughnutChartSkeleton />
+							<CategoryDoughnutChartSkeleton />
+						</>
+					) : (
+						<>
+							<CategoryDoughnutChart title='Доходы' categories={incomes} />
+							<CategoryDoughnutChart title='Расходы' categories={expenses} />
+						</>
+					)}
+				</div>
 			</div>
-		</div>
+		</>
 	);
 };
