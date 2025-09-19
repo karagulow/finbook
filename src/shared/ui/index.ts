@@ -5,3 +5,4 @@ export {
 	CategoryDoughnutChartSkeleton,
 } from './category-doughnut-chart';
 export { Sheet } from './sheet';
+export { Drawer } from './drawer';
