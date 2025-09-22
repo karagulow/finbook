@@ -23,7 +23,7 @@ export const HomePage: React.FC = () => {
 
 				<AccountOverview />
 
-				<div className='flex flex-col gap-5 md:flex-row md:gap-7.5'>
+				<div className='grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-7.5'>
 					{loading ? (
 						<>
 							<CategoryDoughnutChartSkeleton />

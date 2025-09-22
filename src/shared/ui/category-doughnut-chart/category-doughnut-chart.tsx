@@ -64,6 +64,8 @@ export const CategoryDoughnutChart: React.FC<CategoryDoughnutChartProps> = ({
 				},
 			},
 		},
+		responsive: true,
+		maintainAspectRatio: true,
 	};
 
 	return (
@@ -72,7 +74,7 @@ export const CategoryDoughnutChart: React.FC<CategoryDoughnutChartProps> = ({
 				{title}
 			</h2>
 
-			<div className='max-w-[400px] max-h-[400px] aspect-square relative'>
+			<div className='max-w-[400px] w-full aspect-square relative'>
 				<Doughnut data={data} options={options} />
 			</div>
 
