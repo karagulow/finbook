@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { CSSTransition } from 'react-transition-group';
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
 	children?: React.ReactNode;
@@ -10,28 +10,30 @@ interface Props {
 }
 
 export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
-	const nodeRef = useRef<HTMLDivElement>(null);
-
 	return (
-		<CSSTransition
-			in={isOpen}
-			timeout={300}
-			classNames='sheet'
-			unmountOnExit
-			nodeRef={nodeRef}
-		>
-			<div
-				ref={nodeRef}
-				className='sheet-backdrop fixed inset-0 flex justify-end p-5 z-10'
-				onClick={onClose}
-			>
-				<div
-					className='sheet-panel w-100 h-[calc(100vh-40px)] rounded-[8px] bg-[var(--card)] p-5 shadow-[0px_0px_10px_10px_rgba(0,0,0,0.25)]'
-					onClick={e => e.stopPropagation()}
+		<AnimatePresence>
+			{isOpen && (
+				<motion.div
+					key='sheet'
+					className='fixed inset-0 flex justify-end p-5 bg-black/50 backdrop-blur-[2px] z-10'
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.3, ease: 'easeInOut' }}
+					onClick={onClose}
 				>
-					{children}
-				</div>
-			</div>
-		</CSSTransition>
+					<motion.div
+						className='sheet-panel w-100 h-[calc(100vh-40px)] rounded-[8px] bg-[var(--card)] p-5 shadow-[0px_0px_10px_10px_rgba(0,0,0,0.25)]'
+						initial={{ x: '110%' }}
+						animate={{ x: 0 }}
+						exit={{ x: '110%' }}
+						transition={{ duration: 0.3, ease: 'easeInOut' }}
+						onClick={e => e.stopPropagation()}
+					>
+						{children}
+					</motion.div>
+				</motion.div>
+			)}
+		</AnimatePresence>
 	);
 };

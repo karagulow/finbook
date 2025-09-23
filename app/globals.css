@@ -35,38 +35,3 @@ body {
 	color: var(--foreground);
 	font-family: 'Manrope', sans-serif;
 }
-
-.sheet-enter {
-	opacity: 0;
-}
-.sheet-enter-active {
-	opacity: 1;
-	transition: opacity 300ms ease-in-out;
-}
-.sheet-exit {
-	opacity: 1;
-}
-.sheet-exit-active {
-	opacity: 0;
-	transition: opacity 300ms ease-in-out;
-}
-
-.sheet-enter .sheet-panel {
-	transform: translateX(110%);
-}
-.sheet-enter-active .sheet-panel {
-	transform: translateX(0%);
-	transition: transform 300ms ease-in-out;
-}
-.sheet-exit .sheet-panel {
-	transform: translateX(0%);
-}
-.sheet-exit-active .sheet-panel {
-	transform: translateX(110%);
-	transition: transform 300ms ease-in-out;
-}
-
-.sheet-backdrop {
-	background: rgba(0, 0, 0, 0.5);
-	backdrop-filter: blur(2px);
-}
