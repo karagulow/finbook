@@ -7,9 +7,13 @@ import { Account } from '../model/types';
 
 interface Props {
 	accounts: Account[];
+	onCreateAccount?: () => void;
 }
 
-export const AccountsModalContent: React.FC<Props> = ({ accounts }) => {
+export const AccountsModalContent: React.FC<Props> = ({
+	accounts,
+	onCreateAccount,
+}) => {
 	return (
 		<div className='flex h-full flex-col'>
 			<h2 className='mb-5 font-bold text-[17px] text-[var(--foreground-primary)]'>
@@ -20,7 +24,9 @@ export const AccountsModalContent: React.FC<Props> = ({ accounts }) => {
 				<AccountList accounts={accounts} />
 			</div>
 
-			<Button className='mt-5 shrink-0'>Создать счёт</Button>
+			<Button className='mt-5 shrink-0' onClick={onCreateAccount}>
+				Создать счёт
+			</Button>
 		</div>
 	);
 };

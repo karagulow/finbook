@@ -98,6 +98,10 @@ export const AccountOverview: React.FC = () => {
 				isOpen={isAccountsModalOpen}
 				onClose={closeAccountsSheet}
 				accounts={accounts}
+				onCreateAccount={() => {
+					closeAccountsSheet();
+					openCreateAccountModal();
+				}}
 			/>
 
 			<CreateAccountModal
