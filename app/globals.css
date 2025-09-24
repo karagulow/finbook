@@ -35,3 +35,30 @@ body {
 	color: var(--foreground);
 	font-family: 'Manrope', sans-serif;
 }
+
+/* Кастомный скролл для всего приложения */
+body::-webkit-scrollbar {
+	width: 8px; /* ширина вертикального скролла */
+	height: 8px; /* высота горизонтального скролла */
+}
+
+body::-webkit-scrollbar-track {
+	background: var(--card); /* фон дорожки скролла */
+	border-radius: 4px;
+}
+
+body::-webkit-scrollbar-thumb {
+	background: var(--foreground-secondary); /* цвет ползунка */
+	border-radius: 4px;
+	transition: background 0.2s;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+	background: var(--accent); /* цвет ползунка при наведении */
+}
+
+/* Для Firefox (немного упрощенно, не поддерживает градиенты и скругления как Webkit) */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--foreground-secondary) var(--card);
+}

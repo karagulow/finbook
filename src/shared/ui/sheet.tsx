@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
@@ -10,6 +10,18 @@ interface Props {
 }
 
 export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
+	useEffect(() => {
+		if (isOpen) {
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = '';
+		}
+
+		return () => {
+			document.body.style.overflow = '';
+		};
+	}, [isOpen]);
+
 	return (
 		<AnimatePresence>
 			{isOpen && (
