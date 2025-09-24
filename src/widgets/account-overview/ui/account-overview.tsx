@@ -9,11 +9,14 @@ import { AccountCard } from './account-card';
 import { SliderDots } from './slider-dots';
 import { AccountCardSkeleton } from './account-card-skeleton';
 import { AccountsModal } from '../../accounts-modal';
+import { CreateAccountModal } from '../../create-account-modal';
 
 import { useAccounts } from '../hooks/use-accounts';
 
 export const AccountOverview: React.FC = () => {
-	const [isAccountsSheetOpen, setIsAccountsSheetOpen] = useState(false);
+	const [isAccountsModalOpen, setIsAccountsModalOpen] = useState(false);
+	const [isCreateAccountModalOpen, setIsCreateAccountModalOpen] =
+		useState(false);
 	const { accounts, totalBalance, currencyCode, currencySymbol, loading } =
 		useAccounts();
 
@@ -37,8 +40,11 @@ export const AccountOverview: React.FC = () => {
 		goTo,
 	} = useAccountSlider(extendedAccounts);
 
-	const openAccountsSheet = () => setIsAccountsSheetOpen(true);
-	const closeAccountsSheet = () => setIsAccountsSheetOpen(false);
+	const openAccountsSheet = () => setIsAccountsModalOpen(true);
+	const closeAccountsSheet = () => setIsAccountsModalOpen(false);
+
+	const openCreateAccountModal = () => setIsCreateAccountModalOpen(true);
+	const closeCreateAccountModal = () => setIsCreateAccountModalOpen(false);
 
 	return (
 		<>
@@ -81,7 +87,7 @@ export const AccountOverview: React.FC = () => {
 				</div>
 
 				<div className='grid grid-cols-2 gap-1.5 size-[100px] flex-shrink-0'>
-					<CreateAccountButton />
+					<CreateAccountButton onClick={openCreateAccountModal} />
 					<ViewAllAccountsButton onClick={openAccountsSheet} />
 					<ArrowButton direction='left' disabled={!canGoPrev} onClick={prev} />
 					<ArrowButton direction='right' disabled={!canGoNext} onClick={next} />
@@ -89,9 +95,14 @@ export const AccountOverview: React.FC = () => {
 			</div>
 
 			<AccountsModal
-				isOpen={isAccountsSheetOpen}
+				isOpen={isAccountsModalOpen}
 				onClose={closeAccountsSheet}
 				accounts={accounts}
+			/>
+
+			<CreateAccountModal
+				isOpen={isCreateAccountModalOpen}
+				onClose={closeCreateAccountModal}
 			/>
 		</>
 	);
