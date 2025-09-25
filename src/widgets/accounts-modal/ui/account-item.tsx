@@ -4,10 +4,10 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
 import { DeleteButton, EditButton } from '@/src/shared/ui';
+import { ConfirmDeleteDialog } from './confirm-delete-dialog';
+import { EditAccountModal } from '../../edit-account-modal';
 
 import { Account } from '../model/types';
-import { ConfirmDeleteDialog } from './confirm-delete-dialog';
-
 import { toastOptions } from '@/src/shared/lib';
 
 interface Props {
@@ -15,12 +15,14 @@ interface Props {
 }
 
 export const AccountItem: React.FC<Props> = ({ account }) => {
-	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] =
+		useState(false);
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
 	const handleDelete = async () => {
 		try {
 			await axios.delete(`/api/accounts/${account.id}`);
-			setIsDialogOpen(false);
+			setIsConfirmDeleteDialogOpen(false);
 			toast.success('Счёт успешно удалён!', toastOptions);
 		} catch (err) {
 			console.error('Ошибка удаления счета', err);
@@ -45,16 +47,22 @@ export const AccountItem: React.FC<Props> = ({ account }) => {
 				</div>
 
 				<div className='flex flex-row items-center gap-2.5'>
-					<EditButton />
-					<DeleteButton onClick={() => setIsDialogOpen(true)} />
+					<EditButton onClick={() => setIsEditModalOpen(true)} />
+					<DeleteButton onClick={() => setIsConfirmDeleteDialogOpen(true)} />
 				</div>
 			</li>
 
 			<ConfirmDeleteDialog
-				isOpen={isDialogOpen}
-				onClose={() => setIsDialogOpen(false)}
+				isOpen={isConfirmDeleteDialogOpen}
+				onClose={() => setIsConfirmDeleteDialogOpen(false)}
 				onConfirm={handleDelete}
 				accountName={account.name}
+			/>
+
+			<EditAccountModal
+				isOpen={isEditModalOpen}
+				onClose={() => setIsEditModalOpen(false)}
+				account={account}
 			/>
 
 			{createPortal(<Toaster />, document.body)}

@@ -2,20 +2,19 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { Controller, useForm } from 'react-hook-form';
+import { createPortal } from 'react-dom';
 
 import { Button, Input, Select } from '@/src/shared/ui';
 import {
-	CreateAccountModalContentProps,
 	Currency,
 	FormValues,
+	EditAccountModalContentProps,
 } from '../model/types';
-
 import { toastOptions } from '@/src/shared/lib';
-import { createPortal } from 'react-dom';
 
-export const CreateAccountModalContent: React.FC<
-	CreateAccountModalContentProps
-> = ({ onClose }) => {
+export const EditAccountModalContent: React.FC<
+	EditAccountModalContentProps
+> = ({ onClose, account }) => {
 	const [currencies, setCurrencies] = useState<Currency[]>([]);
 
 	const {
@@ -23,7 +22,13 @@ export const CreateAccountModalContent: React.FC<
 		handleSubmit,
 		control,
 		formState: { errors },
-	} = useForm<FormValues>();
+	} = useForm<FormValues>({
+		defaultValues: {
+			name: account.name,
+			currencyId: account.currencyId,
+			amount: account.balance,
+		},
+	});
 
 	useEffect(() => {
 		axios
@@ -33,15 +38,15 @@ export const CreateAccountModalContent: React.FC<
 
 	const onSubmit = async (data: FormValues) => {
 		try {
-			await axios.post('/api/accounts', {
+			await axios.put(`/api/accounts/${account.id}`, {
 				...data,
 				amount: Number(data.amount),
 			});
-			toast.success('Счёт успешно создан!', toastOptions);
+			toast.success('Счёт успешно обновлён!', toastOptions);
 			onClose();
 		} catch (error) {
-			console.error('Ошибка при создании счёта:', error);
-			toast.error('Ошибка при создании счёта', toastOptions);
+			console.error('Ошибка при обновлении счёта:', error);
+			toast.error('Ошибка при обновлении счёта', toastOptions);
 		}
 	};
 
@@ -49,7 +54,7 @@ export const CreateAccountModalContent: React.FC<
 		<>
 			<form className='flex h-full flex-col' onSubmit={handleSubmit(onSubmit)}>
 				<h2 className='mb-5 font-bold text-[17px] text-[var(--foreground-primary)]'>
-					Создать счёт
+					Редактировать счёт
 				</h2>
 
 				<div className='flex flex-col gap-5 flex-1 overflow-y-auto'>
@@ -92,7 +97,7 @@ export const CreateAccountModalContent: React.FC<
 				</div>
 
 				<Button className='mt-5 shrink-0' type='submit'>
-					Создать
+					Сохранить
 				</Button>
 			</form>
 

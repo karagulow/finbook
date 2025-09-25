@@ -6,6 +6,56 @@ import { revalidatePath } from 'next/cache';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
+export async function PUT(
+	req: Request,
+	{ params }: { params: { id: string } }
+) {
+	try {
+		const cookieStore = await cookies();
+		const token = cookieStore.get('authToken')?.value;
+
+		if (!token) {
+			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+		}
+
+		const decoded = verify(token, JWT_SECRET) as { userId: string };
+		const userId = decoded.userId;
+
+		const body = await req.json();
+		const { name, amount, currencyId } = body;
+
+		const account = await prisma.account.findFirst({
+			where: { id: params.id, userId },
+		});
+
+		if (!account) {
+			return NextResponse.json(
+				{ error: 'Счёт не найден или нет доступа' },
+				{ status: 404 }
+			);
+		}
+
+		const updated = await prisma.account.update({
+			where: { id: params.id },
+			data: {
+				name,
+				balance: amount,
+				currencyId,
+			},
+		});
+
+		revalidatePath('/');
+
+		return NextResponse.json(updated);
+	} catch (error) {
+		console.error('Ошибка при обновлении счёта:', error);
+		return NextResponse.json(
+			{ error: 'Failed to update account' },
+			{ status: 500 }
+		);
+	}
+}
+
 export async function DELETE(
 	req: Request,
 	{ params }: { params: { id: string } }

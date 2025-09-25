@@ -27,5 +27,6 @@ export async function getAccounts() {
 		name: acc.name,
 		balance: acc.balance,
 		currency: acc.currency.symbol ?? acc.currency.code,
+		currencyId: acc.currencyId,
 	}));
 }
