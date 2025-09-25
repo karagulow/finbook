@@ -36,37 +36,29 @@ body {
 	font-family: 'Manrope', sans-serif;
 }
 
-.sheet-enter {
-	opacity: 0;
-}
-.sheet-enter-active {
-	opacity: 1;
-	transition: opacity 300ms ease-in-out;
-}
-.sheet-exit {
-	opacity: 1;
-}
-.sheet-exit-active {
-	opacity: 0;
-	transition: opacity 300ms ease-in-out;
+/* Кастомный скролл для всего приложения */
+body::-webkit-scrollbar {
+	width: 8px; /* ширина вертикального скролла */
+	height: 8px; /* высота горизонтального скролла */
 }
 
-.sheet-enter .sheet-panel {
-	transform: translateX(110%);
-}
-.sheet-enter-active .sheet-panel {
-	transform: translateX(0%);
-	transition: transform 300ms ease-in-out;
-}
-.sheet-exit .sheet-panel {
-	transform: translateX(0%);
-}
-.sheet-exit-active .sheet-panel {
-	transform: translateX(110%);
-	transition: transform 300ms ease-in-out;
+body::-webkit-scrollbar-track {
+	background: var(--card); /* фон дорожки скролла */
+	border-radius: 4px;
 }
 
-.sheet-backdrop {
-	background: rgba(0, 0, 0, 0.5);
-	backdrop-filter: blur(2px);
+body::-webkit-scrollbar-thumb {
+	background: var(--foreground-secondary); /* цвет ползунка */
+	border-radius: 4px;
+	transition: background 0.2s;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+	background: var(--accent); /* цвет ползунка при наведении */
+}
+
+/* Для Firefox (немного упрощенно, не поддерживает градиенты и скругления как Webkit) */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--foreground-secondary) var(--card);
 }

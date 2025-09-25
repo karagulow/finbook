@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { useAccountSlider } from '../hooks/use-account-slider';
 
@@ -8,11 +8,15 @@ import { ArrowButton } from './actions/arrow-button';
 import { AccountCard } from './account-card';
 import { SliderDots } from './slider-dots';
 import { AccountCardSkeleton } from './account-card-skeleton';
+import { AccountsModal } from '../../accounts-modal';
+import { CreateAccountModal } from '../../create-account-modal';
 
 import { useAccounts } from '../hooks/use-accounts';
-import { useBalance } from '@/src/entities/balance';
 
 export const AccountOverview: React.FC = () => {
+	const [isAccountsModalOpen, setIsAccountsModalOpen] = useState(false);
+	const [isCreateAccountModalOpen, setIsCreateAccountModalOpen] =
+		useState(false);
 	const { accounts, totalBalance, currencyCode, currencySymbol, loading } =
 		useAccounts();
 
@@ -36,51 +40,74 @@ export const AccountOverview: React.FC = () => {
 		goTo,
 	} = useAccountSlider(extendedAccounts);
 
+	const openAccountsSheet = () => setIsAccountsModalOpen(true);
+	const closeAccountsSheet = () => setIsAccountsModalOpen(false);
+
+	const openCreateAccountModal = () => setIsCreateAccountModalOpen(true);
+	const closeCreateAccountModal = () => setIsCreateAccountModalOpen(false);
+
 	return (
-		<div className='flex flex-row gap-2.5 w-full'>
-			<div className='flex flex-col flex-1 min-w-0 gap-3'>
-				<div className='relative overflow-hidden w-full'>
-					{loading ? (
-						<AccountCardSkeleton />
-					) : (
-						<div
-							className='flex gap-2.5 transition-transform duration-300 ease-in-out'
-							style={{
-								transform: `translateX(-${
-									(currentIndex * 100) / itemsPerView
-								}%)`,
-							}}
-						>
-							{extendedAccounts.map((account, idx) => (
-								<AccountCard
-									key={account.id}
-									currentIndex={currentIndex}
-									itemsPerView={itemsPerView}
-									totalItems={totalItems}
-									idx={idx}
-									account={account}
-								/>
-							))}
-						</div>
+		<>
+			<div className='flex flex-row gap-2.5 w-full'>
+				<div className='flex flex-col flex-1 min-w-0 gap-3'>
+					<div className='relative overflow-hidden w-full'>
+						{loading ? (
+							<AccountCardSkeleton />
+						) : (
+							<div
+								className='flex gap-2.5 transition-transform duration-300 ease-in-out'
+								style={{
+									transform: `translateX(-${
+										(currentIndex * 100) / itemsPerView
+									}%)`,
+								}}
+							>
+								{extendedAccounts.map((account, idx) => (
+									<AccountCard
+										key={account.id}
+										currentIndex={currentIndex}
+										itemsPerView={itemsPerView}
+										totalItems={totalItems}
+										idx={idx}
+										account={account}
+									/>
+								))}
+							</div>
+						)}
+					</div>
+
+					{totalItems > itemsPerView && (
+						<SliderDots
+							totalItems={totalItems}
+							itemsPerView={itemsPerView}
+							currentIndex={currentIndex}
+							goTo={goTo}
+						/>
 					)}
 				</div>
 
-				{totalItems > itemsPerView && (
-					<SliderDots
-						totalItems={totalItems}
-						itemsPerView={itemsPerView}
-						currentIndex={currentIndex}
-						goTo={goTo}
-					/>
-				)}
+				<div className='grid grid-cols-2 gap-1.5 size-[100px] flex-shrink-0'>
+					<CreateAccountButton onClick={openCreateAccountModal} />
+					<ViewAllAccountsButton onClick={openAccountsSheet} />
+					<ArrowButton direction='left' disabled={!canGoPrev} onClick={prev} />
+					<ArrowButton direction='right' disabled={!canGoNext} onClick={next} />
+				</div>
 			</div>
 
-			<div className='grid grid-cols-2 gap-1.5 size-[100px] flex-shrink-0'>
-				<CreateAccountButton />
-				<ViewAllAccountsButton />
-				<ArrowButton direction='left' disabled={!canGoPrev} onClick={prev} />
-				<ArrowButton direction='right' disabled={!canGoNext} onClick={next} />
-			</div>
-		</div>
+			<AccountsModal
+				isOpen={isAccountsModalOpen}
+				onClose={closeAccountsSheet}
+				accounts={accounts}
+				onCreateAccount={() => {
+					closeAccountsSheet();
+					openCreateAccountModal();
+				}}
+			/>
+
+			<CreateAccountModal
+				isOpen={isCreateAccountModalOpen}
+				onClose={closeCreateAccountModal}
+			/>
+		</>
 	);
 };

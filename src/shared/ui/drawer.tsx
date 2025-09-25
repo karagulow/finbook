@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
@@ -10,6 +10,18 @@ interface Props {
 }
 
 export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
+	useEffect(() => {
+		if (isOpen) {
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = '';
+		}
+
+		return () => {
+			document.body.style.overflow = '';
+		};
+	}, [isOpen]);
+
 	return (
 		<AnimatePresence>
 			{isOpen && (
@@ -22,7 +34,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					onClick={onClose}
 				>
 					<motion.div
-						className='absolute inset-0 bg-black/50 backdrop-blur-xs'
+						className='absolute inset-0 bg-black/50 backdrop-blur-[2px]'
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
@@ -30,11 +42,11 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					/>
 
 					<motion.div
-						className='relative w-full h-[80vh] bottom-[-100px] rounded-t-[12px] bg-[var(--card)] p-5 pb-25 shadow-[0px_0px_10px_rgba(0,0,0,0.25)]'
+						className='relative w-full h-[80vh] bottom-[-100px] rounded-t-[12px] bg-[var(--card)] p-5 pb-35 shadow-[0px_0px_10px_rgba(0,0,0,0.25)]'
 						initial={{ y: '100%' }}
 						animate={{ y: 0 }}
 						exit={{ y: '100%' }}
-						transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+						transition={{ type: 'tween', stiffness: 300, damping: 30 }}
 						drag='y'
 						dragConstraints={{ top: -10, bottom: 0 }}
 						dragElastic={{ top: 0.1, bottom: 0.5 }}

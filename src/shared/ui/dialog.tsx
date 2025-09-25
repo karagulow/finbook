@@ -9,7 +9,7 @@ interface Props {
 	onClose: () => void;
 }
 
-export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
+export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 	useEffect(() => {
 		if (isOpen) {
 			document.body.style.overflow = 'hidden';
@@ -26,20 +26,20 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 		<AnimatePresence>
 			{isOpen && (
 				<motion.div
-					key='sheet'
-					className='fixed inset-0 flex justify-end p-5 bg-black/50 backdrop-blur-[2px] z-10'
+					key='dialog'
+					className='fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-[2px]'
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
-					transition={{ duration: 0.3, ease: 'easeInOut' }}
+					transition={{ duration: 0.25, ease: 'easeInOut' }}
 					onClick={onClose}
 				>
 					<motion.div
-						className='sheet-panel w-100 h-[calc(100vh-40px)] rounded-[8px] bg-[var(--card)] p-5 shadow-[0px_0px_10px_10px_rgba(0,0,0,0.25)]'
-						initial={{ x: '110%' }}
-						animate={{ x: 0 }}
-						exit={{ x: '110%' }}
-						transition={{ duration: 0.3, ease: 'easeInOut' }}
+						className='relative w-full max-w-lg rounded-[12px] bg-[var(--card)] p-6 shadow-[0_0_15px_rgba(0,0,0,0.4)]'
+						initial={{ scale: 0.9, opacity: 0 }}
+						animate={{ scale: 1, opacity: 1 }}
+						exit={{ scale: 0.9, opacity: 0 }}
+						transition={{ duration: 0.25, ease: 'easeInOut' }}
 						onClick={e => e.stopPropagation()}
 					>
 						{children}

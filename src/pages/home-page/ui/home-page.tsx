@@ -6,6 +6,7 @@ import {
 	Button,
 	CategoryDoughnutChart,
 	CategoryDoughnutChartSkeleton,
+	Dialog,
 } from '@/src/shared/ui';
 import { Balance } from '@/src/entities/balance';
 import { AccountOverview } from '@/src/widgets/account-overview';
