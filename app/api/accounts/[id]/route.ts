@@ -1,0 +1,50 @@
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { prisma } from '@/prisma/prisma-client';
+import { verify } from 'jsonwebtoken';
+import { revalidatePath } from 'next/cache';
+
+const JWT_SECRET = process.env.JWT_SECRET!;
+
+export async function DELETE(
+	req: Request,
+	{ params }: { params: { id: string } }
+) {
+	try {
+		const cookieStore = await cookies();
+		const token = cookieStore.get('authToken')?.value;
+
+		if (!token) {
+			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+		}
+
+		const decoded = verify(token, JWT_SECRET) as { userId: string };
+		const userId = decoded.userId;
+
+		const account = await prisma.account.findUnique({
+			where: { id: params.id },
+		});
+
+		if (!account) {
+			return NextResponse.json({ error: 'Счёт не найден' }, { status: 404 });
+		}
+
+		if (account.userId !== userId) {
+			return NextResponse.json({ error: 'Нет доступа' }, { status: 403 });
+		}
+
+		await prisma.account.delete({
+			where: { id: params.id },
+		});
+
+		revalidatePath('/');
+
+		return NextResponse.json({ success: true });
+	} catch (error) {
+		console.error(error);
+		return NextResponse.json(
+			{ error: 'Не удалось удалить счёт' },
+			{ status: 500 }
+		);
+	}
+}

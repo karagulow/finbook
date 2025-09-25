@@ -42,6 +42,7 @@ export const CreateAccountModalContent: React.FC<
 			onClose();
 		} catch (error) {
 			console.error('Ошибка при создании счёта:', error);
+			toast.error('Ошибка при создании счёта', toastOptions);
 		}
 	};
 
