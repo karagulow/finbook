@@ -14,4 +14,17 @@ export const transactionValidation = yup.object().shape({
 	description: yup.string().optional(),
 });
 
+export const transferValidation = yup.object().shape({
+	amountFrom: yup
+		.number()
+		.positive('Сумма должна быть больше 0')
+		.required('Введите сумму'),
+	accountIdFrom: yup.string().required('Выберите счёт списания'),
+	accountIdTo: yup.string().required('Выберите счёт зачисления'),
+	rate: yup.number().optional(),
+	date: yup.date().required(),
+	description: yup.string().optional(),
+});
+
 export type TransactionFormData = InferType<typeof transactionValidation>;
+export type TransferFormData = yup.InferType<typeof transferValidation>;

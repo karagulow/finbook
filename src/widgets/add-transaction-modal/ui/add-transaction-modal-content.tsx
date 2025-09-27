@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { Tabs } from '@/src/shared/ui';
 import { TransactionForm } from './transaction-form';
+import { TransferForm } from './transfer-form';
 
 interface Props {
 	onClose: () => void;
@@ -33,6 +34,10 @@ export const AddTransactionModalContent: React.FC<Props> = ({ onClose }) => {
 
 				{activeTransactionType === transactionTypes[1] && (
 					<TransactionForm type='EXPENSE' onClose={onClose} />
+				)}
+
+				{activeTransactionType === transactionTypes[2] && (
+					<TransferForm onClose={onClose} />
 				)}
 			</div>
 		</div>
