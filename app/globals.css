@@ -57,7 +57,7 @@ body::-webkit-scrollbar-thumb:hover {
 	background: var(--accent); /* цвет ползунка при наведении */
 }
 
-/* Для Firefox (немного упрощенно, не поддерживает градиенты и скругления как Webkit) */
+/* Для Firefox */
 * {
 	scrollbar-width: thin;
 	scrollbar-color: var(--foreground-secondary) var(--card);
