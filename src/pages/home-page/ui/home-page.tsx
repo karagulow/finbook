@@ -8,6 +8,7 @@ import {
 	Button,
 	CategoryDoughnutChart,
 	CategoryDoughnutChartSkeleton,
+	StickyHeader,
 } from '@/src/shared/ui';
 import { Balance } from '@/src/entities/balance';
 import { AccountOverview } from '@/src/widgets/account-overview';
@@ -24,6 +25,8 @@ export const HomePage: React.FC = () => {
 
 	return (
 		<>
+			<StickyHeader title='Главная' />
+
 			<div className='flex flex-col gap-5 sm:gap-[30px]'>
 				<div className='flex flex-col items-start gap-2.5 sm:flex-row sm:justify-between sm:items-center'>
 					<Balance />
