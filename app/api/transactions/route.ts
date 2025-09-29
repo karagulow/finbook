@@ -6,6 +6,92 @@ import { revalidatePath } from 'next/cache';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
+export async function GET(req: Request) {
+	try {
+		const cookieStore = await cookies();
+		const token = cookieStore.get('authToken')?.value;
+
+		if (!token) {
+			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+		}
+
+		const decoded = verify(token, JWT_SECRET) as { userId: string };
+		const userId = decoded.userId;
+
+		const { searchParams } = new URL(req.url);
+		const limit = parseInt(searchParams.get('limit') || '25', 10);
+		const cursor = searchParams.get('cursor');
+
+		const transactions = await prisma.transaction.findMany({
+			where: { userId },
+			orderBy: { date: 'desc' },
+			take: limit + 1,
+			...(cursor
+				? {
+						skip: 1,
+						cursor: { id: cursor },
+				  }
+				: {}),
+			include: {
+				account: {
+					include: {
+						currency: {
+							select: {
+								id: true,
+								code: true,
+								symbol: true,
+							},
+						},
+					},
+				},
+				category: true,
+				subcategory: true,
+				accountFrom: {
+					include: {
+						currency: {
+							select: {
+								id: true,
+								code: true,
+								symbol: true,
+							},
+						},
+					},
+				},
+				accountTo: {
+					include: {
+						currency: {
+							select: {
+								id: true,
+								code: true,
+								symbol: true,
+							},
+						},
+					},
+				},
+				goal: true,
+				debt: true,
+			},
+		});
+
+		let nextCursor: string | null = null;
+		if (transactions.length > limit) {
+			const nextItem = transactions.pop();
+			nextCursor = nextItem?.id ?? null;
+		}
+
+		return NextResponse.json({
+			items: transactions,
+			nextCursor,
+		});
+	} catch (error) {
+		console.error('Ошибка при получении транзакций:', error);
+		return NextResponse.json(
+			{ error: 'Ошибка при получении транзакций' },
+			{ status: 500 }
+		);
+	}
+}
+
 export async function POST(req: Request) {
 	try {
 		const cookieStore = await cookies();
