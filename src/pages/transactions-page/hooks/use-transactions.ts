@@ -1,10 +1,15 @@
 'use client';
 
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 import { DayGroup, Transaction } from '../model/types';
 
 interface ApiResponse {
 	items: Transaction[];
+	nextCursor: string | null;
+}
+
+interface PaginatedDayGroups {
+	groups: DayGroup[];
 	nextCursor: string | null;
 }
 
@@ -31,7 +36,13 @@ function groupTransactionsByDay(transactions: Transaction[]): DayGroup[] {
 }
 
 export function useTransactions(limit = 25) {
-	return useInfiniteQuery<DayGroup[], Error>({
+	return useInfiniteQuery<
+		PaginatedDayGroups,
+		Error,
+		InfiniteData<PaginatedDayGroups>,
+		readonly string[],
+		string | null
+	>({
 		queryKey: ['transactions'],
 		queryFn: async ({ pageParam = null }) => {
 			const params = new URLSearchParams();
@@ -42,9 +53,14 @@ export function useTransactions(limit = 25) {
 			if (!res.ok) throw new Error('Ошибка загрузки транзакций');
 
 			const data: ApiResponse = await res.json();
-			return groupTransactionsByDay(data.items);
+			const dayGroups = groupTransactionsByDay(data.items);
+
+			return {
+				groups: dayGroups,
+				nextCursor: data.nextCursor,
+			};
 		},
-		getNextPageParam: () => null,
+		getNextPageParam: lastPage => lastPage.nextCursor ?? null,
 		initialPageParam: null,
 	});
 }

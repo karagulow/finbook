@@ -9,7 +9,7 @@ import { useTransactions } from '../hooks/use-transactions';
 
 export const TransactionList: React.FC = () => {
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-		useTransactions(10);
+		useTransactions(25);
 
 	const loaderRef = useRef<HTMLDivElement | null>(null);
 
@@ -30,21 +30,21 @@ export const TransactionList: React.FC = () => {
 		return () => observer.disconnect();
 	}, [hasNextPage, fetchNextPage]);
 
-	console.log(hasNextPage, isFetchingNextPage);
-
 	return (
 		<div className='flex flex-col gap-5'>
 			{!data ? (
 				<TransactionSkeleton count={10} />
 			) : (
-				data?.pages.map(page =>
-					page.map(data => <TransactionGroup key={data.date} data={data} />)
+				data.pages.map(page =>
+					page.groups.map((group, index) => (
+						<TransactionGroup key={index} data={group} />
+					))
 				)
 			)}
 
 			{hasNextPage && (
 				<div ref={loaderRef} className='text-center py-4 text-sm text-gray-500'>
-					{isFetchingNextPage ? 'Загрузка...' : 'Прокрутите вниз для загрузки'}
+					{isFetchingNextPage ? 'Загрузка...' : ''}
 				</div>
 			)}
 		</div>
