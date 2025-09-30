@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { LogOut } from 'lucide-react';
@@ -10,6 +10,12 @@ import { ConfirmLogoutDialog } from '@/src/features/confirm-logout-dialog/ui/con
 export const LogoutButton: React.FC = () => {
 	const [isConfirmLogoutDialogOpen, setIsConfirmLogoutDialogOpen] =
 		useState(false);
+
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
 
 	return (
 		<>
@@ -21,13 +27,14 @@ export const LogoutButton: React.FC = () => {
 				<span>Выйти</span>
 			</button>
 
-			{createPortal(
-				<ConfirmLogoutDialog
-					isOpen={isConfirmLogoutDialogOpen}
-					onClose={() => setIsConfirmLogoutDialogOpen(false)}
-				/>,
-				document.body
-			)}
+			{mounted &&
+				createPortal(
+					<ConfirmLogoutDialog
+						isOpen={isConfirmLogoutDialogOpen}
+						onClose={() => setIsConfirmLogoutDialogOpen(false)}
+					/>,
+					document.body
+				)}
 		</>
 	);
 };

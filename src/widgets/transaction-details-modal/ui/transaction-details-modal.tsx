@@ -23,11 +23,21 @@ export const TransactionDetailsModal: React.FC<Props> = ({
 		<>
 			{isDesktop ? (
 				<Sheet isOpen={isOpen} onClose={onClose}>
-					{isOpen && <TransactionDetailsContent transaction={transaction} />}
+					{isOpen && (
+						<TransactionDetailsContent
+							transaction={transaction}
+							onCloseModal={onClose}
+						/>
+					)}
 				</Sheet>
 			) : (
 				<Drawer isOpen={isOpen} onClose={onClose}>
-					{isOpen && <TransactionDetailsContent transaction={transaction} />}
+					{isOpen && (
+						<TransactionDetailsContent
+							transaction={transaction}
+							onCloseModal={onClose}
+						/>
+					)}
 				</Drawer>
 			)}
 		</>
