@@ -70,11 +70,11 @@ export const useTransferForm = (onClose: () => void) => {
 		setLoading(true);
 		try {
 			await axios.post('/api/transfers', data);
-			toast.success('Трансфер успешно добавлен!', toastOptions);
+			toast.success('Перевод успешно добавлен!', toastOptions);
 			onClose();
 		} catch (error: any) {
 			toast.error(
-				error.response?.data?.error || 'Ошибка при добавлении трансфера',
+				error.response?.data?.error || 'Ошибка при добавлении перевода',
 				toastOptions
 			);
 		} finally {

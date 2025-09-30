@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
@@ -97,8 +97,6 @@ export const RegistrationForm: React.FC = () => {
 					Войти
 				</Link>
 			</span>
-
-			<Toaster toastOptions={toastOptions} />
 		</form>
 	);
 };

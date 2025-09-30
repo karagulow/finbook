@@ -64,9 +64,14 @@ export const TransferItem: React.FC<Props> = ({ transfer }) => {
 					{transfer.amountFrom}{' '}
 					{transfer.accountFrom.currency.symbol ||
 						transfer.accountFrom.currency.code}{' '}
-					→ {transfer.amountTo}{' '}
-					{transfer.accountTo.currency.symbol ||
-						transfer.accountTo.currency.code}
+					{transfer.accountFrom.currency.id !==
+						transfer.accountTo.currency.id && (
+						<>
+							→ {transfer.amountTo}{' '}
+							{transfer.accountTo.currency.symbol ||
+								transfer.accountTo.currency.code}
+						</>
+					)}
 				</span>
 			</li>
 
