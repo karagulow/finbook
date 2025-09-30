@@ -85,6 +85,7 @@ export const TransactionForm: React.FC<Props> = ({ type, onClose }) => {
 				<Input
 					label='Сумма'
 					type='number'
+					step='any'
 					{...register('amount')}
 					error={errors.amount?.message}
 				/>

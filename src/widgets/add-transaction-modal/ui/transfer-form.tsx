@@ -34,6 +34,7 @@ export const TransferForm: React.FC<Props> = ({ onClose }) => {
 				<Input
 					label='Сумма'
 					type='number'
+					step='any'
 					{...register('amountFrom')}
 					error={errors.amountFrom?.message}
 				/>
