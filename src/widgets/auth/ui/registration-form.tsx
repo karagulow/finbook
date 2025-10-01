@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 
-import { RegistrationFormData } from '../model/types';
+import { Currency, RegistrationFormData } from '../model/types';
 import { registrationValidation } from '../model/validations';
 import { toastOptions } from '@/src/shared/lib';
-import { Button, Input } from '@/src/shared/ui';
+import { Button, Input, Select } from '@/src/shared/ui';
 import { useAuthStore } from '@/src/shared/store/authStore';
 
 export const RegistrationForm: React.FC = () => {
@@ -22,10 +22,19 @@ export const RegistrationForm: React.FC = () => {
 	const {
 		register,
 		handleSubmit,
+		control,
 		formState: { errors },
 	} = useForm<RegistrationFormData>({
 		resolver: yupResolver(registrationValidation),
 	});
+
+	const [currencies, setCurrencies] = useState<Currency[]>([]);
+
+	useEffect(() => {
+		axios
+			.get<Currency[]>('/api/currencies')
+			.then(res => setCurrencies(res.data));
+	}, []);
 
 	const onSubmit = async (data: RegistrationFormData) => {
 		if (!navigator.onLine) {
@@ -39,6 +48,7 @@ export const RegistrationForm: React.FC = () => {
 			const response = await axios.post('/api/auth/registration', {
 				email: data.email,
 				password: data.password,
+				currencyId: data.currencyId,
 			});
 			setAuth(response.data.token, { email: data.email });
 			toast.success('Регистрация успешна!', toastOptions);
@@ -81,6 +91,24 @@ export const RegistrationForm: React.FC = () => {
 					type='password'
 					{...register('confirmPassword')}
 					error={errors.confirmPassword?.message}
+				/>
+
+				<Controller
+					name='currencyId'
+					control={control}
+					rules={{ required: 'Выберите валюту' }}
+					render={({ field, fieldState }) => (
+						<Select
+							placeholder='Выберите валюту'
+							value={field.value}
+							onChange={field.onChange}
+							error={fieldState.error?.message}
+							options={currencies.map(c => ({
+								value: c.id,
+								label: `${c.name} (${c.code})`,
+							}))}
+						/>
+					)}
 				/>
 			</div>
 

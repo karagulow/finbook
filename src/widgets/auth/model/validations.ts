@@ -22,4 +22,5 @@ export const registrationValidation = yup.object({
 		.string()
 		.oneOf([yup.ref('password')], 'Пароли не совпадают')
 		.required(),
+	currencyId: yup.string().required('Валюта обязательна'),
 });

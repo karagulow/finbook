@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 	}
 
 	try {
-		const { email, password } = await req.json();
+		const { email, password, currencyId } = await req.json();
 
 		if (await prisma.user.findUnique({ where: { email } })) {
 			return NextResponse.json(
@@ -27,13 +27,14 @@ export async function POST(req: Request) {
 
 		const hashedPassword = await bcrypt.hash(password, 10);
 
-		const defaultCurrency = await prisma.currency.findUnique({
-			where: { code: 'RUB' },
+		const selectedCurrency = await prisma.currency.findUnique({
+			where: { id: currencyId },
 		});
-		if (!defaultCurrency) {
+
+		if (!selectedCurrency) {
 			return NextResponse.json(
-				{ message: 'Произошла ошибка с валютами' },
-				{ status: 500 }
+				{ message: 'Выбранная валюта не найдена' },
+				{ status: 400 }
 			);
 		}
 
@@ -41,12 +42,12 @@ export async function POST(req: Request) {
 			data: {
 				email,
 				password: hashedPassword,
-				currencyId: defaultCurrency.id,
+				currencyId: selectedCurrency.id,
 				accounts: {
 					create: {
-						name: 'Наличные',
+						name: 'Основной счёт',
 						balance: 0,
-						currencyId: defaultCurrency.id,
+						currencyId: selectedCurrency.id,
 					},
 				},
 				categories: {
@@ -90,7 +91,7 @@ export async function POST(req: Request) {
 		});
 
 		return NextResponse.json(
-			{ message: 'Регистрация успешна' },
+			{ message: 'Регистрация успешна', token },
 			{
 				status: 201,
 				headers: {
