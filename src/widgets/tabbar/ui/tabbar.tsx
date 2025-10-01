@@ -25,7 +25,7 @@ export const Tabbar: React.FC = () => {
 				label='Аналитика'
 			/>
 			<TabbarItem
-				path='/another'
+				path='/more'
 				icon={<AlignJustify size={ICON_SIZE} strokeWidth={ICON_STROKE_WIDTH} />}
 				label='Ещё'
 			/>

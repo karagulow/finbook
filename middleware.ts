@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
 	}
 
 	// Защищенные страницы
-	const protectedPaths = ['/', '/transactions'];
+	const protectedPaths = ['/', '/transactions', '/more'];
 	if (protectedPaths.includes(pathname)) {
 		if (!token) {
 			if (!refreshToken) {
@@ -90,6 +90,7 @@ export const config = {
 		'/login',
 		'/registration',
 		'/transactions',
+		'/more',
 		'/((?!_next|api|.*\\..*).*)',
 	],
 };
