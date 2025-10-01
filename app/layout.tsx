@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
 import './globals.css';
 import Providers from '@/src/app/providers';
+import { TopBlurOverlay } from '@/src/shared/ui';
 
 const manropeSans = Manrope({
 	variable: '--font-manrope-sans',
@@ -39,6 +40,7 @@ export default function RootLayout({
 		<html lang='ru'>
 			<body className={`${manropeSans.variable} antialiased`}>
 				<div className='bg-[var(--background-primary)]'>
+					<TopBlurOverlay />
 					<Providers>{children}</Providers>
 				</div>
 			</body>

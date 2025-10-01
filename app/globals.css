@@ -65,3 +65,16 @@ body::-webkit-scrollbar-thumb:hover {
 	scrollbar-width: thin;
 	scrollbar-color: var(--foreground-secondary) var(--card);
 }
+
+.progressive-blur:after {
+	content: '';
+	opacity: 1;
+	-webkit-backdrop-filter: blur(2px);
+	backdrop-filter: blur(2px);
+	pointer-events: none;
+	transition: all 1s;
+	position: absolute;
+	inset: 0;
+	-webkit-mask: linear-gradient(#000 60%, #0000);
+	mask: linear-gradient(#000 60%, #0000);
+}
