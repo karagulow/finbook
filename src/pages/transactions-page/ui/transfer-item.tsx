@@ -61,13 +61,18 @@ export const TransferItem: React.FC<Props> = ({ transfer }) => {
 				</div>
 
 				<span className='font-medium text-[15px] text-[var(--foreground-primary)] flex-shrink-0'>
-					{transfer.amountFrom}{' '}
+					{transfer.amountFrom.toLocaleString('ru-RU', {
+						minimumFractionDigits: 2,
+					})}{' '}
 					{transfer.accountFrom.currency.symbol ||
 						transfer.accountFrom.currency.code}{' '}
 					{transfer.accountFrom.currency.id !==
 						transfer.accountTo.currency.id && (
 						<>
-							→ {transfer.amountTo}{' '}
+							→{' '}
+							{transfer.amountTo.toLocaleString('ru-RU', {
+								minimumFractionDigits: 2,
+							})}{' '}
 							{transfer.accountTo.currency.symbol ||
 								transfer.accountTo.currency.code}
 						</>

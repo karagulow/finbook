@@ -11,6 +11,7 @@ import { TransactionSum } from './transaction-sum';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
 
 import { toastOptions } from '@/src/shared/lib';
+import { EditTransactionModal } from '../../edit-transaction-modal';
 
 interface Props {
 	transaction: Transaction;
@@ -21,8 +22,12 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 	transaction,
 	onCloseModal,
 }) => {
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] =
 		useState(false);
+
+	const openEditModal = () => setIsEditModalOpen(true);
+	const closeEditModal = () => setIsEditModalOpen(false);
 
 	const openConfirmDeleteDialog = () => setIsConfirmDeleteDialogOpen(true);
 	const closeConfirmDeleteDialog = () => setIsConfirmDeleteDialogOpen(false);
@@ -53,7 +58,7 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 				</div>
 
 				<div className='flex flex-row items-center gap-2.5'>
-					<Button className='w-full' variant='default'>
+					<Button className='w-full' variant='default' onClick={openEditModal}>
 						Изменить
 					</Button>
 					<Button
@@ -65,6 +70,12 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 					</Button>
 				</div>
 			</div>
+
+			<EditTransactionModal
+				isOpen={isEditModalOpen}
+				onClose={closeEditModal}
+				transaction={transaction}
+			/>
 
 			<ConfirmDeleteDialog
 				isOpen={isConfirmDeleteDialogOpen}
