@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
 	}
 
 	// Защищенные страницы
-	const protectedPaths = ['/'];
+	const protectedPaths = ['/', '/transactions'];
 	if (protectedPaths.includes(pathname)) {
 		if (!token) {
 			if (!refreshToken) {
@@ -85,7 +85,13 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ['/', '/login', '/registration', '/((?!_next|api|.*\\..*).*)'],
+	matcher: [
+		'/',
+		'/login',
+		'/registration',
+		'/transactions',
+		'/((?!_next|api|.*\\..*).*)',
+	],
 };
 
 export const runtime = 'nodejs';

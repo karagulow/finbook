@@ -34,6 +34,9 @@ body {
 	background: var(--background);
 	color: var(--foreground);
 	font-family: 'Manrope', sans-serif;
+
+	overflow-x: hidden;
+	margin-right: calc(-1 * (100vw - 100%));
 }
 
 /* Кастомный скролл для всего приложения */
@@ -57,7 +60,7 @@ body::-webkit-scrollbar-thumb:hover {
 	background: var(--accent); /* цвет ползунка при наведении */
 }
 
-/* Для Firefox (немного упрощенно, не поддерживает градиенты и скругления как Webkit) */
+/* Для Firefox */
 * {
 	scrollbar-width: thin;
 	scrollbar-color: var(--foreground-secondary) var(--card);

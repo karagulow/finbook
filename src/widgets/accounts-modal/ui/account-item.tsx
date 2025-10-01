@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
 import axios from 'axios';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 import { DeleteButton, EditButton } from '@/src/shared/ui';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
@@ -64,8 +63,6 @@ export const AccountItem: React.FC<Props> = ({ account }) => {
 				onClose={() => setIsEditModalOpen(false)}
 				account={account}
 			/>
-
-			{createPortal(<Toaster />, document.body)}
 		</>
 	);
 };

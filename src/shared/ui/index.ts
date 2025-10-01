@@ -10,3 +10,8 @@ export { EditButton } from './edit-button';
 export { DeleteButton } from './delete-button';
 export { Select } from './select';
 export { Dialog } from './dialog';
+export { Tabs } from './tabs';
+export { Textarea } from './textarea';
+export { DatePicker } from './date-picker';
+export { StickyHeader } from './sticky-header';
+export { Description } from './description';

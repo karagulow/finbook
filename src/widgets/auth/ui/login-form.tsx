@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import toast, { Toaster } from 'react-hot-toast';
-import { set, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { LoginFormData } from '../model/types';
@@ -87,8 +87,6 @@ export const LoginForm: React.FC = () => {
 					Зарегистрироваться
 				</Link>
 			</span>
-
-			<Toaster toastOptions={toastOptions} />
 		</form>
 	);
 };
