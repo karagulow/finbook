@@ -44,7 +44,7 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					onClick={onClose}
 				>
 					<motion.div
-						className='relative w-full max-w-lg rounded-[12px] bg-[var(--card)] p-6 shadow-[0_0_15px_rgba(0,0,0,0.4)]'
+						className='relative w-full max-w-lg rounded-[12px] bg-[var(--card)] p-6 shadow-xl'
 						initial={{ scale: 0.9, opacity: 0 }}
 						animate={{ scale: 1, opacity: 1 }}
 						exit={{ scale: 0.9, opacity: 0 }}

@@ -5,21 +5,25 @@
 	--button-primary-hover: #000;
 	--button-primary: #1a1a1a;
 	--border-primary-hover: #d4d4d4;
-	--border-primary: #e6e6e6;
+	--border-primary: #dddddd;
+	--border-wrong: #a16161;
+	--border-wrong-hover: #b36464;
 	--button-secondary: #fafafa;
 	--background-primary: #ffffff;
+	--background-wrong: #654a4a;
+	--background-wrong-hover: #785353;
 	--button-tertiary: #f1f1f1;
+	--button-tertiary-hover: #ededed;
 	--divider: #eaeaea;
 	--card: #f9f8f8;
-	--foreground-secondary: #555555;
+	--foreground-secondary: #6f6f6f;
 	--foreground-primary: #111111;
-	--button-tertiary-hover: #f0f0f0;
 	--input-primary: #ffffff;
 	--foreground-inverse: #ffffff;
 	--wrong: #ff4d4f;
 	--input-primary-placeholder: #9ca3af;
 	--success: #22c55e;
-	--muted: #f5f5f5;
+	--muted: #f2f2f2;
 	--accent: #3b82f6;
 }
 
@@ -29,8 +33,12 @@
 	--button-primary: #e6e6e6;
 	--border-primary-hover: #3a3f4c;
 	--border-primary: #2c2e33;
+	--border-wrong: #654a4a;
+	--border-wrong-hover: #785353;
 	--button-secondary: #35353b;
 	--background-primary: #08090a;
+	--background-wrong: #382828;
+	--background-wrong-hover: #523333;
 	--button-tertiary: #1e2025;
 	--divider: #191c1f;
 	--card: #0f1011;

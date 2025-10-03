@@ -14,7 +14,7 @@ const variantStyles: Record<NonNullable<Props['variant']>, string> = {
 	default:
 		'bg-[var(--button-tertiary)] border-[var(--border-primary)] text-[var(--foreground-primary)] hover:bg-[var(--button-tertiary-hover)] hover:border-[var(--border-primary-hover)]',
 	wrong:
-		'bg-[#382828] border-[#654a4a] text-[var(--wrong)] hover:bg-[#523333] hover:border-[#785353]',
+		'bg-[var(--background-wrong)] border-[var(--border-wrong)] text-[var(--wrong)] hover:bg-[var(--background-wrong-hover)] hover:border-[var(--border-wrong-hover)]',
 };
 
 export const Button: React.FC<Props> = ({

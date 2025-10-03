@@ -60,7 +60,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 							<X strokeWidth={1.5} size={30} />
 						</button>
 
-						<div className='sheet-panel w-100 h-[calc(100vh-40px)] rounded-[8px] bg-[var(--card)] p-5 shadow-[0px_0px_10px_10px_rgba(0,0,0,0.25)]'>
+						<div className='sheet-panel w-100 h-[calc(100vh-40px)] rounded-[8px] bg-[var(--card)] p-5 shadow-xl'>
 							{children}
 						</div>
 					</motion.div>
