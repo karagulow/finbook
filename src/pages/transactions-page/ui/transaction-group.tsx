@@ -24,7 +24,7 @@ export const TransactionGroup: React.FC<Props> = ({ data }) => {
 					})}
 				</span>
 
-				<div className='flex flex-row flex-wrap items-center gap-2 w-full justify-between sm:w-fit sm:justify-start sm:gap-5'>
+				{/* <div className='flex flex-row flex-wrap items-center gap-2 w-full justify-between sm:w-fit sm:justify-start sm:gap-5'>
 					<div className='flex flex-row items-center gap-1 text-[var(--success)]'>
 						<CircleArrowUp size={16} />
 						<span>
@@ -45,7 +45,7 @@ export const TransactionGroup: React.FC<Props> = ({ data }) => {
 							₽
 						</span>
 					</div>
-				</div>
+				</div> */}
 			</div>
 
 			<ul className='flex flex-col'>
