@@ -2,6 +2,7 @@ import React from 'react';
 
 import { StickyHeader } from '@/src/shared/ui';
 import { AppSettings } from './app-settings';
+import { UserSettings } from './user-settings';
 
 export const SettingsPage: React.FC = () => {
 	return (
@@ -14,7 +15,10 @@ export const SettingsPage: React.FC = () => {
 				</h1>
 
 				<div className='flex flex-row gap-[30px]'>
-					<AppSettings />
+					<div className='flex flex-col gap-5 w-full'>
+						<AppSettings />
+						<UserSettings />
+					</div>
 				</div>
 			</div>
 		</>

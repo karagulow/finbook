@@ -10,7 +10,12 @@ export const AppSettings: React.FC = () => {
 	return (
 		<SettingsBlockLayout title='Приложение'>
 			<SettingsBlockItem>
-				<span>Оформление</span>
+				<div className='flex flex-col gap-1.5'>
+					<span className='text-[15px] text-[var(--foreground-primary)]'>
+						Оформление
+					</span>
+					<span>Выбор основной цветовой схемы оформления.</span>
+				</div>
 				<ThemeSwitcher />
 			</SettingsBlockItem>
 		</SettingsBlockLayout>

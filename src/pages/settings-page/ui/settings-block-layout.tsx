@@ -1,3 +1,4 @@
+import { cn } from '@/src/shared/lib';
 import React from 'react';
 
 interface SettingsBlockLayoutProps {
@@ -7,6 +8,7 @@ interface SettingsBlockLayoutProps {
 
 interface SettingsBlockItemProps {
 	children?: React.ReactNode;
+	className?: string;
 }
 
 export const SettingsBlockLayout: React.FC<SettingsBlockLayoutProps> = ({
@@ -14,8 +16,8 @@ export const SettingsBlockLayout: React.FC<SettingsBlockLayoutProps> = ({
 	children,
 }) => {
 	return (
-		<div className='flex flex-col gap-4 sm:gap-5 w-full p-5 bg-[var(--card)] rounded-[8px] font-medium text-[13px] text-[var(--foreground-primary)]'>
-			<h2 className='font-bold text-[17px] text-[var(--foreground-primary)]'>
+		<div className='flex flex-col gap-4 sm:gap-5 w-full p-5 bg-[var(--card)] rounded-[8px] font-medium text-[13px] text-[var(--foreground-secondary)]'>
+			<h2 className='font-bold text-[19px] text-[var(--foreground-primary)]'>
 				{title}
 			</h2>
 			{children}
@@ -25,9 +27,15 @@ export const SettingsBlockLayout: React.FC<SettingsBlockLayoutProps> = ({
 
 export const SettingsBlockItem: React.FC<SettingsBlockItemProps> = ({
 	children,
+	className,
 }) => {
 	return (
-		<div className='flex flex-row items-center justify-between gap-2.5'>
+		<div
+			className={cn(
+				'flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-5 sm:gap-2.5',
+				className
+			)}
+		>
 			{children}
 		</div>
 	);

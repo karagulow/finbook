@@ -19,7 +19,7 @@ export default function ThemeSwitcher() {
 	if (!mounted) return null;
 
 	return (
-		<div className='w-[150px]'>
+		<div className='w-full sm:w-[150px]'>
 			<Select
 				options={themeOptions}
 				value={theme}
