@@ -37,12 +37,15 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang='ru'>
+		<html lang='ru' suppressHydrationWarning>
 			<body className={`${manropeSans.variable} antialiased`}>
-				<div className='bg-[var(--background-primary)]'>
-					<TopBlurOverlay />
-					<Providers>{children}</Providers>
-				</div>
+				<Providers>
+					<div className='bg-[var(--background-primary)]'>
+						<TopBlurOverlay />
+
+						{children}
+					</div>
+				</Providers>
 			</body>
 		</html>
 	);
