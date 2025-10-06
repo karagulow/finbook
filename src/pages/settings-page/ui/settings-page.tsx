@@ -7,6 +7,7 @@ import { AppSettings } from './app-settings';
 import { UserSettings } from './user-settings';
 import { useUser } from '../model/use-user';
 import { SettingsBlockSkeleton } from './settings-block-skeleton';
+import { DataSettings } from './data-settings';
 
 export const SettingsPage: React.FC = () => {
 	const { user, isLoading, error } = useUser();
@@ -29,6 +30,7 @@ export const SettingsPage: React.FC = () => {
 							<div className='flex flex-row gap-[30px]'>
 								<div className='flex flex-col gap-5 w-full'>
 									<AppSettings />
+									<DataSettings user={user} />
 									<UserSettings user={user} />
 								</div>
 							</div>

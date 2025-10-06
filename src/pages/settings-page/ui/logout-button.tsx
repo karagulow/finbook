@@ -1,24 +1,27 @@
-'use client';
-
 import React, { useState } from 'react';
 
+import { Button } from '@/src/shared/ui';
 import { LogOut } from 'lucide-react';
-
 import { ConfirmLogoutDialog } from '@/src/features/confirm-logout-dialog/ui/confirm-logout-dialog';
 
-export const LogoutButton: React.FC = () => {
+interface Props {
+	className?: string;
+}
+
+export const LogoutButton: React.FC<Props> = ({ className }) => {
 	const [isConfirmLogoutDialogOpen, setIsConfirmLogoutDialogOpen] =
 		useState(false);
 
 	return (
 		<>
-			<button
-				className='flex flex-row items-center gap-2.5 p-2.5 w-full rounded-[6px] hover:bg-[#ff85830e] font-medium text-[13px] text-[var(--wrong)] transition cursor-pointer'
+			<Button
+				className='w-full sm:w-fit'
+				variant='wrong'
 				onClick={() => setIsConfirmLogoutDialogOpen(true)}
 			>
-				<LogOut size={16} strokeWidth={1.5} />
-				<span>Выйти</span>
-			</button>
+				<LogOut size={16} strokeWidth={1} />
+				Выйти из аккаунта
+			</Button>
 
 			<ConfirmLogoutDialog
 				isOpen={isConfirmLogoutDialogOpen}
