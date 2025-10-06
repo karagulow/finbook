@@ -33,6 +33,7 @@ export function Select<T extends string | number = string>({
 	const [showError, setShowError] = useState(false);
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
+	const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
 
 	const selected = options.find(o => o.value === value);
 
@@ -73,7 +74,11 @@ export function Select<T extends string | number = string>({
 					let next = prev + 1;
 					for (let i = 0; i < options.length; i++) {
 						const idx = (next + i) % options.length;
-						if (!options[idx].disabled) return idx;
+						if (!options[idx].disabled) {
+							// скролл к элементу
+							optionRefs.current[idx]?.scrollIntoView({ block: 'nearest' });
+							return idx;
+						}
 					}
 					return prev;
 				});
@@ -85,7 +90,10 @@ export function Select<T extends string | number = string>({
 					let next = prev - 1;
 					for (let i = 0; i < options.length; i++) {
 						const idx = (next - i + options.length) % options.length;
-						if (!options[idx].disabled) return idx;
+						if (!options[idx].disabled) {
+							optionRefs.current[idx]?.scrollIntoView({ block: 'nearest' });
+							return idx;
+						}
 					}
 					return prev;
 				});
@@ -104,6 +112,16 @@ export function Select<T extends string | number = string>({
 		document.addEventListener('keydown', handleKey);
 		return () => document.removeEventListener('keydown', handleKey);
 	}, [open, highlighted, options, onChange]);
+
+	useEffect(() => {
+		if (open) {
+			const selectedIndex = options.findIndex(o => o.value === value);
+			setHighlighted(selectedIndex);
+			if (optionRefs.current[selectedIndex]) {
+				optionRefs.current[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+			}
+		}
+	}, [open, value, options]);
 
 	return (
 		<label className='flex flex-col gap-1.5'>
@@ -160,17 +178,13 @@ export function Select<T extends string | number = string>({
 								return (
 									<li
 										key={String(opt.value)}
-										onMouseDown={e => {
-											e.preventDefault();
-											if (opt.disabled) return;
-											onChange?.(opt.value);
-											setOpen(false);
+										ref={el => {
+											optionRefs.current[idx] = el;
 										}}
-										onTouchStart={e => {
-											e.preventDefault();
+										onPointerUp={e => {
 											if (opt.disabled) return;
 											onChange?.(opt.value);
-											setOpen(false);
+											setTimeout(() => setOpen(false), 0);
 										}}
 										className={`flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] text-[var(--foreground-primary)] rounded-[4px] ${
 											opt.disabled
