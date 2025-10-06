@@ -7,19 +7,17 @@ import {
 import { Button, Divider } from '@/src/shared/ui';
 
 import { LogOut, Trash } from 'lucide-react';
+import { ChangeCurrency } from './change-currency/change-currency';
+import { User } from '../model/types';
 
-export const UserSettings: React.FC = () => {
+interface UserSettingsProps {
+	user: User;
+}
+
+export const UserSettings: React.FC<UserSettingsProps> = ({ user }) => {
 	return (
 		<SettingsBlockLayout title='Аккаунт'>
-			<SettingsBlockItem>
-				<div className='flex flex-col gap-1.5'>
-					<span className='text-[15px] text-[var(--foreground-primary)]'>
-						Основная валюта
-					</span>
-					<span>Выбор основной валюты аккаунта.</span>
-				</div>
-				<Button className='w-full sm:w-fit'>Настроить</Button>
-			</SettingsBlockItem>
+			<ChangeCurrency currency={user.currency} />
 
 			<Divider />
 
@@ -40,7 +38,7 @@ export const UserSettings: React.FC = () => {
 					<span className='text-[15px] text-[var(--foreground-primary)]'>
 						Электронная почта
 					</span>
-					<span>Вы вошли как example@mail.com.</span>
+					<span>Вы вошли как {user.email}.</span>
 				</div>
 
 				<div className='flex flex-row items-center gap-2.5 w-full sm:w-fit'>
