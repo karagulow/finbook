@@ -90,6 +90,30 @@ body::-webkit-scrollbar-thumb:hover {
 	scrollbar-color: var(--foreground-secondary) var(--card);
 }
 
+/* Тонкий скролл */
+.scroll-thin::-webkit-scrollbar {
+	height: 6px;
+	width: 6px;
+}
+
+.scroll-thin::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.scroll-thin::-webkit-scrollbar-thumb {
+	background: var(--border-primary);
+	border-radius: 4px;
+}
+
+.scroll-thin:hover::-webkit-scrollbar-thumb {
+	background: var(--foreground-secondary);
+}
+
+.scroll-thin {
+	scrollbar-width: thin;
+	scrollbar-color: var(--border-primary) transparent;
+}
+
 .progressive-blur:after {
 	content: '';
 	opacity: 1;
