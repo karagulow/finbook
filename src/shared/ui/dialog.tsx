@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
@@ -10,6 +10,8 @@ interface Props {
 }
 
 export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
+	const keydownListenerRef = useRef<(() => void) | null>(null);
+
 	useEffect(() => {
 		if (isOpen) {
 			document.body.style.overflow = 'hidden';
@@ -21,18 +23,24 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 			};
 
 			document.addEventListener('keydown', handleKeyDown);
+			keydownListenerRef.current = () =>
+				document.removeEventListener('keydown', handleKeyDown);
 
 			return () => {
-				document.body.style.overflow = '';
-				document.removeEventListener('keydown', handleKeyDown);
+				if (keydownListenerRef.current) {
+					keydownListenerRef.current();
+					keydownListenerRef.current = null;
+				}
 			};
-		} else {
-			document.body.style.overflow = '';
 		}
 	}, [isOpen, onClose]);
 
 	return (
-		<AnimatePresence>
+		<AnimatePresence
+			onExitComplete={() => {
+				document.body.style.overflow = '';
+			}}
+		>
 			{isOpen && (
 				<motion.div
 					key='dialog'
@@ -44,7 +52,7 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					onClick={onClose}
 				>
 					<motion.div
-						className='relative w-full max-w-lg rounded-[12px] bg-[var(--card)] p-6 shadow-[0_0_15px_rgba(0,0,0,0.4)]'
+						className='relative w-full max-w-lg rounded-[12px] bg-[var(--card)] p-6 shadow-xl'
 						initial={{ scale: 0.9, opacity: 0 }}
 						animate={{ scale: 1, opacity: 1 }}
 						exit={{ scale: 0.9, opacity: 0 }}

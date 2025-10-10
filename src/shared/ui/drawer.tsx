@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
@@ -10,6 +10,8 @@ interface Props {
 }
 
 export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
+	const keydownListenerRef = useRef<(() => void) | null>(null);
+
 	useEffect(() => {
 		if (isOpen) {
 			document.body.style.overflow = 'hidden';
@@ -21,18 +23,24 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 			};
 
 			document.addEventListener('keydown', handleKeyDown);
+			keydownListenerRef.current = () =>
+				document.removeEventListener('keydown', handleKeyDown);
 
 			return () => {
-				document.body.style.overflow = '';
-				document.removeEventListener('keydown', handleKeyDown);
+				if (keydownListenerRef.current) {
+					keydownListenerRef.current();
+					keydownListenerRef.current = null;
+				}
 			};
-		} else {
-			document.body.style.overflow = '';
 		}
 	}, [isOpen, onClose]);
 
 	return (
-		<AnimatePresence>
+		<AnimatePresence
+			onExitComplete={() => {
+				document.body.style.overflow = '';
+			}}
+		>
 			{isOpen && (
 				<motion.div
 					className='fixed inset-0 z-10 flex items-end'
@@ -51,7 +59,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					/>
 
 					<motion.div
-						className='relative w-full h-[80vh] bottom-[-100px] rounded-t-[12px] bg-[var(--card)] p-5 pb-35 shadow-[0px_0px_10px_rgba(0,0,0,0.25)]'
+						className='relative w-full h-[90vh] bottom-[-100px] rounded-t-[12px] bg-[var(--card)] p-5 pb-35 shadow-xl'
 						initial={{ y: '100%' }}
 						animate={{ y: 0 }}
 						exit={{ y: '100%' }}

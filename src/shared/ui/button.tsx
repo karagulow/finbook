@@ -14,7 +14,7 @@ const variantStyles: Record<NonNullable<Props['variant']>, string> = {
 	default:
 		'bg-[var(--button-tertiary)] border-[var(--border-primary)] text-[var(--foreground-primary)] hover:bg-[var(--button-tertiary-hover)] hover:border-[var(--border-primary-hover)]',
 	wrong:
-		'bg-[#382828] border-[#654a4a] text-[var(--wrong)] hover:bg-[#523333] hover:border-[#785353]',
+		'bg-[var(--background-wrong)] border-[var(--border-wrong)] text-[var(--wrong)] hover:bg-[var(--background-wrong-hover)] hover:border-[var(--border-wrong-hover)]',
 };
 
 export const Button: React.FC<Props> = ({
@@ -28,7 +28,7 @@ export const Button: React.FC<Props> = ({
 	return (
 		<button
 			className={cn(
-				'py-2.5 px-5 rounded-[6px] border-[0.5px] text-[13px] font-semibold active:scale-99 transition cursor-pointer',
+				'flex flex-row items-center justify-center gap-2 py-2.5 px-5 rounded-[6px] border-[0.5px] text-[13px] font-semibold active:scale-99 transition cursor-pointer',
 				variantStyles[variant],
 				disabled && 'opacity-50 pointer-events-none',
 				className

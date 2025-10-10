@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { X } from 'lucide-react';
@@ -12,6 +12,8 @@ interface Props {
 }
 
 export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
+	const keydownListenerRef = useRef<(() => void) | null>(null);
+
 	useEffect(() => {
 		if (isOpen) {
 			document.body.style.overflow = 'hidden';
@@ -23,18 +25,29 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 			};
 
 			document.addEventListener('keydown', handleKeyDown);
+			keydownListenerRef.current = () =>
+				document.removeEventListener('keydown', handleKeyDown);
 
 			return () => {
-				document.body.style.overflow = '';
-				document.removeEventListener('keydown', handleKeyDown);
+				if (keydownListenerRef.current) {
+					keydownListenerRef.current();
+					keydownListenerRef.current = null;
+				}
 			};
-		} else {
-			document.body.style.overflow = '';
 		}
 	}, [isOpen, onClose]);
 
+	useEffect(() => {
+		if (!isOpen) {
+		}
+	}, [isOpen]);
+
 	return (
-		<AnimatePresence>
+		<AnimatePresence
+			onExitComplete={() => {
+				document.body.style.overflow = '';
+			}}
+		>
 			{isOpen && (
 				<motion.div
 					key='sheet'
@@ -60,7 +73,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 							<X strokeWidth={1.5} size={30} />
 						</button>
 
-						<div className='sheet-panel w-100 h-[calc(100vh-40px)] rounded-[8px] bg-[var(--card)] p-5 shadow-[0px_0px_10px_10px_rgba(0,0,0,0.25)]'>
+						<div className='sheet-panel w-100 h-[calc(100vh-40px)] rounded-[8px] bg-[var(--card)] p-5 shadow-xl'>
 							{children}
 						</div>
 					</motion.div>
