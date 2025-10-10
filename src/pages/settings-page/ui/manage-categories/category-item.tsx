@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { DeleteButton, EditButton } from '@/src/shared/ui';
 import { ConfirmDeleteCategory } from './confirm-delete-category';
+import { EditCategoryModal } from './edit-category-modal';
 
 interface Props {
 	category: {
@@ -14,9 +15,13 @@ interface Props {
 
 export const CategoryItem: React.FC<Props> = ({ category }) => {
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
 	const openDeleteModal = () => setIsDeleteModalOpen(true);
 	const closeDeleteModal = () => setIsDeleteModalOpen(false);
+
+	const openEditModal = () => setIsEditModalOpen(true);
+	const closeEditModal = () => setIsEditModalOpen(false);
 
 	return (
 		<>
@@ -39,7 +44,7 @@ export const CategoryItem: React.FC<Props> = ({ category }) => {
 					</div>
 
 					<div className='flex flex-row items-center gap-2.5'>
-						<EditButton />
+						<EditButton onClick={openEditModal} />
 						<DeleteButton onClick={openDeleteModal} />
 					</div>
 				</div>
@@ -55,6 +60,12 @@ export const CategoryItem: React.FC<Props> = ({ category }) => {
 					))}
 				</div>
 			</li>
+
+			<EditCategoryModal
+				isOpen={isEditModalOpen}
+				onClose={closeEditModal}
+				category={category}
+			/>
 
 			<ConfirmDeleteCategory
 				isOpen={isDeleteModalOpen}
