@@ -59,7 +59,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					/>
 
 					<motion.div
-						className='relative w-full h-[80vh] bottom-[-100px] rounded-t-[12px] bg-[var(--card)] p-5 pb-35 shadow-xl'
+						className='relative w-full h-[90vh] bottom-[-100px] rounded-t-[12px] bg-[var(--card)] p-5 pb-35 shadow-xl'
 						initial={{ y: '100%' }}
 						animate={{ y: 0 }}
 						exit={{ y: '100%' }}
