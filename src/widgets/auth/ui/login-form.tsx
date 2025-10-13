@@ -40,11 +40,16 @@ export const LoginForm: React.FC = () => {
 			setAuth(response.data.token, { email: data.email });
 			toast.success('Успешный вход!', toastOptions);
 			setTimeout(() => router.push('/'), 1000);
-		} catch (error: any) {
-			toast.error(
-				error.response?.data?.message || 'Ошибка авторизации',
-				toastOptions
-			);
+		} catch (error: unknown) {
+			let message = 'Ошибка авторизации';
+
+			if (axios.isAxiosError(error)) {
+				message = error.response?.data?.message || error.message || message;
+			} else if (error instanceof Error) {
+				message = error.message;
+			}
+
+			toast.error(message, toastOptions);
 		} finally {
 			setLoading(false);
 		}

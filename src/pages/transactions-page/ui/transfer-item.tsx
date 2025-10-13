@@ -8,6 +8,7 @@ interface Props {
 		date: string;
 		type: string;
 		accountFrom: {
+			id: string;
 			name: string;
 			currency: {
 				id: string;
@@ -16,6 +17,7 @@ interface Props {
 			};
 		};
 		accountTo: {
+			id: string;
 			name: string;
 			currency: {
 				id: string;

@@ -6,7 +6,7 @@ import {
 	UseFieldArrayAppend,
 	UseFieldArrayRemove,
 } from 'react-hook-form';
-import { Button, DeleteButton, Input } from '@/src/shared/ui';
+import { Button, DeleteButton } from '@/src/shared/ui';
 import { FormValues } from './create-category-content';
 
 interface Props {

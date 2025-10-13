@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useForm } from 'react-hook-form';
+import { Resolver, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Button, DatePicker, Input, Select, Textarea } from '@/src/shared/ui';
@@ -12,7 +12,7 @@ import {
 	TransactionFormData,
 	transactionValidation,
 } from '../model/validations';
-import { Transaction } from '../model/types';
+import { Account, Category, Subcategory, Transaction } from '../model/types';
 
 interface Props {
 	type: 'INCOME' | 'EXPENSE';
@@ -26,9 +26,9 @@ export const TransactionForm: React.FC<Props> = ({
 	transaction,
 }) => {
 	const [loading, setLoading] = useState(false);
-	const [accounts, setAccounts] = useState<any[]>([]);
-	const [categories, setCategories] = useState<any[]>([]);
-	const [subcategories, setSubcategories] = useState<any[]>([]);
+	const [accounts, setAccounts] = useState<Account[]>([]);
+	const [categories, setCategories] = useState<Category[]>([]);
+	const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
 
 	const {
 		register,
@@ -37,7 +37,9 @@ export const TransactionForm: React.FC<Props> = ({
 		watch,
 		formState: { errors },
 	} = useForm<TransactionFormData>({
-		resolver: yupResolver(transactionValidation) as any,
+		resolver: yupResolver(
+			transactionValidation
+		) as Resolver<TransactionFormData>,
 		defaultValues: {
 			amount: transaction.amount,
 			date: new Date(transaction.date),
@@ -79,11 +81,16 @@ export const TransactionForm: React.FC<Props> = ({
 
 			onClose();
 			toast.success('Транзакция обновлена!', toastOptions);
-		} catch (error: any) {
-			toast.error(
-				error.response?.data?.message || 'Ошибка при обновлении транзакции',
-				toastOptions
-			);
+		} catch (error: unknown) {
+			let message = 'Ошибка при обновлении транзакции';
+
+			if (axios.isAxiosError(error)) {
+				message = error.response?.data?.message || error.message || message;
+			} else if (error instanceof Error) {
+				message = error.message;
+			}
+
+			toast.error(message, toastOptions);
 		} finally {
 			setLoading(false);
 		}

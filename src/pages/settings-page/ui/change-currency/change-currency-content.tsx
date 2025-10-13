@@ -30,6 +30,7 @@ export const ChangeCurrencyContent: React.FC<Props> = ({
 				const { data } = await axios.get<Currency[]>('/api/currencies');
 				setCurrencies(data);
 			} catch (error) {
+				console.error(error);
 				toast.error('Не удалось загрузить список валют');
 			}
 		};
@@ -52,8 +53,16 @@ export const ChangeCurrencyContent: React.FC<Props> = ({
 			});
 			toast.success('Валюта успешно изменена');
 			onClose();
-		} catch (error: any) {
-			toast.error(error.response?.data?.error || 'Ошибка при смене валюты');
+		} catch (error: unknown) {
+			let message = 'Ошибка при смене валюты';
+
+			if (axios.isAxiosError(error)) {
+				message = error.response?.data?.error || error.message || message;
+			} else if (error instanceof Error) {
+				message = error.message;
+			}
+
+			toast.error(message);
 		} finally {
 			setLoading(false);
 		}

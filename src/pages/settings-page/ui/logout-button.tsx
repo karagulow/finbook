@@ -4,11 +4,7 @@ import { Button } from '@/src/shared/ui';
 import { LogOut } from 'lucide-react';
 import { ConfirmLogoutDialog } from '@/src/features/confirm-logout-dialog/ui/confirm-logout-dialog';
 
-interface Props {
-	className?: string;
-}
-
-export const LogoutButton: React.FC<Props> = ({ className }) => {
+export const LogoutButton: React.FC = () => {
 	const [isConfirmLogoutDialogOpen, setIsConfirmLogoutDialogOpen] =
 		useState(false);
 

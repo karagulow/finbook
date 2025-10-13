@@ -48,7 +48,8 @@ export const ConfirmDeleteCategory: React.FC<Props> = ({
 				</p>
 				<p className='text-[var(--foreground-secondary)] text-[13px]'>
 					Вы уверены, что хотите удалить категорию{' '}
-					<span className='font-medium'>"{category.name}"</span>?<br />
+					<span className='font-medium'>&quot;{category.name}&quot;</span>?
+					<br />
 				</p>
 				<div className='flex justify-end gap-3 w-full'>
 					<Button

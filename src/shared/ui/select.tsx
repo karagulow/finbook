@@ -71,7 +71,7 @@ export function Select<T extends string | number = string>({
 			if (e.key === 'ArrowDown') {
 				e.preventDefault();
 				setHighlighted(prev => {
-					let next = prev + 1;
+					const next = prev + 1;
 					for (let i = 0; i < options.length; i++) {
 						const idx = (next + i) % options.length;
 						if (!options[idx].disabled) {
@@ -87,7 +87,7 @@ export function Select<T extends string | number = string>({
 			if (e.key === 'ArrowUp') {
 				e.preventDefault();
 				setHighlighted(prev => {
-					let next = prev - 1;
+					const next = prev - 1;
 					for (let i = 0; i < options.length; i++) {
 						const idx = (next - i + options.length) % options.length;
 						if (!options[idx].disabled) {
@@ -181,7 +181,7 @@ export function Select<T extends string | number = string>({
 										ref={el => {
 											optionRefs.current[idx] = el;
 										}}
-										onPointerUp={e => {
+										onPointerUp={() => {
 											if (opt.disabled) return;
 											onChange?.(opt.value);
 											setTimeout(() => setOpen(false), 0);

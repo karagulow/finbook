@@ -6,10 +6,13 @@ import { revalidatePath } from 'next/cache';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function PUT(
-	req: Request,
-	{ params }: { params: { id: string } }
-) {
+type RouteContext = {
+	params: Promise<{ id: string }>;
+};
+
+export async function PUT(req: Request, context: RouteContext) {
+	const { id } = await context.params;
+
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -41,7 +44,7 @@ export async function PUT(
 
 		// ищем текущую транзакцию
 		const existing = await prisma.transaction.findUnique({
-			where: { id: params.id },
+			where: { id },
 		});
 
 		if (!existing) {
@@ -105,7 +108,7 @@ export async function PUT(
 
 		// обновляем транзакцию
 		const updated = await prisma.transaction.update({
-			where: { id: params.id },
+			where: { id },
 			data: {
 				accountIdFrom,
 				accountIdTo,

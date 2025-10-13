@@ -29,6 +29,7 @@ export const metadata: Metadata = {
 		'учёт расходов',
 		'приложение',
 	],
+	manifest: '/manifest.json',
 };
 
 export default function RootLayout({

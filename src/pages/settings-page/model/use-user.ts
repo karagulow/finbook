@@ -17,9 +17,20 @@ export function useUser() {
 			try {
 				const { data } = await axios.get<User>('/api/user');
 				if (isMounted) setUser(data);
-			} catch (err: any) {
+			} catch (err: unknown) {
 				if (isMounted) {
-					setError(err.response?.data?.error || err.message);
+					let message = 'Неизвестная ошибка';
+
+					if (axios.isAxiosError(err)) {
+						message =
+							err.response?.data?.error ||
+							err.message ||
+							'Ошибка при загрузке пользователя';
+					} else if (err instanceof Error) {
+						message = err.message;
+					}
+
+					setError(message);
 				}
 			} finally {
 				if (isMounted) setIsLoading(false);

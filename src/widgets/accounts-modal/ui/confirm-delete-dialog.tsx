@@ -25,7 +25,7 @@ export const ConfirmDeleteDialog: React.FC<Props> = ({
 				</h2>
 				<p className='text-[var(--foreground-secondary)] text-[13px]'>
 					Вы уверены, что хотите удалить счёт{' '}
-					<span className='font-medium'>"{accountName}"</span>?<br />
+					<span className='font-medium'>&quot;{accountName}&quot;</span>?<br />
 				</p>
 				<div className='flex justify-end gap-3 w-full'>
 					<Button className='w-full' variant='default' onClick={onClose}>

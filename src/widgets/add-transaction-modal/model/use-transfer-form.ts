@@ -1,18 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Resolver, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
 import { toastOptions } from '@/src/shared/lib';
 import { TransferFormData, transferValidation } from './validations';
+import { Account, Currency } from './types';
 
 export const useTransferForm = (onClose: () => void) => {
 	const [loading, setLoading] = useState(false);
-	const [accounts, setAccounts] = useState<any[]>([]);
-	const [currencies, setCurrencies] = useState<any[]>([]);
+	const [accounts, setAccounts] = useState<Account[]>([]);
+	const [currencies, setCurrencies] = useState<Currency[]>([]);
 
 	const {
 		register,
@@ -21,7 +22,7 @@ export const useTransferForm = (onClose: () => void) => {
 		watch,
 		formState: { errors },
 	} = useForm<TransferFormData>({
-		resolver: yupResolver(transferValidation) as any,
+		resolver: yupResolver(transferValidation) as Resolver<TransferFormData>,
 		defaultValues: {
 			date: new Date(),
 		},
@@ -72,11 +73,16 @@ export const useTransferForm = (onClose: () => void) => {
 			await axios.post('/api/transfers', data);
 			toast.success('Перевод успешно добавлен!', toastOptions);
 			onClose();
-		} catch (error: any) {
-			toast.error(
-				error.response?.data?.error || 'Ошибка при добавлении перевода',
-				toastOptions
-			);
+		} catch (error: unknown) {
+			let message = 'Ошибка при добавлении перевода';
+
+			if (axios.isAxiosError(error)) {
+				message = error.response?.data?.message || error.message || message;
+			} else if (error instanceof Error) {
+				message = error.message;
+			}
+
+			toast.error(message, toastOptions);
 		} finally {
 			setLoading(false);
 		}

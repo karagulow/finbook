@@ -53,11 +53,16 @@ export const RegistrationForm: React.FC = () => {
 			setAuth(response.data.token, { email: data.email });
 			toast.success('Регистрация успешна!', toastOptions);
 			router.push('/');
-		} catch (error: any) {
-			toast.error(
-				error.response?.data?.message || 'Ошибка регистрации',
-				toastOptions
-			);
+		} catch (error: unknown) {
+			let message = 'Ошибка регистрации';
+
+			if (axios.isAxiosError(error)) {
+				message = error.response?.data?.message || error.message || message;
+			} else if (error instanceof Error) {
+				message = error.message;
+			}
+
+			toast.error(message, toastOptions);
 		} finally {
 			setLoading(false);
 		}

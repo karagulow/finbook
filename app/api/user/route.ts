@@ -38,9 +38,14 @@ export async function GET(req: NextRequest) {
 		}
 
 		return NextResponse.json(fullUser);
-	} catch (error: any) {
-		console.error(error);
-		return NextResponse.json({ error: error.message }, { status: 400 });
+	} catch (error) {
+		if (error instanceof Error) {
+			console.error(error);
+			return NextResponse.json({ error: error.message }, { status: 400 });
+		}
+
+		console.error('Неизвестная ошибка', error);
+		return NextResponse.json({ error: 'Неизвестная ошибка' }, { status: 500 });
 	}
 }
 

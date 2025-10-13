@@ -4,10 +4,21 @@ import { useMediaQuery } from '@/src/shared/hooks';
 import { Drawer, Sheet } from '@/src/shared/ui';
 import { EditCategoryContent } from './edit-category-content';
 
+interface Subcategory {
+	name: string;
+}
+
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
-	category: any;
+	category: {
+		id: string;
+		name: string;
+		type: 'EXPENSE' | 'INCOME';
+		icon: string;
+		color: string;
+		subcategories: Subcategory[];
+	};
 }
 
 export const EditCategoryModal: React.FC<Props> = ({

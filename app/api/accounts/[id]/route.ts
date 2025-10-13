@@ -6,10 +6,13 @@ import { revalidatePath } from 'next/cache';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function PUT(
-	req: Request,
-	{ params }: { params: { id: string } }
-) {
+type RouteContext = {
+	params: Promise<{ id: string }>;
+};
+
+export async function PUT(req: Request, context: RouteContext) {
+	const { id } = await context.params;
+
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -25,7 +28,7 @@ export async function PUT(
 		const { name, amount, currencyId } = body;
 
 		const account = await prisma.account.findFirst({
-			where: { id: params.id, userId },
+			where: { id, userId },
 		});
 
 		if (!account) {
@@ -36,7 +39,7 @@ export async function PUT(
 		}
 
 		const updated = await prisma.account.update({
-			where: { id: params.id },
+			where: { id },
 			data: {
 				name,
 				balance: amount,
@@ -56,10 +59,9 @@ export async function PUT(
 	}
 }
 
-export async function DELETE(
-	req: Request,
-	{ params }: { params: { id: string } }
-) {
+export async function DELETE(req: Request, context: RouteContext) {
+	const { id } = await context.params;
+
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -72,7 +74,7 @@ export async function DELETE(
 		const userId = decoded.userId;
 
 		const account = await prisma.account.findUnique({
-			where: { id: params.id },
+			where: { id },
 		});
 
 		if (!account) {
@@ -84,7 +86,7 @@ export async function DELETE(
 		}
 
 		await prisma.account.delete({
-			where: { id: params.id },
+			where: { id },
 		});
 
 		revalidatePath('/');

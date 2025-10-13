@@ -9,6 +9,7 @@ export async function GET() {
 
 		return NextResponse.json(currencies);
 	} catch (error) {
+		console.error('Ошибка при загрузке валют:', error);
 		return NextResponse.json(
 			{ message: 'Ошибка при загрузке валют' },
 			{ status: 500 }

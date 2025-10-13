@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function GET(req: NextRequest) {
+export async function GET() {
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
 		});
 
 		return NextResponse.json(categories);
-	} catch (error: any) {
+	} catch (error) {
 		console.error('Ошибка при получении категорий:', error);
 		return NextResponse.json(
 			{ message: 'Ошибка при получении категорий' },

@@ -79,8 +79,8 @@ export const EmojiPicker: React.FC<Props> = ({
 							navPosition='bottom'
 							previewPosition='none'
 							skinTonePosition='none'
-							onEmojiSelect={(e: any) => {
-								onSelect?.(e.native);
+							onEmojiSelect={(emoji: { native: string }) => {
+								onSelect?.(emoji.native);
 								setIsPickerOpen(false);
 							}}
 						/>

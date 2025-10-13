@@ -8,9 +8,10 @@ interface Props {
 		type: string;
 		amount: number;
 		date: string;
-		category: { name: string; icon: string };
-		subcategory?: { name: string };
+		category: { id: string; name: string; icon: string };
+		subcategory?: { id: string; name: string };
 		account: {
+			id: string;
 			name: string;
 			currency: { code: string; symbol: string | null };
 		};

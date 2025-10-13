@@ -6,10 +6,13 @@ import { revalidatePath } from 'next/cache';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function PUT(
-	req: Request,
-	{ params }: { params: { id: string } }
-) {
+type RouteContext = {
+	params: Promise<{ id: string }>;
+};
+
+export async function PUT(req: Request, context: RouteContext) {
+	const { id } = await context.params;
+
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -22,7 +25,7 @@ export async function PUT(
 		const userId = decoded.userId;
 
 		const transaction = await prisma.transaction.findUnique({
-			where: { id: params.id },
+			where: { id },
 		});
 
 		if (!transaction) {
@@ -39,7 +42,7 @@ export async function PUT(
 		const data = await req.json();
 
 		const updated = await prisma.transaction.update({
-			where: { id: params.id },
+			where: { id },
 			data: {
 				type: data.type,
 				date: data.date,
@@ -63,10 +66,9 @@ export async function PUT(
 	}
 }
 
-export async function DELETE(
-	req: Request,
-	{ params }: { params: { id: string } }
-) {
+export async function DELETE(req: Request, context: RouteContext) {
+	const { id } = await context.params;
+
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -79,7 +81,7 @@ export async function DELETE(
 		const userId = decoded.userId;
 
 		const transaction = await prisma.transaction.findUnique({
-			where: { id: params.id },
+			where: { id },
 		});
 
 		if (!transaction) {
@@ -94,7 +96,7 @@ export async function DELETE(
 		}
 
 		await prisma.transaction.delete({
-			where: { id: params.id },
+			where: { id },
 		});
 
 		revalidatePath('/');

@@ -26,6 +26,7 @@ export const ConfirmLogoutDialog: React.FC<Props> = ({ isOpen, onClose }) => {
 			logout();
 			router.replace('/login');
 		} catch (error) {
+			console.log(error);
 			toast.error('Произошла ошибка.', toastOptions);
 		}
 	};

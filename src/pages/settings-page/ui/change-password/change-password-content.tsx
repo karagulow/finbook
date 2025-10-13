@@ -61,8 +61,16 @@ export const ChangePasswordContent: React.FC<Props> = ({ onClose }) => {
 			toast.success('Пароль успешно изменён');
 			reset();
 			onClose();
-		} catch (error: any) {
-			toast.error(error.response?.data?.error || 'Ошибка при смене пароля');
+		} catch (error: unknown) {
+			let message = 'Ошибка при смене пароля';
+
+			if (axios.isAxiosError(error)) {
+				message = error.response?.data?.error || error.message || message;
+			} else if (error instanceof Error) {
+				message = error.message;
+			}
+
+			toast.error(message);
 		} finally {
 			setLoading(false);
 		}

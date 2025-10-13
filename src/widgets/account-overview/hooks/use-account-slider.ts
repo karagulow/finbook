@@ -1,6 +1,14 @@
 import { useState, useCallback, useEffect } from 'react';
 
-export const useAccountSlider = (items: any[]) => {
+interface Accounts {
+	id: string;
+	name: string;
+	balance: number;
+	currency: string;
+	currencyId?: string;
+}
+
+export const useAccountSlider = (items: Accounts[]) => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [itemsPerView, setItemsPerView] = useState(1);
 

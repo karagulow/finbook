@@ -15,11 +15,11 @@ export const CategoriesModal: React.FC<Props> = ({ isOpen, onClose }) => {
 		<>
 			{isDesktop ? (
 				<Sheet isOpen={isOpen} onClose={onClose}>
-					{isOpen && <CategoriesModalContent onClose={onClose} />}
+					{isOpen && <CategoriesModalContent />}
 				</Sheet>
 			) : (
 				<Drawer isOpen={isOpen} onClose={onClose}>
-					{isOpen && <CategoriesModalContent onClose={onClose} />}
+					{isOpen && <CategoriesModalContent />}
 				</Drawer>
 			)}
 		</>

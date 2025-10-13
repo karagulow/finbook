@@ -3,10 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useForm } from 'react-hook-form';
+import { Resolver, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { TransactionFormData } from '../model/types';
+import {
+	Account,
+	Category,
+	Subcategory,
+	TransactionFormData,
+} from '../model/types';
 import { transactionValidation } from '../model/validations';
 import { toastOptions } from '@/src/shared/lib';
 import { Button, DatePicker, Input, Select, Textarea } from '@/src/shared/ui';
@@ -18,9 +23,9 @@ interface Props {
 
 export const TransactionForm: React.FC<Props> = ({ type, onClose }) => {
 	const [loading, setLoading] = useState(false);
-	const [accounts, setAccounts] = useState<any[]>([]);
-	const [categories, setCategories] = useState<any[]>([]);
-	const [subcategories, setSubcategories] = useState<any[]>([]);
+	const [accounts, setAccounts] = useState<Account[]>([]);
+	const [categories, setCategories] = useState<Category[]>([]);
+	const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
 
 	const {
 		register,
@@ -29,7 +34,9 @@ export const TransactionForm: React.FC<Props> = ({ type, onClose }) => {
 		watch,
 		formState: { errors },
 	} = useForm<TransactionFormData>({
-		resolver: yupResolver(transactionValidation) as any,
+		resolver: yupResolver(
+			transactionValidation
+		) as Resolver<TransactionFormData>,
 		defaultValues: {
 			date: new Date(),
 		},
@@ -66,11 +73,16 @@ export const TransactionForm: React.FC<Props> = ({ type, onClose }) => {
 
 			onClose();
 			toast.success('Транзакция добавлена!', toastOptions);
-		} catch (error: any) {
-			toast.error(
-				error.response?.data?.message || 'Ошибка при добавлении транзакции',
-				toastOptions
-			);
+		} catch (error: unknown) {
+			let message = 'Ошибка при добавлении транзакции';
+
+			if (axios.isAxiosError(error)) {
+				message = error.response?.data?.message || error.message || message;
+			} else if (error instanceof Error) {
+				message = error.message;
+			}
+
+			toast.error(message, toastOptions);
 		} finally {
 			setLoading(false);
 		}

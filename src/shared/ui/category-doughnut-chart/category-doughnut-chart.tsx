@@ -1,6 +1,12 @@
 import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import {
+	Chart as ChartJS,
+	ArcElement,
+	Tooltip,
+	Legend,
+	TooltipItem,
+} from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -52,7 +58,7 @@ export const CategoryDoughnutChart: React.FC<CategoryDoughnutChartProps> = ({
 			legend: { display: false },
 			tooltip: {
 				callbacks: {
-					label: function (tooltipItem: any) {
+					label: function (tooltipItem: TooltipItem<'doughnut'>) {
 						const value = tooltipItem.raw as number;
 						return (
 							value.toLocaleString('ru-RU', {

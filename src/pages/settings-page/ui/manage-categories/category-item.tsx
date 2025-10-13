@@ -8,7 +8,9 @@ interface Props {
 	category: {
 		id: string;
 		name: string;
-		icon: string | null;
+		icon: string;
+		color: string;
+		type: 'INCOME' | 'EXPENSE';
 		subcategories: { id: string; name: string }[];
 	};
 }

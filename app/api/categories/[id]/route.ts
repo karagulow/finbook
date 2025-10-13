@@ -5,10 +5,13 @@ import { cookies } from 'next/headers';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function DELETE(
-	req: Request,
-	{ params }: { params: { id: string } }
-) {
+type RouteContext = {
+	params: Promise<{ id: string }>;
+};
+
+export async function DELETE(req: Request, context: RouteContext) {
+	const { id } = await context.params;
+
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -19,7 +22,7 @@ export async function DELETE(
 
 		const decoded = verify(token, JWT_SECRET) as { userId: string };
 		const userId = decoded.userId;
-		const categoryId = params.id;
+		const categoryId = id;
 
 		const category = await prisma.category.findUnique({
 			where: { id: categoryId },
@@ -55,10 +58,9 @@ export async function DELETE(
 	}
 }
 
-export async function PUT(
-	req: Request,
-	{ params }: { params: { id: string } }
-) {
+export async function PUT(req: Request, context: RouteContext) {
+	const { id } = await context.params;
+
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -69,7 +71,7 @@ export async function PUT(
 
 		const decoded = verify(token, JWT_SECRET) as { userId: string };
 		const userId = decoded.userId;
-		const categoryId = params.id;
+		const categoryId = id;
 
 		const body = await req.json();
 		const { name, type, icon, color, subcategories } = body;

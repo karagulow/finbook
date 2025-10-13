@@ -4,19 +4,16 @@ import { CategoryItem } from './category-item';
 import { CategoryItemSkeleton } from './category-item-skeleton';
 import { CreateCategoryModal } from './create-category-modal';
 
-interface Props {
-	onClose: () => void;
-}
-
 interface Category {
 	id: string;
 	name: string;
-	icon: string | null;
+	icon: string;
+	color: string;
 	type: 'INCOME' | 'EXPENSE';
 	subcategories: { id: string; name: string }[];
 }
 
-export const CategoriesModalContent: React.FC<Props> = ({ onClose }) => {
+export const CategoriesModalContent: React.FC = () => {
 	const transactionTypes = ['Доходы', 'Расходы'];
 	const [activeTransactionType, setActiveTransactionType] = useState(
 		transactionTypes[1]

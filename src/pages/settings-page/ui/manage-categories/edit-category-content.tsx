@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -87,11 +87,17 @@ export const EditCategoryContent: React.FC<Props> = ({ onClose, category }) => {
 			await axios.put(`/api/categories/${category.id}`, payload);
 			toast.success('Категория успешно обновлена!');
 			onClose();
-		} catch (err: any) {
+		} catch (err: unknown) {
+			let message = 'Ошибка при редактировании категории';
+
+			if (axios.isAxiosError(err)) {
+				message = err.response?.data?.message || err.message || message;
+			} else if (err instanceof Error) {
+				message = err.message;
+			}
+
 			console.error('Ошибка при редактировании категории:', err);
-			toast.error(
-				err.response?.data?.message || 'Ошибка при редактировании категории'
-			);
+			toast.error(message);
 		}
 	};
 

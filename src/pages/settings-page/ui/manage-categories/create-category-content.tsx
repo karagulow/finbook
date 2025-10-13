@@ -97,11 +97,17 @@ export const CreateCategoryContent: React.FC<Props> = ({ onClose }) => {
 			await axios.post('/api/categories', payload);
 			toast.success('Категория успешно создана!');
 			onClose();
-		} catch (err: any) {
+		} catch (err: unknown) {
+			let message = 'Ошибка при создании категории';
+
+			if (axios.isAxiosError(err)) {
+				message = err.response?.data?.message || err.message || message;
+			} else if (err instanceof Error) {
+				message = err.message;
+			}
+
 			console.error('Ошибка при создании категории:', err);
-			toast.error(
-				err.response?.data?.message || 'Ошибка при создании категории'
-			);
+			toast.error(message);
 		}
 	};
 

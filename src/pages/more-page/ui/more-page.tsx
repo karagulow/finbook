@@ -4,11 +4,7 @@ import { StickyHeader } from '@/src/shared/ui';
 import { LinkItem } from './link-item';
 import { Cog, Goal, HandCoins } from 'lucide-react';
 
-interface Props {
-	className?: string;
-}
-
-export const MorePage: React.FC<Props> = ({ className }) => {
+export const MorePage: React.FC = () => {
 	const STROKE_WIDTH = 1;
 
 	return (

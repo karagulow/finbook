@@ -1,18 +1,10 @@
-'use client';
+import React from 'react';
 
-import React, { useState } from 'react';
-
-import { Button, StickyHeader } from '@/src/shared/ui';
-import { AddTransactionModal } from '@/src/widgets/add-transaction-modal';
+import { StickyHeader } from '@/src/shared/ui';
 import { TransactionList } from './transaction-list';
+import { AddTransaction } from '@/src/features/add-transaction';
 
 export const TransactionsPage: React.FC = () => {
-	const [isAddTransactionModalOpen, setIsAddTransactionModalOpen] =
-		useState(false);
-
-	const openAddTransactionModal = () => setIsAddTransactionModalOpen(true);
-	const closeAddTransactionModal = () => setIsAddTransactionModalOpen(false);
-
 	return (
 		<>
 			<StickyHeader title='Транзакции' />
@@ -22,21 +14,12 @@ export const TransactionsPage: React.FC = () => {
 					<h1 className='font-medium text-[24px] text-[var(--foreground-primary)]'>
 						Транзакции
 					</h1>
-					<Button
-						className='w-full sm:w-auto'
-						onClick={openAddTransactionModal}
-					>
-						Добавить транзакцию
-					</Button>
+
+					<AddTransaction />
 				</div>
 
 				<TransactionList />
 			</div>
-
-			<AddTransactionModal
-				isOpen={isAddTransactionModalOpen}
-				onClose={closeAddTransactionModal}
-			/>
 		</>
 	);
 };

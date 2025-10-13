@@ -1,14 +1,19 @@
 import React from 'react';
-import { CircleArrowDown, CircleArrowUp } from 'lucide-react';
+
 import { TransactionItem } from './transaction-item';
 import { TransferItem } from './transfer-item';
+import {
+	IncomeExpenseTransaction,
+	Transaction,
+	TransferTransaction,
+} from '../model/types';
 
 interface Props {
 	data: {
 		date: string;
 		expense: number;
 		income: number;
-		transactions: any[];
+		transactions: Transaction[];
 	};
 }
 
@@ -49,11 +54,14 @@ export const TransactionGroup: React.FC<Props> = ({ data }) => {
 			</div>
 
 			<ul className='flex flex-col'>
-				{data.transactions.map(transaction =>
-					transaction.type !== 'TRANSFER' ? (
-						<TransactionItem key={transaction.id} transaction={transaction} />
+				{data.transactions.map(tx =>
+					tx.type === 'TRANSFER' ? (
+						<TransferItem key={tx.id} transfer={tx as TransferTransaction} />
 					) : (
-						<TransferItem key={transaction.id} transfer={transaction} />
+						<TransactionItem
+							key={tx.id}
+							transaction={tx as IncomeExpenseTransaction}
+						/>
 					)
 				)}
 			</ul>
