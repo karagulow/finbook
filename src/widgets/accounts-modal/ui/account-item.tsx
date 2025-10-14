@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { DeleteButton, EditButton } from '@/src/shared/ui';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
@@ -18,9 +19,12 @@ export const AccountItem: React.FC<Props> = ({ account }) => {
 		useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+	const queryClient = useQueryClient();
+
 	const handleDelete = async () => {
 		try {
 			await axios.delete(`/api/accounts/${account.id}`);
+			queryClient.invalidateQueries({ queryKey: ['accounts'] });
 			setIsConfirmDeleteDialogOpen(false);
 			toast.success('Счёт успешно удалён!', toastOptions);
 		} catch (err) {

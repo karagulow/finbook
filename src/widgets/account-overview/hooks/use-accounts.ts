@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getAccounts } from '../lib/get-accounts';
 
 export type Account = {
@@ -18,37 +18,32 @@ interface BalanceResponse {
 }
 
 export const useAccounts = () => {
-	const [accounts, setAccounts] = useState<Account[]>([]);
-	const [totalBalance, setTotalBalance] = useState(0);
-	const [currencyCode, setCurrencyCode] = useState('');
-	const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
-	const [loading, setLoading] = useState(true);
+	const { data, isLoading, isFetching } = useQuery({
+		queryKey: ['accounts'],
+		queryFn: async () => {
+			const accountsData = await getAccounts();
 
-	useEffect(() => {
-		const fetchAccounts = async () => {
-			setLoading(true);
-			try {
-				const accountsData = await getAccounts();
+			const balanceRes = await fetch('/api/balance', {
+				method: 'GET',
+				credentials: 'include',
+			});
+			const balanceData: BalanceResponse = await balanceRes.json();
 
-				const balanceRes = await fetch('/api/balance', {
-					method: 'GET',
-					credentials: 'include',
-				});
-				const balanceData: BalanceResponse = await balanceRes.json();
+			return {
+				accounts: accountsData,
+				totalBalance: balanceData.total,
+				currencyCode: balanceData.currencyCode,
+				currencySymbol: balanceData.currencySymbol,
+			};
+		},
+		refetchOnWindowFocus: false,
+	});
 
-				setAccounts(accountsData);
-				setTotalBalance(balanceData.total);
-				setCurrencyCode(balanceData.currencyCode);
-				setCurrencySymbol(balanceData.currencySymbol);
-			} catch (err) {
-				console.error('Ошибка загрузки счетов', err);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchAccounts();
-	}, []);
-
-	return { accounts, totalBalance, currencyCode, currencySymbol, loading };
+	return {
+		accounts: data?.accounts ?? [],
+		totalBalance: data?.totalBalance ?? 0,
+		currencyCode: data?.currencyCode ?? '',
+		currencySymbol: data?.currencySymbol ?? null,
+		loading: isLoading || isFetching,
+	};
 };

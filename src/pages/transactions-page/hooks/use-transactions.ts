@@ -60,6 +60,7 @@ export function useTransactions(limit = 25) {
 				nextCursor: data.nextCursor,
 			};
 		},
+		refetchOnWindowFocus: false,
 		getNextPageParam: lastPage => lastPage.nextCursor ?? null,
 		initialPageParam: null,
 	});

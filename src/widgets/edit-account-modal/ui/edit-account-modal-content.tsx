@@ -1,53 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import { Controller, useForm } from 'react-hook-form';
+'use client';
 
+import React from 'react';
+import { Controller } from 'react-hook-form';
 import { Button, Input, Select } from '@/src/shared/ui';
-import {
-	Currency,
-	FormValues,
-	EditAccountModalContentProps,
-} from '../model/types';
-import { toastOptions } from '@/src/shared/lib';
+import { EditAccountModalContentProps } from '../model/types';
+import { useEditAccountForm } from '../model/use-edit-account-form';
 
 export const EditAccountModalContent: React.FC<
 	EditAccountModalContentProps
 > = ({ onClose, account }) => {
-	const [currencies, setCurrencies] = useState<Currency[]>([]);
-
-	const {
-		register,
-		handleSubmit,
-		control,
-		formState: { errors },
-	} = useForm<FormValues>({
-		defaultValues: {
-			name: account.name,
-			currencyId: account.currencyId,
-			amount: account.balance,
-		},
-	});
-
-	useEffect(() => {
-		axios
-			.get<Currency[]>('/api/currencies')
-			.then(res => setCurrencies(res.data));
-	}, []);
-
-	const onSubmit = async (data: FormValues) => {
-		try {
-			await axios.put(`/api/accounts/${account.id}`, {
-				...data,
-				amount: Number(data.amount),
-			});
-			toast.success('Счёт успешно обновлён!', toastOptions);
-			onClose();
-		} catch (error) {
-			console.error('Ошибка при обновлении счёта:', error);
-			toast.error('Ошибка при обновлении счёта', toastOptions);
-		}
-	};
+	const { register, handleSubmit, control, errors, currencies, onSubmit } =
+		useEditAccountForm(onClose, account);
 
 	return (
 		<form className='flex h-full flex-col' onSubmit={handleSubmit(onSubmit)}>

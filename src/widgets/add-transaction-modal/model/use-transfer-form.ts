@@ -75,6 +75,7 @@ export const useTransferForm = (onClose: () => void) => {
 		try {
 			await axios.post('/api/transfers', data);
 			queryClient.invalidateQueries({ queryKey: ['transactions'] });
+			queryClient.invalidateQueries({ queryKey: ['accounts'] });
 			toast.success('Перевод успешно добавлен!', toastOptions);
 			onClose();
 		} catch (error: unknown) {
