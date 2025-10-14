@@ -5,6 +5,7 @@ import { Resolver, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { toastOptions } from '@/src/shared/lib';
 import { TransferFormData, transferValidation } from './validations';
@@ -17,6 +18,8 @@ export const useTransferForm = (
 	const [loading, setLoading] = useState(false);
 	const [accounts, setAccounts] = useState<Account[]>([]);
 	const [currencies, setCurrencies] = useState<Currency[]>([]);
+
+	const queryClient = useQueryClient();
 
 	const {
 		register,
@@ -78,6 +81,7 @@ export const useTransferForm = (
 		setLoading(true);
 		try {
 			await axios.put(`/api/transfers/${transaction.id}`, data);
+			queryClient.invalidateQueries({ queryKey: ['transactions'] });
 			toast.success('Перевод успешно обновлён!', toastOptions);
 			onClose();
 		} catch (error: unknown) {

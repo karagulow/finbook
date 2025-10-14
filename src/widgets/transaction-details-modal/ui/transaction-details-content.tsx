@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Button, Description } from '@/src/shared/ui';
 import { Transaction } from '../model/types';
@@ -22,6 +23,8 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 	transaction,
 	onCloseModal,
 }) => {
+	const queryClient = useQueryClient();
+
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] =
 		useState(false);
@@ -35,6 +38,7 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 	const handleDelete = async () => {
 		try {
 			await axios.delete(`/api/transactions/${transaction.id}`);
+			queryClient.invalidateQueries({ queryKey: ['transactions'] });
 			setIsConfirmDeleteDialogOpen(false);
 			toast.success('Транзакция успешно удалена!', toastOptions);
 			onCloseModal();

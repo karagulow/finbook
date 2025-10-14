@@ -7,18 +7,17 @@ import { Resolver, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQueryClient } from '@tanstack/react-query';
 
-import {
-	Account,
-	Category,
-	Subcategory,
-	TransactionFormData,
-} from '../model/types';
-import { transactionValidation } from '../model/validations';
 import { toastOptions } from '@/src/shared/lib';
+import {
+	TransactionFormData,
+	transactionValidation,
+} from '../model/validations';
+import { Account, Category, Subcategory, Transaction } from '../model/types';
 
 export const useTransactionForm = (
 	type: 'INCOME' | 'EXPENSE',
-	onClose: () => void
+	onClose: () => void,
+	transaction: Transaction
 ) => {
 	const [loading, setLoading] = useState(false);
 	const [accounts, setAccounts] = useState<Account[]>([]);
@@ -31,14 +30,21 @@ export const useTransactionForm = (
 		resolver: yupResolver(
 			transactionValidation
 		) as Resolver<TransactionFormData>,
-		defaultValues: { date: new Date() },
+		defaultValues: {
+			amount: transaction.amount,
+			date: new Date(transaction.date),
+			accountId: transaction.account?.id,
+			categoryId: transaction.category?.id,
+			subcategoryId: transaction.subcategory?.id,
+			description: transaction.description,
+		},
 	});
 
 	const {
-		watch,
-		setValue,
-		handleSubmit,
 		register,
+		handleSubmit,
+		setValue,
+		watch,
 		formState: { errors },
 	} = form;
 
@@ -73,17 +79,22 @@ export const useTransactionForm = (
 
 		setLoading(true);
 		try {
-			await axios.post('/api/transactions', { ...data, type });
+			await axios.put(`/api/transactions/${transaction.id}`, {
+				...data,
+				type,
+			});
 			queryClient.invalidateQueries({ queryKey: ['transactions'] });
+			toast.success('Транзакция обновлена!', toastOptions);
 			onClose();
-			toast.success('Транзакция добавлена!', toastOptions);
 		} catch (error: unknown) {
-			let message = 'Ошибка при добавлении транзакции';
+			let message = 'Ошибка при обновлении транзакции';
+
 			if (axios.isAxiosError(error)) {
 				message = error.response?.data?.message || error.message || message;
 			} else if (error instanceof Error) {
 				message = error.message;
 			}
+
 			toast.error(message, toastOptions);
 		} finally {
 			setLoading(false);
