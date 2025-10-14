@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 
 import { Button, DatePicker, Input, Select, Textarea } from '@/src/shared/ui';
 import { useTransferForm } from '../model/use-transfer-form';
@@ -9,7 +9,7 @@ interface Props {
 	onClose: () => void;
 }
 
-export const TransferForm: React.FC<Props> = ({ onClose }) => {
+export const TransferForm: React.FC<Props> = memo(({ onClose }) => {
 	const {
 		register,
 		handleSubmit,
@@ -102,4 +102,4 @@ export const TransferForm: React.FC<Props> = ({ onClose }) => {
 			</Button>
 		</form>
 	);
-};
+});

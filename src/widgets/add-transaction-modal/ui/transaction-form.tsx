@@ -1,92 +1,27 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import { Resolver, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-
-import {
-	Account,
-	Category,
-	Subcategory,
-	TransactionFormData,
-} from '../model/types';
-import { transactionValidation } from '../model/validations';
-import { toastOptions } from '@/src/shared/lib';
+import React, { memo } from 'react';
 import { Button, DatePicker, Input, Select, Textarea } from '@/src/shared/ui';
+import { useTransactionForm } from '../model/use-transaction-form';
 
 interface Props {
 	type: 'INCOME' | 'EXPENSE';
 	onClose: () => void;
 }
 
-export const TransactionForm: React.FC<Props> = ({ type, onClose }) => {
-	const [loading, setLoading] = useState(false);
-	const [accounts, setAccounts] = useState<Account[]>([]);
-	const [categories, setCategories] = useState<Category[]>([]);
-	const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
-
+export const TransactionForm: React.FC<Props> = memo(({ type, onClose }) => {
 	const {
 		register,
 		handleSubmit,
-		setValue,
 		watch,
-		formState: { errors },
-	} = useForm<TransactionFormData>({
-		resolver: yupResolver(
-			transactionValidation
-		) as Resolver<TransactionFormData>,
-		defaultValues: {
-			date: new Date(),
-		},
-	});
-
-	const selectedCategoryId = watch('categoryId');
-
-	useEffect(() => {
-		axios.get('/api/accounts').then(res => setAccounts(res.data));
-		axios.get('/api/categories').then(res => setCategories(res.data));
-	}, []);
-
-	useEffect(() => {
-		const category = categories.find(c => c.id === selectedCategoryId);
-		if (category) {
-			setSubcategories(category.subcategories);
-		} else {
-			setSubcategories([]);
-		}
-	}, [selectedCategoryId, categories]);
-
-	const onSubmit = async (data: TransactionFormData) => {
-		if (!navigator.onLine) {
-			toast.error('Нет соединения с интернетом', toastOptions);
-			return;
-		}
-
-		setLoading(true);
-		try {
-			await axios.post('/api/transactions', {
-				...data,
-				type,
-			});
-
-			onClose();
-			toast.success('Транзакция добавлена!', toastOptions);
-		} catch (error: unknown) {
-			let message = 'Ошибка при добавлении транзакции';
-
-			if (axios.isAxiosError(error)) {
-				message = error.response?.data?.message || error.message || message;
-			} else if (error instanceof Error) {
-				message = error.message;
-			}
-
-			toast.error(message, toastOptions);
-		} finally {
-			setLoading(false);
-		}
-	};
+		setValue,
+		errors,
+		onSubmit,
+		loading,
+		accounts,
+		categories,
+		subcategories,
+	} = useTransactionForm(type, onClose);
 
 	return (
 		<form
@@ -112,7 +47,7 @@ export const TransactionForm: React.FC<Props> = ({ type, onClose }) => {
 					placeholder='Выберите счёт'
 					options={accounts.map(acc => ({
 						value: acc.id,
-						label: `${acc.name}`,
+						label: acc.name,
 					}))}
 					value={watch('accountId')}
 					onChange={val => setValue('accountId', val)}
@@ -152,4 +87,4 @@ export const TransactionForm: React.FC<Props> = ({ type, onClose }) => {
 			</Button>
 		</form>
 	);
-};
+});

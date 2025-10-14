@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { useAccountSlider } from '../hooks/use-account-slider';
 
@@ -20,15 +20,18 @@ export const AccountOverview: React.FC = () => {
 	const { accounts, totalBalance, currencyCode, currencySymbol, loading } =
 		useAccounts();
 
-	const extendedAccounts = [
-		{
-			id: 'all',
-			name: 'Все счета',
-			balance: totalBalance,
-			currency: currencySymbol || currencyCode,
-		},
-		...accounts,
-	];
+	const extendedAccounts = useMemo(
+		() => [
+			{
+				id: 'all',
+				name: 'Все счета',
+				balance: totalBalance,
+				currency: currencySymbol || currencyCode,
+			},
+			...accounts,
+		],
+		[accounts, totalBalance, currencyCode, currencySymbol]
+	);
 	const {
 		currentIndex,
 		totalItems,
@@ -40,11 +43,20 @@ export const AccountOverview: React.FC = () => {
 		goTo,
 	} = useAccountSlider(extendedAccounts);
 
-	const openAccountsSheet = () => setIsAccountsModalOpen(true);
-	const closeAccountsSheet = () => setIsAccountsModalOpen(false);
+	const openAccountsSheet = useCallback(() => setIsAccountsModalOpen(true), []);
+	const closeAccountsSheet = useCallback(
+		() => setIsAccountsModalOpen(false),
+		[]
+	);
 
-	const openCreateAccountModal = () => setIsCreateAccountModalOpen(true);
-	const closeCreateAccountModal = () => setIsCreateAccountModalOpen(false);
+	const openCreateAccountModal = useCallback(
+		() => setIsCreateAccountModalOpen(true),
+		[]
+	);
+	const closeCreateAccountModal = useCallback(
+		() => setIsCreateAccountModalOpen(false),
+		[]
+	);
 
 	return (
 		<>
