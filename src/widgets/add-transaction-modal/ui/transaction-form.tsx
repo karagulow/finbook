@@ -9,7 +9,7 @@ interface Props {
 	onClose: () => void;
 }
 
-export const TransactionForm: React.FC<Props> = memo(({ type, onClose }) => {
+const TransactionFormComponent: React.FC<Props> = ({ type, onClose }) => {
 	const {
 		register,
 		handleSubmit,
@@ -87,4 +87,8 @@ export const TransactionForm: React.FC<Props> = memo(({ type, onClose }) => {
 			</Button>
 		</form>
 	);
-});
+};
+
+TransactionFormComponent.displayName = 'TransactionForm';
+
+export const TransactionForm = memo(TransactionFormComponent);

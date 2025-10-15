@@ -10,7 +10,14 @@ import { useCategoryForm } from '../../model/use-category-form';
 
 export const EditCategoryContent: React.FC<{
 	onClose: () => void;
-	category: any;
+	category: {
+		id: string;
+		name: string;
+		type: 'EXPENSE' | 'INCOME';
+		icon: string;
+		color: string;
+		subcategories: { name: string }[];
+	};
 }> = ({ onClose, category }) => {
 	const {
 		control,

@@ -9,7 +9,7 @@ interface Props {
 	onClose: () => void;
 }
 
-export const TransferForm: React.FC<Props> = memo(({ onClose }) => {
+const TransferFormComponent: React.FC<Props> = ({ onClose }) => {
 	const {
 		register,
 		handleSubmit,
@@ -102,4 +102,8 @@ export const TransferForm: React.FC<Props> = memo(({ onClose }) => {
 			</Button>
 		</form>
 	);
-});
+};
+
+TransferFormComponent.displayName = 'TransferForm';
+
+export const TransferForm = memo(TransferFormComponent);
