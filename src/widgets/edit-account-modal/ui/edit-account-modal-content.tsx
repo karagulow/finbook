@@ -9,8 +9,15 @@ import { useEditAccountForm } from '../model/use-edit-account-form';
 export const EditAccountModalContent: React.FC<
 	EditAccountModalContentProps
 > = ({ onClose, account }) => {
-	const { register, handleSubmit, control, errors, currencies, onSubmit } =
-		useEditAccountForm(onClose, account);
+	const {
+		register,
+		handleSubmit,
+		control,
+		errors,
+		isLoading,
+		currencies,
+		onSubmit,
+	} = useEditAccountForm(onClose, account);
 
 	return (
 		<form className='flex h-full flex-col' onSubmit={handleSubmit(onSubmit)}>
@@ -58,7 +65,7 @@ export const EditAccountModalContent: React.FC<
 			</div>
 
 			<Button className='mt-5 shrink-0' type='submit'>
-				Сохранить
+				{isLoading ? 'Сохранение...' : 'Сохранить'}
 			</Button>
 		</form>
 	);

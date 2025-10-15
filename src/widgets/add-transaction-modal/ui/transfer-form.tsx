@@ -98,7 +98,7 @@ export const TransferForm: React.FC<Props> = memo(({ onClose }) => {
 			</div>
 
 			<Button type='submit' disabled={loading}>
-				{loading ? 'Загрузка...' : 'Добавить'}
+				{loading ? 'Добавление...' : 'Добавить'}
 			</Button>
 		</form>
 	);

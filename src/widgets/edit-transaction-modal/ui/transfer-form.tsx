@@ -100,7 +100,7 @@ export const TransferForm: React.FC<Props> = ({ onClose, transaction }) => {
 			</div>
 
 			<Button type='submit' disabled={loading}>
-				{loading ? 'Загрузка...' : 'Сохранить'}
+				{loading ? 'Сохранение...' : 'Сохранить'}
 			</Button>
 		</form>
 	);

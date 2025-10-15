@@ -18,10 +18,12 @@ export const AccountItem: React.FC<Props> = ({ account }) => {
 	const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] =
 		useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const queryClient = useQueryClient();
 
 	const handleDelete = async () => {
+		setIsLoading(true);
 		try {
 			await axios.delete(`/api/accounts/${account.id}`);
 			queryClient.invalidateQueries({ queryKey: ['accounts'] });
@@ -31,6 +33,7 @@ export const AccountItem: React.FC<Props> = ({ account }) => {
 			console.error('Ошибка удаления счета', err);
 			toast.error('Ошибка удаления счета', toastOptions);
 		}
+		setIsLoading(false);
 	};
 
 	return (
@@ -60,6 +63,7 @@ export const AccountItem: React.FC<Props> = ({ account }) => {
 				onClose={() => setIsConfirmDeleteDialogOpen(false)}
 				onConfirm={handleDelete}
 				accountName={account.name}
+				loading={isLoading}
 			/>
 
 			<EditAccountModal

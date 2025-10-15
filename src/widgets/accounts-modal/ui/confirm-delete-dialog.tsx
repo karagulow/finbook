@@ -9,6 +9,7 @@ interface Props {
 	onClose: () => void;
 	onConfirm: () => void;
 	accountName: string;
+	loading: boolean;
 }
 
 export const ConfirmDeleteDialog: React.FC<Props> = ({
@@ -16,6 +17,7 @@ export const ConfirmDeleteDialog: React.FC<Props> = ({
 	onClose,
 	onConfirm,
 	accountName,
+	loading,
 }) => {
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose}>
@@ -28,11 +30,21 @@ export const ConfirmDeleteDialog: React.FC<Props> = ({
 					<span className='font-medium'>&quot;{accountName}&quot;</span>?<br />
 				</p>
 				<div className='flex justify-end gap-3 w-full'>
-					<Button className='w-full' variant='default' onClick={onClose}>
+					<Button
+						className='w-full'
+						variant='default'
+						disabled={loading}
+						onClick={onClose}
+					>
 						Отмена
 					</Button>
-					<Button className='w-full' variant='wrong' onClick={onConfirm}>
-						Удалить
+					<Button
+						className='w-full'
+						variant='wrong'
+						disabled={loading}
+						onClick={onConfirm}
+					>
+						{loading ? 'Удаление...' : 'Удалить'}
 					</Button>
 				</div>
 			</div>

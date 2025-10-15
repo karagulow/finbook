@@ -7,12 +7,14 @@ interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	onConfirm: () => void;
+	loading: boolean;
 }
 
 export const ConfirmDeleteDialog: React.FC<Props> = ({
 	isOpen,
 	onClose,
 	onConfirm,
+	loading,
 }) => {
 	return (
 		<Dialog isOpen={isOpen} onClose={onClose}>
@@ -24,11 +26,21 @@ export const ConfirmDeleteDialog: React.FC<Props> = ({
 					Вы уверены, что хотите удалить транзакцию?
 				</p>
 				<div className='flex justify-end gap-3 w-full'>
-					<Button className='w-full' variant='default' onClick={onClose}>
+					<Button
+						className='w-full'
+						variant='default'
+						disabled={loading}
+						onClick={onClose}
+					>
 						Отмена
 					</Button>
-					<Button className='w-full' variant='wrong' onClick={onConfirm}>
-						Удалить
+					<Button
+						className='w-full'
+						variant='wrong'
+						disabled={loading}
+						onClick={onConfirm}
+					>
+						{loading ? 'Удаление...' : 'Удалить'}
 					</Button>
 				</div>
 			</div>

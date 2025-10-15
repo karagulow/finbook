@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -19,8 +19,10 @@ interface Props {
 export const ConfirmLogoutDialog: React.FC<Props> = ({ isOpen, onClose }) => {
 	const { logout } = useAuthStore();
 	const router = useRouter();
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleLogout = async () => {
+		setIsLoading(true);
 		try {
 			await axios.post('/api/auth/logout');
 			logout();
@@ -41,11 +43,21 @@ export const ConfirmLogoutDialog: React.FC<Props> = ({ isOpen, onClose }) => {
 					Вы уверены, что хотите выйти из аккаунта?
 				</p>
 				<div className='flex justify-end gap-3 w-full'>
-					<Button className='w-full' variant='default' onClick={onClose}>
+					<Button
+						className='w-full'
+						variant='default'
+						disabled={isLoading}
+						onClick={onClose}
+					>
 						Отмена
 					</Button>
-					<Button className='w-full' variant='wrong' onClick={handleLogout}>
-						Выйти
+					<Button
+						className='w-full'
+						variant='wrong'
+						disabled={isLoading}
+						onClick={handleLogout}
+					>
+						{isLoading ? 'Выход...' : 'Выйти'}
 					</Button>
 				</div>
 			</div>

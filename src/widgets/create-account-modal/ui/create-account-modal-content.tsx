@@ -9,8 +9,15 @@ import { useCreateAccountForm } from '../model/use-create-account-form';
 export const CreateAccountModalContent: React.FC<
 	CreateAccountModalContentProps
 > = ({ onClose }) => {
-	const { register, handleSubmit, control, errors, currencies, onSubmit } =
-		useCreateAccountForm(onClose);
+	const {
+		register,
+		handleSubmit,
+		control,
+		errors,
+		isLoading,
+		currencies,
+		onSubmit,
+	} = useCreateAccountForm(onClose);
 
 	return (
 		<form className='flex h-full flex-col' onSubmit={handleSubmit(onSubmit)}>
@@ -58,7 +65,7 @@ export const CreateAccountModalContent: React.FC<
 			</div>
 
 			<Button className='mt-5 shrink-0' type='submit'>
-				Создать
+				{isLoading ? 'Создание...' : 'Создать'}
 			</Button>
 		</form>
 	);

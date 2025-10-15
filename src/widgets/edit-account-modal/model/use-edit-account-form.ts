@@ -24,7 +24,7 @@ export const useEditAccountForm = (
 		register,
 		handleSubmit,
 		control,
-		formState: { errors },
+		formState: { errors, isLoading },
 	} = useForm<FormValues>({
 		defaultValues: {
 			name: account.name,
@@ -62,6 +62,7 @@ export const useEditAccountForm = (
 		handleSubmit,
 		control,
 		errors,
+		isLoading,
 		currencies,
 		onSubmit,
 	};

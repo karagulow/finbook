@@ -89,7 +89,7 @@ export const ChangeCurrencyContent: React.FC<Props> = ({
 				</div>
 
 				<Button type='submit' disabled={isDisabled}>
-					{loading ? 'Сохраняю…' : 'Сохранить'}
+					{loading ? 'Сохранение…' : 'Сохранить'}
 				</Button>
 			</form>
 		</div>

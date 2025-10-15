@@ -25,6 +25,8 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 }) => {
 	const queryClient = useQueryClient();
 
+	const [isLoading, setIsLoading] = useState(false);
+
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [isConfirmDeleteDialogOpen, setIsConfirmDeleteDialogOpen] =
 		useState(false);
@@ -36,6 +38,7 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 	const closeConfirmDeleteDialog = () => setIsConfirmDeleteDialogOpen(false);
 
 	const handleDelete = async () => {
+		setIsLoading(true);
 		try {
 			await axios.delete(`/api/transactions/${transaction.id}`);
 			queryClient.invalidateQueries({ queryKey: ['transactions'] });
@@ -46,6 +49,7 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 			console.error('Ошибка удаления транзакции', err);
 			toast.error('Ошибка удаления транзакции', toastOptions);
 		}
+		setIsLoading(false);
 	};
 
 	return (
@@ -85,6 +89,7 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 				isOpen={isConfirmDeleteDialogOpen}
 				onClose={closeConfirmDeleteDialog}
 				onConfirm={handleDelete}
+				loading={isLoading}
 			/>
 		</>
 	);

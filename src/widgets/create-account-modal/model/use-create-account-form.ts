@@ -17,7 +17,7 @@ export const useCreateAccountForm = (onClose: () => void) => {
 		register,
 		handleSubmit,
 		control,
-		formState: { errors },
+		formState: { errors, isLoading },
 	} = useForm<FormValues>();
 
 	useEffect(() => {
@@ -49,6 +49,7 @@ export const useCreateAccountForm = (onClose: () => void) => {
 		handleSubmit,
 		control,
 		errors,
+		isLoading,
 		currencies,
 		onSubmit,
 	};

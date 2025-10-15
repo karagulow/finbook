@@ -83,7 +83,7 @@ export const TransactionForm: React.FC<Props> = memo(({ type, onClose }) => {
 			</div>
 
 			<Button type='submit' disabled={loading}>
-				{loading ? 'Загрузка...' : 'Добавить'}
+				{loading ? 'Добавление...' : 'Добавить'}
 			</Button>
 		</form>
 	);

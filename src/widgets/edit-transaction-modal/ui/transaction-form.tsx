@@ -8,7 +8,7 @@ import { useTransactionForm } from '../model/use-transaction-form';
 interface Props {
 	type: 'INCOME' | 'EXPENSE';
 	onClose: () => void;
-	transaction?: Transaction;
+	transaction: Transaction;
 }
 
 export const TransactionForm: React.FC<Props> = memo(
@@ -86,7 +86,7 @@ export const TransactionForm: React.FC<Props> = memo(
 				</div>
 
 				<Button type='submit' disabled={loading}>
-					{loading ? 'Загрузка...' : transaction ? 'Сохранить' : 'Добавить'}
+					{loading ? 'Сохранение...' : 'Сохранить'}
 				</Button>
 			</form>
 		);
