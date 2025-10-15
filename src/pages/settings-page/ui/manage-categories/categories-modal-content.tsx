@@ -1,17 +1,11 @@
+'use client';
+
 import { Button, Tabs } from '@/src/shared/ui';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { CategoryItem } from './category-item';
 import { CategoryItemSkeleton } from './category-item-skeleton';
 import { CreateCategoryModal } from './create-category-modal';
-
-interface Category {
-	id: string;
-	name: string;
-	icon: string;
-	color: string;
-	type: 'INCOME' | 'EXPENSE';
-	subcategories: { id: string; name: string }[];
-}
+import { useCategories } from '../../model/use-categories';
 
 export const CategoriesModalContent: React.FC = () => {
 	const transactionTypes = ['Доходы', 'Расходы'];
@@ -23,26 +17,7 @@ export const CategoriesModalContent: React.FC = () => {
 	const openCreateModal = () => setIsCreateModalOpen(true);
 	const closeCreateModal = () => setIsCreateModalOpen(false);
 
-	const [categories, setCategories] = useState<Category[]>([]);
-	const [loading, setLoading] = useState(false);
-
-	useEffect(() => {
-		const fetchCategories = async () => {
-			setLoading(true);
-			try {
-				const res = await fetch('/api/categories');
-				const data = await res.json();
-				if (!res.ok) throw new Error(data.message);
-				setCategories(data);
-			} catch (e) {
-				console.error('Ошибка при загрузке категорий:', e);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchCategories();
-	}, []);
+	const { categories, loading } = useCategories();
 
 	const filteredCategories = categories.filter(c =>
 		activeTransactionType === transactionTypes[0]

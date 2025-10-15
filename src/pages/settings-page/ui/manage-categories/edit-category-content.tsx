@@ -1,105 +1,28 @@
 'use client';
 
 import React from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import { Controller } from 'react-hook-form';
 
 import { Button, Input, Select } from '@/src/shared/ui';
 import { EmojiPicker } from './emoji-picker';
 import { Subcategories } from './subcategories';
+import { useCategoryForm } from '../../model/use-category-form';
 
-interface SubcategoryForm {
-	name: string;
-}
-
-export interface FormValues {
-	name: string;
-	type: 'EXPENSE' | 'INCOME';
-	icon: string;
-	color: string;
-	subcategories: SubcategoryForm[];
-}
-
-interface Props {
+export const EditCategoryContent: React.FC<{
 	onClose: () => void;
-	category: {
-		id: string;
-		name: string;
-		type: 'EXPENSE' | 'INCOME';
-		icon: string;
-		color: string;
-		subcategories: SubcategoryForm[];
-	};
-}
-
-const schema: yup.ObjectSchema<FormValues> = yup.object({
-	name: yup.string().required('Введите название категории'),
-	type: yup
-		.mixed<'EXPENSE' | 'INCOME'>()
-		.oneOf(['EXPENSE', 'INCOME'])
-		.required(),
-	icon: yup.string().required('Выберите эмодзи'),
-	color: yup.string().required(),
-	subcategories: yup
-		.array(
-			yup.object({
-				name: yup
-					.string()
-					.required('Введите название подкатегории')
-					.trim()
-					.min(1, 'Название подкатегории не может быть пустым'),
-			})
-		)
-		.default([]),
-});
-
-export const EditCategoryContent: React.FC<Props> = ({ onClose, category }) => {
+	category: any;
+}> = ({ onClose, category }) => {
 	const {
 		control,
 		handleSubmit,
-		formState: { errors, isSubmitting, isDirty },
-	} = useForm<FormValues>({
-		resolver: yupResolver(schema),
-		defaultValues: {
-			name: category.name,
-			type: category.type,
-			icon: category.icon,
-			color: category.color,
-			subcategories: category.subcategories || [],
-		},
-	});
-
-	const { fields, append, remove } = useFieldArray({
-		control,
-		name: 'subcategories',
-	});
-
-	const onSubmit = async (data: FormValues) => {
-		try {
-			const payload = {
-				...data,
-				subcategories: data.subcategories.map(s => s.name).filter(Boolean),
-			};
-
-			await axios.put(`/api/categories/${category.id}`, payload);
-			toast.success('Категория успешно обновлена!');
-			onClose();
-		} catch (err: unknown) {
-			let message = 'Ошибка при редактировании категории';
-
-			if (axios.isAxiosError(err)) {
-				message = err.response?.data?.message || err.message || message;
-			} else if (err instanceof Error) {
-				message = err.message;
-			}
-
-			console.error('Ошибка при редактировании категории:', err);
-			toast.error(message);
-		}
-	};
+		errors,
+		isSubmitting,
+		isDirty,
+		fields,
+		append,
+		remove,
+		onSubmit,
+	} = useCategoryForm({ mode: 'edit', onClose, category });
 
 	return (
 		<form
@@ -117,14 +40,11 @@ export const EditCategoryContent: React.FC<Props> = ({ onClose, category }) => {
 					render={({ field }) => (
 						<EmojiPicker
 							className='self-center'
-							selectedEmoji={field.value}
 							onSelect={field.onChange}
+							selectedEmoji={field.value}
 						/>
 					)}
 				/>
-				{errors.icon && (
-					<p className='text-[13px] text-red-500'>{errors.icon.message}</p>
-				)}
 
 				<Controller
 					control={control}
@@ -157,10 +77,10 @@ export const EditCategoryContent: React.FC<Props> = ({ onClose, category }) => {
 				/>
 
 				<Subcategories
-					control={control}
 					fields={fields}
 					append={append}
 					remove={remove}
+					control={control}
 				/>
 			</div>
 

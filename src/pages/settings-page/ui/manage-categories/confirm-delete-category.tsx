@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { Button, Dialog } from '@/src/shared/ui';
 import { toastOptions } from '@/src/shared/lib';
@@ -19,12 +20,15 @@ export const ConfirmDeleteCategory: React.FC<Props> = ({
 	onClose,
 	category,
 }) => {
+	const queryClient = useQueryClient();
+
 	const [loading, setLoading] = useState(false);
 
 	const handleDelete = async () => {
 		try {
 			setLoading(true);
 			await axios.delete(`/api/categories/${category.id}`);
+			queryClient.invalidateQueries({ queryKey: ['categories'] });
 
 			toast.success('Категория успешно удалена!', toastOptions);
 			onClose();
