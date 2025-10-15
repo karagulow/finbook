@@ -27,7 +27,15 @@ export async function middleware(request: NextRequest) {
 	}
 
 	// Защищенные страницы
-	const protectedPaths = ['/', '/transactions', '/settings', '/more'];
+	const protectedPaths = [
+		'/',
+		'/transactions',
+		'/analytics',
+		'/goals',
+		'/debts',
+		'/settings',
+		'/more',
+	];
 	if (protectedPaths.includes(pathname)) {
 		if (!token) {
 			if (!refreshToken) {
@@ -90,6 +98,9 @@ export const config = {
 		'/login',
 		'/registration',
 		'/transactions',
+		'/analytics',
+		'/goals',
+		'/debts',
 		'/settings',
 		'/more',
 		'/((?!_next|api|.*\\..*).*)',
