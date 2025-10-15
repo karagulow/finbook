@@ -56,15 +56,15 @@ const schema: yup.ObjectSchema<FormValues> = yup.object({
 
 function getRandomColor() {
 	const colors = [
-		'#FF9800',
-		'#4CAF50',
-		'#2196F3',
-		'#9C27B0',
-		'#F44336',
-		'#009688',
-		'#3F51B5',
-		'#E91E63',
-		'#00BCD4',
+		'#F4A261',
+		'#A8DADC',
+		'#457B9D',
+		'#B5838D',
+		'#E5989B',
+		'#6D6875',
+		'#84A59D',
+		'#F6BD60',
+		'#B5E48C',
 	];
 	return colors[Math.floor(Math.random() * colors.length)];
 }

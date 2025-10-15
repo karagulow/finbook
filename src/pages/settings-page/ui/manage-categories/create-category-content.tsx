@@ -73,6 +73,20 @@ export const CreateCategoryContent: React.FC<{ onClose: () => void }> = ({
 					)}
 				/>
 
+				<Controller
+					control={control}
+					name='color'
+					render={({ field }) => (
+						<Input
+							label='Цвет категории'
+							type='color'
+							error={errors.color?.message}
+							value={field.value}
+							onChange={field.onChange}
+						/>
+					)}
+				/>
+
 				<Subcategories
 					fields={fields}
 					append={append}
