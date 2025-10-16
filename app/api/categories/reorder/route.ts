@@ -18,7 +18,7 @@ export async function PATCH(req: Request) {
 
 		await Promise.all(
 			orderedIds.map((id: string, index: number) =>
-				prisma.account.updateMany({
+				prisma.category.updateMany({
 					where: { id, userId },
 					data: { order: index },
 				})

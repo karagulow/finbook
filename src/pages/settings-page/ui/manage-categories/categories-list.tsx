@@ -1,6 +1,5 @@
-'use client';
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import {
 	DndContext,
 	closestCenter,
@@ -14,31 +13,33 @@ import {
 	SortableContext,
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import axios from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AccountItem } from './account-item';
-import { Account } from '../model/types';
-import toast from 'react-hot-toast';
+import axios from 'axios';
+
+import { CategoryItem } from './category-item';
+import { CategoryItemSkeleton } from './category-item-skeleton';
+import { Category } from '../../model/use-categories';
 import { toastOptions } from '@/src/shared/lib';
 
 interface Props {
-	accounts: Account[];
+	loading: boolean;
+	categories: Category[];
 }
 
-export const AccountList: React.FC<Props> = ({ accounts }) => {
-	const [items, setItems] = useState(accounts);
+export const CategoriesList: React.FC<Props> = ({ loading, categories }) => {
+	const [items, setItems] = useState(categories);
 	const queryClient = useQueryClient();
 
 	const sensors = useSensors(useSensor(PointerSensor));
 
 	const reorderMutation = useMutation({
-		mutationFn: async (newItems: Account[]) => {
-			await axios.patch('/api/accounts/reorder', {
+		mutationFn: async (newItems: Category[]) => {
+			await axios.patch('/api/categories/reorder', {
 				orderedIds: newItems.map(i => i.id),
 			});
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['accounts'] });
+			queryClient.invalidateQueries({ queryKey: ['categories'] });
 			toast.success('Порядок сохранён', toastOptions);
 		},
 		onError: () => {
@@ -58,17 +59,36 @@ export const AccountList: React.FC<Props> = ({ accounts }) => {
 		reorderMutation.mutate(newItems);
 	};
 
+	useEffect(() => {
+		setItems(categories);
+	}, [categories]);
+
 	return (
 		<DndContext
 			sensors={sensors}
 			collisionDetection={closestCenter}
 			onDragEnd={handleDragEnd}
 		>
-			<SortableContext items={items} strategy={verticalListSortingStrategy}>
-				<ul className='flex flex-col gap-2.5'>
-					{items.map(account => (
-						<AccountItem key={account.id} id={account.id} account={account} />
-					))}
+			<SortableContext
+				items={items.map(i => i.id)}
+				strategy={verticalListSortingStrategy}
+			>
+				<ul className='flex flex-col gap-2.5 flex-1 overflow-y-auto w-full'>
+					{loading ? (
+						[...Array(5)].map((_, i) => <CategoryItemSkeleton key={i} />)
+					) : items.length ? (
+						items.map(category => (
+							<CategoryItem
+								key={category.id}
+								id={category.id}
+								category={category}
+							/>
+						))
+					) : (
+						<span className='text-[var(--foreground-secondary)]'>
+							Нет категорий
+						</span>
+					)}
 				</ul>
 			</SortableContext>
 		</DndContext>

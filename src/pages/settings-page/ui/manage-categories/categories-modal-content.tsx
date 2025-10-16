@@ -1,11 +1,11 @@
 'use client';
 
-import { Button, Tabs } from '@/src/shared/ui';
 import React, { useState } from 'react';
-import { CategoryItem } from './category-item';
-import { CategoryItemSkeleton } from './category-item-skeleton';
+
 import { CreateCategoryModal } from './create-category-modal';
 import { useCategories } from '../../model/use-categories';
+import { Button, Tabs } from '@/src/shared/ui';
+import { CategoriesList } from './categories-list';
 
 export const CategoriesModalContent: React.FC = () => {
 	const transactionTypes = ['Доходы', 'Расходы'];
@@ -39,19 +39,7 @@ export const CategoriesModalContent: React.FC = () => {
 					tabName='transaction-type'
 				/>
 
-				<ul className='flex flex-col gap-2.5 flex-1 overflow-y-auto'>
-					{loading ? (
-						[...Array(5)].map((_, i) => <CategoryItemSkeleton key={i} />)
-					) : filteredCategories.length ? (
-						filteredCategories.map(category => (
-							<CategoryItem key={category.id} category={category} />
-						))
-					) : (
-						<span className='text-[var(--foreground-secondary)]'>
-							Нет категорий
-						</span>
-					)}
-				</ul>
+				<CategoriesList loading={loading} categories={filteredCategories} />
 
 				<Button type='submit' onClick={openCreateModal}>
 					Создать категорию

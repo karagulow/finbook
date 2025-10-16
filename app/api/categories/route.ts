@@ -23,7 +23,7 @@ export async function GET() {
 				subcategories: true,
 			},
 			orderBy: {
-				createdAt: 'desc',
+				order: 'asc',
 			},
 		});
 
