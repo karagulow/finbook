@@ -20,7 +20,7 @@ export async function getAccounts() {
 	const accounts = await prisma.account.findMany({
 		where: { userId },
 		include: { currency: true },
-		orderBy: { createdAt: 'desc' },
+		orderBy: { order: 'asc' },
 	});
 
 	return accounts.map(acc => ({
