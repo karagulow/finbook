@@ -1,0 +1,98 @@
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { prisma } from '@/prisma/prisma-client';
+import { verify } from 'jsonwebtoken';
+import { revalidatePath } from 'next/cache';
+
+const JWT_SECRET = process.env.JWT_SECRET!;
+
+export async function POST(req: Request) {
+	try {
+		const cookieStore = await cookies();
+		const token = cookieStore.get('authToken')?.value;
+
+		if (!token) {
+			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+		}
+
+		const decoded = verify(token, JWT_SECRET) as { userId: string };
+		const userId = decoded.userId;
+
+		const body = await req.json();
+		const { accountIdFrom, accountIdTo, amountFrom, rate, description, date } =
+			body;
+
+		if (!accountIdFrom || !accountIdTo || !amountFrom) {
+			return NextResponse.json(
+				{ error: 'Некорректные данные' },
+				{ status: 400 }
+			);
+		}
+
+		if (accountIdFrom === accountIdTo) {
+			return NextResponse.json(
+				{ error: 'Счета должны быть разными' },
+				{ status: 400 }
+			);
+		}
+
+		const accountFrom = await prisma.account.findUnique({
+			where: { id: accountIdFrom },
+			include: { currency: true },
+		});
+		const accountTo = await prisma.account.findUnique({
+			where: { id: accountIdTo },
+			include: { currency: true },
+		});
+
+		if (!accountFrom || !accountTo) {
+			return NextResponse.json({ error: 'Счета не найдены' }, { status: 404 });
+		}
+
+		let finalRate = 1;
+		if (accountFrom.currencyId !== accountTo.currencyId) {
+			if (!rate || rate <= 0) {
+				return NextResponse.json(
+					{ error: 'Не указан курс для разных валют' },
+					{ status: 400 }
+				);
+			}
+			finalRate = rate;
+		}
+
+		const amountTo = amountFrom * finalRate;
+
+		const transfer = await prisma.transaction.create({
+			data: {
+				type: 'TRANSFER',
+				accountIdFrom,
+				accountIdTo,
+				amountFrom,
+				amountTo,
+				description,
+				date: new Date(date),
+				userId,
+			},
+		});
+
+		await prisma.account.update({
+			where: { id: accountIdFrom },
+			data: { balance: { decrement: amountFrom } },
+		});
+
+		await prisma.account.update({
+			where: { id: accountIdTo },
+			data: { balance: { increment: amountTo } },
+		});
+
+		revalidatePath('/');
+
+		return NextResponse.json(transfer);
+	} catch (error) {
+		console.error('Ошибка при создании трансфера:', error);
+		return NextResponse.json(
+			{ error: 'Ошибка при создании трансфера' },
+			{ status: 500 }
+		);
+	}
+}
