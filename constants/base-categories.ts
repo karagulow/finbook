@@ -3,19 +3,19 @@ export const baseCategories = {
 		{
 			name: 'Зарплата',
 			icon: '💼',
-			color: '#4caf50',
+			color: '#81c784', // мягкий зеленый
 			subcategories: ['Основная', 'Премии'],
 		},
 		{
 			name: 'Инвестиции',
 			icon: '📈',
-			color: '#009688',
+			color: '#4db6ac', // спокойный бирюзовый
 			subcategories: ['Дивиденды', 'Купоны', 'Вклады'],
 		},
 		{
 			name: 'Прочие доходы',
 			icon: '💸',
-			color: '#8bc34a',
+			color: '#aed581', // светло-зеленый
 			subcategories: ['Подарки', 'Продажа вещей'],
 		},
 	],
@@ -23,55 +23,55 @@ export const baseCategories = {
 		{
 			name: 'Жилье',
 			icon: '🏠',
-			color: '#ff9800',
+			color: '#ffb74d', // мягкий оранжевый
 			subcategories: ['Аренда', 'Коммунальные услуги', 'Ремонт и обслуживание'],
 		},
 		{
 			name: 'Транспорт',
 			icon: '🚌',
-			color: '#2196f3',
+			color: '#64b5f6', // мягкий синий
 			subcategories: ['Общественный', 'Личный автомобиль', 'Такси'],
 		},
 		{
 			name: 'Еда',
 			icon: '🍔',
-			color: '#f44336',
+			color: '#e57373', // мягкий красный
 			subcategories: ['Продукты', 'Кафе/рестораны'],
 		},
 		{
 			name: 'Здоровье и красота',
 			icon: '⚕️',
-			color: '#9c27b0',
+			color: '#ba68c8', // мягкий фиолетовый
 			subcategories: [],
 		},
 		{
 			name: 'Личные траты',
 			icon: '🛍️',
-			color: '#e91e63',
+			color: '#f06292', // нежный розовый
 			subcategories: ['Одежда', 'Хобби'],
 		},
 		{
 			name: 'Развлечения',
 			icon: '🎬',
-			color: '#673ab7',
+			color: '#9575cd', // светлый фиолетовый
 			subcategories: ['Кино', 'Концерты'],
 		},
 		{
 			name: 'Подписки',
 			icon: '📱',
-			color: '#3f51b5',
+			color: '#7986cb', // мягкий синий
 			subcategories: [],
 		},
 		{
 			name: 'Путешествие',
 			icon: '🛫',
-			color: '#795548',
+			color: '#a1887f', // мягкий коричневый
 			subcategories: [],
 		},
 		{
 			name: 'Прочие расходы',
 			icon: '💸',
-			color: '#607d8b',
+			color: '#90a4ae', // мягкий серо-голубой
 			subcategories: ['Подарки', 'Благотворительность'],
 		},
 	],

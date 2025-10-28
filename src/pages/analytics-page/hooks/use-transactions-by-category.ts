@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { AnalyticsTransaction } from '../model/types';
 
 export type CategoryStat = {
 	id: string;
@@ -9,7 +10,9 @@ export type CategoryStat = {
 	color: string;
 };
 
-export const useTransactionsByCategoryYearly = (transactions: any[]) => {
+export const useTransactionsByCategoryYearly = (
+	transactions: AnalyticsTransaction[]
+) => {
 	return useMemo(() => {
 		const incomeMap = new Map<string, CategoryStat>();
 		const expenseMap = new Map<string, CategoryStat>();

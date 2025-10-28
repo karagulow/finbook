@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { AnalyticsTransaction } from '../model/types';
 
 const monthLabels = [
 	'Январь',
@@ -17,7 +18,9 @@ const monthLabels = [
 	'Декабрь',
 ];
 
-export const useIncomeExpenseLineData = (transactions: any[]) => {
+export const useIncomeExpenseLineData = (
+	transactions: AnalyticsTransaction[] = []
+) => {
 	return useMemo(() => {
 		const monthly = Array.from({ length: 12 }, (_, i) => ({
 			label: monthLabels[i],

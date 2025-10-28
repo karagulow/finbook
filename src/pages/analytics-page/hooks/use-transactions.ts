@@ -1,20 +1,26 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type QueryFunction } from '@tanstack/react-query';
 import { getTransactionsByYear } from '../lib/get-transactions-by-year';
 import { useSelectedAccount } from '@/src/widgets/account-overview/hooks/use-selected-account';
+import type { AnalyticsTransaction } from '../model/types';
 
 export const useYearlyTransactions = () => {
 	const { selectedAccountId } = useSelectedAccount();
 
-	const { data, isLoading, isFetching } = useQuery({
+	const queryFn: QueryFunction<AnalyticsTransaction[]> = async () => {
+		const txs = await getTransactionsByYear(selectedAccountId);
+		return txs as AnalyticsTransaction[];
+	};
+
+	const { data, isLoading, isFetching } = useQuery<AnalyticsTransaction[]>({
 		queryKey: ['transactions', selectedAccountId],
-		queryFn: () => getTransactionsByYear(selectedAccountId),
+		queryFn,
 		refetchOnWindowFocus: false,
 	});
 
 	return {
-		transactions: data ?? [],
+		transactions: Array.isArray(data) ? data : [],
 		loading: isLoading || isFetching,
 	};
 };

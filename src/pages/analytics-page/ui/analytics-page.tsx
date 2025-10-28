@@ -16,8 +16,10 @@ import { useTransactionsByCategoryYearly } from '../hooks/use-transactions-by-ca
 
 export const AnalyticsPage: React.FC = () => {
 	const { transactions, loading } = useYearlyTransactions();
-	const lineData = useIncomeExpenseLineData(transactions);
-	const { incomes, expenses } = useTransactionsByCategoryYearly(transactions);
+	const lineData = useIncomeExpenseLineData(transactions ?? []);
+	const { incomes, expenses } = useTransactionsByCategoryYearly(
+		transactions ?? []
+	);
 
 	return (
 		<>
