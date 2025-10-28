@@ -60,6 +60,7 @@ export async function POST(req: Request) {
 							subcategories: {
 								create: cat.subcategories.map(name => ({ name })),
 							},
+							order: cat.order,
 						})),
 						...baseCategories.EXPENSE.map(cat => ({
 							name: cat.name,
@@ -69,6 +70,7 @@ export async function POST(req: Request) {
 							subcategories: {
 								create: cat.subcategories.map(name => ({ name })),
 							},
+							order: cat.order,
 						})),
 					],
 				},

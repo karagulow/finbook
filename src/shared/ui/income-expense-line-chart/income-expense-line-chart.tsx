@@ -52,8 +52,6 @@ const IncomeExpenseLineChartComponent: React.FC<
 		);
 	}
 
-	console.log(dataPoints);
-
 	const labels = dataPoints.map(p => p.label);
 
 	const data = {
