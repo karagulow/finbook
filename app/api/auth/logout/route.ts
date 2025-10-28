@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 		}
 
 		return NextResponse.json(
-			{ message: 'Вы вышли из системы' },
+			{ message: 'Вы успешно вышли из системы.' },
 			{
 				status: 200,
 				headers: {
@@ -33,7 +33,9 @@ export async function POST(req: Request) {
 	} catch (error) {
 		console.error(error);
 		return NextResponse.json(
-			{ message: 'Ошибка при логауте' },
+			{
+				message: 'Не удалось выйти из системы. Попробуйте ещё раз чуть позже.',
+			},
 			{ status: 500 }
 		);
 	}

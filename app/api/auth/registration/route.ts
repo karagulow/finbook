@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export async function POST(req: Request) {
 	if (!JWT_SECRET) {
 		return NextResponse.json(
-			{ message: 'Серверная ошибка: JWT_SECRET не настроен' },
+			{ message: 'Произошла внутренняя ошибка сервера. Попробуйте позже.' },
 			{ status: 500 }
 		);
 	}
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
 		if (await prisma.user.findUnique({ where: { email } })) {
 			return NextResponse.json(
-				{ message: 'Email уже используется' },
+				{ message: 'Этот email уже зарегистрирован.' },
 				{ status: 400 }
 			);
 		}
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 
 		if (!selectedCurrency) {
 			return NextResponse.json(
-				{ message: 'Выбранная валюта не найдена' },
+				{ message: 'Выбранная валюта недоступна.' },
 				{ status: 400 }
 			);
 		}
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
 		});
 
 		return NextResponse.json(
-			{ message: 'Регистрация успешна', token },
+			{ message: 'Вы успешно зарегистрировались!', token },
 			{
 				status: 201,
 				headers: {
@@ -106,6 +106,9 @@ export async function POST(req: Request) {
 		);
 	} catch (error) {
 		console.error('Registration error:', error);
-		return NextResponse.json({ message: 'Ошибка сервера' }, { status: 500 });
+		return NextResponse.json(
+			{ message: 'Не удалось зарегистрироваться. Попробуйте ещё раз.' },
+			{ status: 500 }
+		);
 	}
 }

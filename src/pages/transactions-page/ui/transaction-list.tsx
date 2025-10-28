@@ -8,7 +8,7 @@ import { TransactionSkeleton } from './transaction-skeleton';
 import { useTransactions } from '../hooks/use-transactions';
 
 export const TransactionList: React.FC = () => {
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
 		useTransactions(25);
 
 	const loaderRef = useRef<HTMLDivElement | null>(null);
@@ -30,16 +30,22 @@ export const TransactionList: React.FC = () => {
 		return () => observer.disconnect();
 	}, [hasNextPage, fetchNextPage]);
 
+	const allGroups = data?.pages.flatMap(page => page.groups) ?? [];
+
+	const isEmpty = !isLoading && allGroups.length === 0;
+
 	return (
 		<div className='flex flex-col gap-5'>
-			{!data ? (
+			{isLoading ? (
 				<TransactionSkeleton count={10} />
+			) : isEmpty ? (
+				<div className='text-center text-[var(--foreground-secondary)] text-[13px]'>
+					Транзакции не найдены.
+				</div>
 			) : (
-				data.pages.map(page =>
-					page.groups.map((group, index) => (
-						<TransactionGroup key={index} data={group} />
-					))
-				)
+				allGroups.map((group, index) => (
+					<TransactionGroup key={index} data={group} />
+				))
 			)}
 
 			{hasNextPage && (

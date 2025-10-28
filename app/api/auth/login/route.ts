@@ -10,7 +10,7 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
 export async function POST(req: Request) {
 	if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
 		return NextResponse.json(
-			{ message: 'Серверная ошибка: JWT_SECRET не настроен' },
+			{ message: 'Произошла внутренняя ошибка сервера. Попробуйте позже.' },
 			{ status: 500 }
 		);
 	}
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 		const user = await prisma.user.findUnique({ where: { email } });
 		if (!user || !(await bcrypt.compare(password, user.password))) {
 			return NextResponse.json(
-				{ message: 'Неверные credentials' },
+				{ message: 'Неправильный адрес электронной почты или пароль.' },
 				{ status: 401 }
 			);
 		}
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
 		});
 
 		return NextResponse.json(
-			{ message: 'Успешный вход' },
+			{ message: 'Вы успешно вошли в систему!' },
 			{
 				status: 200,
 				headers: {
@@ -59,6 +59,9 @@ export async function POST(req: Request) {
 		);
 	} catch (error) {
 		console.error('Ошибка входа:', error);
-		return NextResponse.json({ message: 'Ошибка сервера' }, { status: 500 });
+		return NextResponse.json(
+			{ message: 'Не удалось выполнить вход. Попробуйте ещё раз.' },
+			{ status: 500 }
+		);
 	}
 }
