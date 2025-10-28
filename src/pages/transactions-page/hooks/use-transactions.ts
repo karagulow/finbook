@@ -17,7 +17,7 @@ function groupTransactionsByDay(transactions: Transaction[]): DayGroup[] {
 	const groups: Record<string, DayGroup> = {};
 
 	for (const tx of transactions) {
-		const day = new Date(tx.date).toISOString().split('T')[0];
+		const day = new Date(tx.date).toLocaleDateString('sv-SE');
 
 		if (!groups[day]) {
 			groups[day] = { date: day, income: 0, expense: 0, transactions: [] };
