@@ -4,6 +4,10 @@ export {
 	CategoryDoughnutChart,
 	CategoryDoughnutChartSkeleton,
 } from './category-doughnut-chart';
+export {
+	IncomeExpenseLineChart,
+	IncomeExpenseLineChartSkeleton,
+} from './income-expense-line-chart';
 export { Sheet } from './sheet';
 export { Drawer } from './drawer';
 export { EditButton } from './edit-button';

@@ -8,189 +8,147 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-
-  email     String   @unique
-  password  String
-
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String        @unique
+  password     String
   refreshToken String?
-
-  currency  Currency @relation(fields: [currencyId], references: [id])
-  currencyId String
-
-  accounts  Account[]
-  categories Category[]
-  goals     Goal[]
-  debts     Debt[]
+  currencyId   String        @db.Uuid
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  accounts     Account[]
+  categories   Category[]
+  debts        Debt[]
+  goals        Goal[]
   transactions Transaction[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  currency     Currency      @relation(fields: [currencyId], references: [id])
 }
 
 model Account {
-  id        String   @id @default(uuid())
-
-  name      String
-  balance   Float
-  order     Int       @default(0)
-
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-
-  currency  Currency @relation(fields: [currencyId], references: [id])
-  currencyId String
-
-  transactions        Transaction[] @relation("TransactionAccount")
-  transactionsFrom    Transaction[] @relation("TransactionFrom")
-  transactionsTo      Transaction[] @relation("TransactionTo")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  balance          Float
+  order            Int           @default(0)
+  userId           String        @db.Uuid
+  currencyId       String        @db.Uuid
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  currency         Currency      @relation(fields: [currencyId], references: [id])
+  user             User          @relation(fields: [userId], references: [id])
+  transactionsFrom Transaction[] @relation("TransactionFrom")
+  transactionsTo   Transaction[] @relation("TransactionTo")
+  transactions     Transaction[] @relation("TransactionAccount")
 }
 
 model Category {
-  id        String   @id @default(uuid())
-
-  name      String
-  type      CategoryType
-  icon      String
-  color     String
-  order     Int       @default(0)
-
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-
-  transactions Transaction[]
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  type          CategoryType
+  icon          String
+  color         String
+  order         Int           @default(0)
+  userId        String        @db.Uuid
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id])
   subcategories Subcategory[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  transactions  Transaction[]
 }
 
 model Subcategory {
-  id        String   @id @default(uuid())
-
-  name      String
-
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String
+  categoryId   String        @db.Uuid
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  category     Category      @relation(fields: [categoryId], references: [id])
   transactions Transaction[]
-
-  category  Category @relation(fields: [categoryId], references: [id])
-  categoryId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Transaction {
-  id        String   @id @default(uuid())
-
-  type      TransactionType
-  date      DateTime
-  description String?
-
-  // INCOME / EXPENSE
-  account     Account?         @relation("TransactionAccount", fields: [accountId], references: [id])
-  accountId   String?
-  category    Category?        @relation(fields: [categoryId], references: [id])
-  categoryId  String?
-  subcategory Subcategory?     @relation(fields: [subcategoryId], references: [id])
-  subcategoryId String?
-  amount      Float?
-
-  // TRANSFER
-  accountFrom Account?         @relation("TransactionFrom", fields: [accountIdFrom], references: [id])
-  accountIdFrom String?
-  accountTo   Account?         @relation("TransactionTo", fields: [accountIdTo], references: [id])
-  accountIdTo String?
-  amountFrom  Float?
-  amountTo    Float?
-
-  // GOAL / DEBT
-  goal      Goal?        @relation(fields: [goalId], references: [id])
-  goalId    String?
-  goalType  GoalTransactionType?
-
-  debt      Debt?        @relation(fields: [debtId], references: [id])
-  debtId    String?
-
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type          TransactionType
+  date          DateTime
+  description   String?
+  accountId     String?              @db.Uuid
+  categoryId    String?              @db.Uuid
+  subcategoryId String?              @db.Uuid
+  amount        Float?
+  accountIdFrom String?              @db.Uuid
+  accountIdTo   String?              @db.Uuid
+  amountFrom    Float?
+  amountTo      Float?
+  goalId        String?              @db.Uuid
+  goalType      GoalTransactionType?
+  debtId        String?              @db.Uuid
+  userId        String               @db.Uuid
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  accountFrom   Account?             @relation("TransactionFrom", fields: [accountIdFrom], references: [id])
+  accountTo     Account?             @relation("TransactionTo", fields: [accountIdTo], references: [id])
+  account       Account?             @relation("TransactionAccount", fields: [accountId], references: [id])
+  category      Category?            @relation(fields: [categoryId], references: [id])
+  debt          Debt?                @relation(fields: [debtId], references: [id])
+  goal          Goal?                @relation(fields: [goalId], references: [id])
+  subcategory   Subcategory?         @relation(fields: [subcategoryId], references: [id])
+  user          User                 @relation(fields: [userId], references: [id])
 }
 
-
 model Currency {
-  id        String   @id @default(uuid())
-
-  name      String
-  code      String   @unique
-  symbol    String?
-
-  users     User[]
-  accounts  Account[]
-
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String
+  code              String         @unique
+  symbol            String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  accounts          Account[]
   exchangeRatesFrom ExchangeRate[] @relation("FromCurrency")
   exchangeRatesTo   ExchangeRate[] @relation("ToCurrency")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  users             User[]
 }
 
 model ExchangeRate {
-  id          String   @id @default(uuid())
-  from        Currency @relation("FromCurrency", fields: [fromId], references: [id])
-  fromId      String
-  to          Currency @relation("ToCurrency", fields: [toId], references: [id])
-  toId        String
-  rate        Float
-  date        DateTime @default(now())
-
-  @@unique([fromId, toId, date])
-
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fromId    String   @db.Uuid
+  toId      String   @db.Uuid
+  rate      Float
+  date      DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  from      Currency @relation("FromCurrency", fields: [fromId], references: [id])
+  to        Currency @relation("ToCurrency", fields: [toId], references: [id])
+
+  @@unique([fromId, toId, date])
 }
 
 model Goal {
-  id        String   @id @default(uuid())
-
-  name      String
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
   target_amount Float
-  saved_amount Float
-  deadline   DateTime
-  description String?
-  icon      String
-
-  transactions Transaction[]
-
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  saved_amount  Float
+  deadline      DateTime
+  description   String?
+  icon          String
+  userId        String        @db.Uuid
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id])
+  transactions  Transaction[]
 }
 
 model Debt {
-  id        String   @id @default(uuid())
-
-  name      String
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
   target_amount Float
-  saved_amount Float
-  deadline   DateTime
-  paid      Boolean
-  type      DebtType
-  description String?
-
-  transactions Transaction[]
-
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  saved_amount  Float
+  deadline      DateTime
+  paid          Boolean
+  type          DebtType
+  description   String?
+  userId        String        @db.Uuid
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id])
+  transactions  Transaction[]
 }
 
 enum CategoryType {
