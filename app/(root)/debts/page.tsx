@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { DebtsPage } from '@/src/pages/debts-page';
+import { DebtsPage } from '@/src/page-views/debts-page';
 
 export const metadata: Metadata = {
 	title: 'Долги',
