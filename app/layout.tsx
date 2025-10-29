@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
 import './globals.css';
-import Providers from '@/src/app/providers';
+import Providers from '@/app/providers';
 import { SplashScreen, TopBlurOverlay } from '@/src/shared/ui';
 
 const manropeSans = Manrope({

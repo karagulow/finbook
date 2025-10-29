@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'react-hot-toast';
 
-import { toastOptions } from '../shared/lib';
+import { toastOptions } from '../src/shared/lib';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
 	const [queryClient] = useState(() => new QueryClient());
