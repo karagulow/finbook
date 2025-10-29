@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { AnalyticsPage } from '@/src/pages/analytics-page';
+import { AnalyticsPage } from '@/src/page-views/analytics-page';
 
 export const metadata: Metadata = {
 	title: 'Аналитика',

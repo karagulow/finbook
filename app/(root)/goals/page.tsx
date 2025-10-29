@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { GoalsPage } from '@/src/pages/goals-page';
+import { GoalsPage } from '@/src/page-views/goals-page';
 
 export const metadata: Metadata = {
 	title: 'Цели',

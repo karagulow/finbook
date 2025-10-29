@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { TransactionsPage } from '@/src/pages/transactions-page';
+import { TransactionsPage } from '@/src/page-views/transactions-page';
 
 export const metadata: Metadata = {
 	title: 'Транзакции',
