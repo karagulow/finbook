@@ -60,8 +60,9 @@ export default function RootLayout({
 				/>
 			</head>
 			<body className={`${manropeSans.variable} antialiased`}>
+				<div className='statusbar'></div>
 				<Providers>
-					<div className='bg-[var(--background-primary)]'>
+					<div className='bg-[var(--background-primary)] '>
 						<TopBlurOverlay />
 						<SplashScreen />
 

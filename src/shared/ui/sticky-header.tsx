@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { cn } from '../lib';
 
 interface Props {
 	title: string;
@@ -11,11 +12,7 @@ export const StickyHeader: React.FC<Props> = ({ title }) => {
 
 	useEffect(() => {
 		const handleScroll = () => {
-			if (window.scrollY > 40) {
-				setVisible(true);
-			} else {
-				setVisible(false);
-			}
+			setVisible(window.scrollY > 40);
 		};
 
 		window.addEventListener('scroll', handleScroll);
@@ -23,11 +20,13 @@ export const StickyHeader: React.FC<Props> = ({ title }) => {
 	}, []);
 
 	return (
-		<div
-			className={`fixed block lg:hidden top-0 left-0 w-full bg-[var(--background-primary)]/70 backdrop-blur-md border-b-[0.5px] border-[var(--border-primary)] shadow-md transition-transform duration-500 z-10 
-        ${visible ? 'translate-y-0' : '-translate-y-full'}`}
-		>
-			<div className='py-2.5 text-center font-regular text-[15px] text-[var(--foreground-primary)]'>
+		<div className='fixed block lg:hidden top-0 left-0 w-full z-10'>
+			<div
+				className={cn(
+					'py-2.5 text-center font-semibold text-[15px] text-[var(--foreground-primary)] transition-opacity duration-300',
+					visible ? 'opacity-100' : 'opacity-0'
+				)}
+			>
 				{title}
 			</div>
 		</div>
