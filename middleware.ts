@@ -11,22 +11,7 @@ export async function middleware(request: NextRequest) {
 	const token = request.cookies.get('authToken')?.value;
 	const refreshToken = request.cookies.get('refreshToken')?.value;
 
-	// Гостевые страницы
 	const guestPaths = ['/login', '/registration'];
-	if (guestPaths.includes(pathname)) {
-		if (token) {
-			try {
-				if (!token) throw new Error('Token is undefined');
-				verify(token, JWT_SECRET);
-				return NextResponse.redirect(new URL('/', request.url));
-			} catch (error) {
-				console.log(`[Middleware] Invalid token for guest path: ${error}`);
-			}
-		}
-		return NextResponse.next();
-	}
-
-	// Защищенные страницы
 	const protectedPaths = [
 		'/',
 		'/transactions',
@@ -36,24 +21,31 @@ export async function middleware(request: NextRequest) {
 		'/settings',
 		'/more',
 	];
+
+	// Гостевые страницы
+	if (guestPaths.includes(pathname)) {
+		if (token) {
+			try {
+				verify(token, JWT_SECRET);
+				return NextResponse.redirect(new URL('/', request.url));
+			} catch {}
+		}
+		return NextResponse.next();
+	}
+
+	// Защищенные страницы
 	if (protectedPaths.includes(pathname)) {
-		if (!token) {
-			if (!refreshToken) {
-				return NextResponse.redirect(new URL('/login', request.url));
+		if (token) {
+			try {
+				verify(token, JWT_SECRET);
+				return NextResponse.next();
+			} catch {
+				// токен истек — будем пробовать refresh
 			}
 		}
 
-		try {
-			if (!token) throw new Error('Token is undefined');
-			verify(token, JWT_SECRET);
-			return NextResponse.next();
-		} catch (error) {
-			if (!refreshToken) {
-				return NextResponse.redirect(new URL('/login', request.url));
-			}
-
+		if (refreshToken) {
 			try {
-				if (!refreshToken) throw new Error('Refresh token is undefined');
 				const payload = verify(refreshToken, JWT_REFRESH_SECRET) as {
 					userId: string;
 					email: string;
@@ -61,18 +53,16 @@ export async function middleware(request: NextRequest) {
 				const user = await prisma.user.findUnique({
 					where: { id: payload.userId },
 				});
-
-				if (!user || user.refreshToken !== refreshToken) {
+				if (!user || user.refreshToken !== refreshToken)
 					throw new Error('Invalid refresh token');
-				}
 
 				const newAccessToken = sign(
 					{ userId: user.id, email: user.email },
 					JWT_SECRET,
 					{ expiresIn: '15m' }
 				);
-
-				const response = NextResponse.next();
+				const redirectUrl = request.nextUrl.clone();
+				const response = NextResponse.redirect(redirectUrl);
 				response.cookies.set('authToken', newAccessToken, {
 					httpOnly: true,
 					secure: process.env.NODE_ENV === 'production',
@@ -80,13 +70,13 @@ export async function middleware(request: NextRequest) {
 					path: '/',
 					maxAge: 900,
 				});
-
 				return response;
-			} catch (refreshError) {
-				console.log(`[Middleware] Refresh failed: ${refreshError}`);
+			} catch {
 				return NextResponse.redirect(new URL('/login', request.url));
 			}
 		}
+
+		return NextResponse.redirect(new URL('/login', request.url));
 	}
 
 	return NextResponse.next();
