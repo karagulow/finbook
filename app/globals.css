@@ -54,6 +54,10 @@
 	--accent: #4a7ee0;
 }
 
+.dark .statusbar {
+	display: none;
+}
+
 body {
 	font-family: 'Manrope', sans-serif;
 
