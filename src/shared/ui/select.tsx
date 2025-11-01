@@ -132,8 +132,9 @@ export function Select<T extends string | number = string>({
 			)}
 
 			<div ref={wrapperRef} className='relative'>
-				<button
-					type='button'
+				<div
+					role='button'
+					tabIndex={0}
 					onClick={() => {
 						setOpen(o => !o);
 						setHighlighted(options.findIndex(o => o.value === value));
@@ -160,7 +161,7 @@ export function Select<T extends string | number = string>({
 					>
 						<ChevronDown size={16} className='opacity-70' />
 					</div>
-				</button>
+				</div>
 
 				<AnimatePresence>
 					{open && (
@@ -181,10 +182,10 @@ export function Select<T extends string | number = string>({
 										ref={el => {
 											optionRefs.current[idx] = el;
 										}}
-										onPointerUp={() => {
+										onPointerDown={() => {
 											if (opt.disabled) return;
 											onChange?.(opt.value);
-											setTimeout(() => setOpen(false), 0);
+											setOpen(false);
 										}}
 										className={`flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] text-[var(--foreground-primary)] rounded-[4px] ${
 											opt.disabled
