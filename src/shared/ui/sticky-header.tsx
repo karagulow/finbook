@@ -20,10 +20,10 @@ export const StickyHeader: React.FC<Props> = ({ title }) => {
 	}, []);
 
 	return (
-		<div className='fixed block lg:hidden top-0 left-0 w-full z-10'>
+		<div className='fixed block lg:hidden top-0 left-0 w-full bg-[var(--background-primary)]/70 backdrop-blur-md z-10 pt-[calc(env(safe-area-inset-top)+10px)]'>
 			<div
 				className={cn(
-					'py-2.5 text-center font-semibold text-[15px] text-[var(--foreground-primary)] transition-opacity duration-300',
+					'pb-2.5 text-center font-semibold text-[15px] text-[var(--foreground-primary)] transition-opacity duration-300',
 					visible ? 'opacity-100' : 'opacity-0'
 				)}
 			>

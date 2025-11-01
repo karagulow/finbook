@@ -67,7 +67,7 @@ model Subcategory {
 model Transaction {
   id            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   type          TransactionType
-  date          DateTime
+  date          DateTime             @db.Timestamp(6)
   description   String?
   accountId     String?              @db.Uuid
   categoryId    String?              @db.Uuid
@@ -111,7 +111,7 @@ model ExchangeRate {
   fromId    String   @db.Uuid
   toId      String   @db.Uuid
   rate      Float
-  date      DateTime @default(now())
+  date      DateTime @default(now()) @db.Timestamp(6)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   from      Currency @relation("FromCurrency", fields: [fromId], references: [id])

@@ -25,12 +25,6 @@
 	--success: #22c55e;
 	--muted: #f2f2f2;
 	--accent: #3b82f6;
-
-	--statusbar-bg: color-mix(
-		in oklab,
-		var(--background-primary) 70%,
-		transparent
-	);
 }
 
 .dark {
@@ -65,6 +59,10 @@ body {
 
 	overflow-x: hidden;
 	margin-right: calc(-1 * (100vw - 100%));
+	padding-top: env(safe-area-inset-top);
+	padding-bottom: env(safe-area-inset-bottom);
+	padding-left: env(safe-area-inset-left);
+	padding-right: env(safe-area-inset-right);
 }
 
 /* Кастомный скролл для всего приложения */
@@ -129,26 +127,4 @@ body::-webkit-scrollbar-thumb:hover {
 	inset: 0;
 	-webkit-mask: linear-gradient(#000 60%, #0000);
 	mask: linear-gradient(#000 60%, #0000);
-}
-
-.statusbar {
-	position: fixed;
-	left: 0;
-	right: 0;
-	top: -80px;
-	height: 124px;
-	overflow: hidden;
-	z-index: 10;
-}
-
-.statusbar::before {
-	content: '';
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 0;
-	height: 150%;
-	-webkit-backdrop-filter: blur(12px);
-	backdrop-filter: blur(12px);
-	background-color: var(--statusbar-bg);
 }
