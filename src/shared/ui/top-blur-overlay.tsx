@@ -8,11 +8,7 @@ export const TopBlurOverlay: React.FC = () => {
 
 	useEffect(() => {
 		const handleScroll = () => {
-			if (window.scrollY > 40) {
-				setVisible(true);
-			} else {
-				setVisible(false);
-			}
+			setVisible(window.scrollY > 40);
 		};
 
 		window.addEventListener('scroll', handleScroll);
@@ -22,8 +18,8 @@ export const TopBlurOverlay: React.FC = () => {
 	return (
 		<div
 			className={cn(
-				'progressive-blur pointer-events-none fixed inset-0 z-9 h-30 w-screen lg:h-15 transition-opacity duration-500',
-				visible ? 'opacity-100' : 'opacity-0'
+				'progressive-blur pointer-events-none fixed inset-0 z-9 h-30 w-screen lg:h-15 transition-transform duration-500',
+				visible ? 'translate-y-0' : '-translate-y-full'
 			)}
 		></div>
 	);

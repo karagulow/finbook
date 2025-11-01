@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
 import './globals.css';
 import Providers from '@/app/providers';
-import { SplashScreen, TopBlurOverlay } from '@/src/shared/ui';
+import { SplashScreen } from '@/src/shared/ui';
 
 const manropeSans = Manrope({
 	variable: '--font-manrope-sans',
@@ -59,7 +59,6 @@ export default function RootLayout({
 			<body className={`${manropeSans.variable} antialiased`}>
 				<Providers>
 					<div className='bg-[var(--background-primary)] '>
-						<TopBlurOverlay />
 						<SplashScreen />
 
 						{children}
