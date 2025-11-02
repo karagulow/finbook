@@ -75,7 +75,6 @@ export function Select<T extends string | number = string>({
 					for (let i = 0; i < options.length; i++) {
 						const idx = (next + i) % options.length;
 						if (!options[idx].disabled) {
-							// скролл к элементу
 							optionRefs.current[idx]?.scrollIntoView({ block: 'nearest' });
 							return idx;
 						}
@@ -182,10 +181,10 @@ export function Select<T extends string | number = string>({
 										ref={el => {
 											optionRefs.current[idx] = el;
 										}}
-										onPointerDown={() => {
+										onClick={() => {
 											if (opt.disabled) return;
 											onChange?.(opt.value);
-											setOpen(false);
+											setTimeout(() => setOpen(false), 0);
 										}}
 										className={`flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] text-[var(--foreground-primary)] rounded-[4px] ${
 											opt.disabled
