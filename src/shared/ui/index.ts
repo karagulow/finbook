@@ -22,3 +22,4 @@ export { Description } from './description';
 export { TopBlurOverlay } from './top-blur-overlay';
 export { Divider } from './divider';
 export { SplashScreen } from './splash-screen';
+export { Statusbar } from './statusbar';

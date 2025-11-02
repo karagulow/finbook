@@ -8,11 +8,7 @@ export const TopBlurOverlay: React.FC = () => {
 
 	useEffect(() => {
 		const handleScroll = () => {
-			if (window.scrollY > 40) {
-				setVisible(true);
-			} else {
-				setVisible(false);
-			}
+			setVisible(window.scrollY > 40);
 		};
 
 		window.addEventListener('scroll', handleScroll);

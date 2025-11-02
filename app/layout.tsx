@@ -1,8 +1,8 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
 import './globals.css';
 import Providers from '@/app/providers';
-import { SplashScreen, TopBlurOverlay } from '@/src/shared/ui';
+import { SplashScreen, Statusbar } from '@/src/shared/ui';
 
 const manropeSans = Manrope({
 	variable: '--font-manrope-sans',
@@ -32,11 +32,12 @@ export const metadata: Metadata = {
 	manifest: '/manifest.json',
 };
 
-export const viewport = {
+export const viewport: Viewport = {
 	width: 'device-width',
 	initialScale: 1,
 	maximumScale: 1,
 	userScalable: false,
+	viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -48,10 +49,6 @@ export default function RootLayout({
 		<html lang='ru' suppressHydrationWarning>
 			<head>
 				<link rel='manifest' href='/manifest.json' />
-				<meta
-					name='viewport'
-					content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'
-				/>
 				<link rel='apple-touch-icon' href='/icons/icon-192x192.png' />
 				<meta name='apple-mobile-web-app-capable' content='yes' />
 				<meta
@@ -60,11 +57,10 @@ export default function RootLayout({
 				/>
 			</head>
 			<body className={`${manropeSans.variable} antialiased`}>
+				<Statusbar />
 				<Providers>
-					<div className='bg-[var(--background-primary)]'>
-						<TopBlurOverlay />
+					<div className='bg-[var(--background-primary)] '>
 						<SplashScreen />
-
 						{children}
 					</div>
 				</Providers>
