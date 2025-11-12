@@ -1,4 +1,11 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
+import autoAnimate from '@formkit/auto-animate';
 
 import { useAccountSlider } from '../hooks/use-account-slider';
 
@@ -20,6 +27,14 @@ export const AccountOverview: React.FC = () => {
 	const { accounts, totalBalance, currencyCode, currencySymbol, loading } =
 		useAccounts();
 
+	const [prevAccounts, setPrevAccounts] = useState(accounts);
+
+	useEffect(() => {
+		if (!loading) {
+			setPrevAccounts(accounts);
+		}
+	}, [accounts, loading]);
+
 	const extendedAccounts = useMemo(
 		() => [
 			{
@@ -28,9 +43,9 @@ export const AccountOverview: React.FC = () => {
 				balance: totalBalance,
 				currency: currencySymbol || currencyCode,
 			},
-			...accounts,
+			...prevAccounts,
 		],
-		[accounts, totalBalance, currencyCode, currencySymbol]
+		[prevAccounts, totalBalance, currencyCode, currencySymbol]
 	);
 	const {
 		currentIndex,
@@ -42,6 +57,17 @@ export const AccountOverview: React.FC = () => {
 		prev,
 		goTo,
 	} = useAccountSlider(extendedAccounts);
+
+	const containerRef = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		if (containerRef.current) {
+			autoAnimate(containerRef.current, {
+				duration: 250,
+				easing: 'ease-in-out',
+			});
+		}
+	}, []);
 
 	const openAccountsSheet = useCallback(() => setIsAccountsModalOpen(true), []);
 	const closeAccountsSheet = useCallback(
@@ -63,29 +89,30 @@ export const AccountOverview: React.FC = () => {
 			<div className='flex flex-row gap-2.5 w-full'>
 				<div className='flex flex-col flex-1 min-w-0 gap-3'>
 					<div className='relative overflow-hidden w-full'>
-						{loading ? (
-							<AccountCardSkeleton />
-						) : (
-							<div
-								className='flex gap-2.5 transition-transform duration-300 ease-in-out'
-								style={{
-									transform: `translateX(-${
-										(currentIndex * 100) / itemsPerView
-									}%)`,
-								}}
-							>
-								{extendedAccounts.map((account, idx) => (
+						<div
+							className='flex gap-2.5 transition-transform duration-300 ease-in-out'
+							style={{
+								transform: `translateX(-${
+									(currentIndex * 100) / itemsPerView
+								}%)`,
+							}}
+							ref={containerRef}
+						>
+							{loading && extendedAccounts.length <= 1 ? (
+								<AccountCardSkeleton />
+							) : (
+								extendedAccounts.map((account, idx) => (
 									<AccountCard
 										key={account.id}
+										account={account}
+										idx={idx}
 										currentIndex={currentIndex}
 										itemsPerView={itemsPerView}
 										totalItems={totalItems}
-										idx={idx}
-										account={account}
 									/>
-								))}
-							</div>
-						)}
+								))
+							)}
+						</div>
 					</div>
 
 					{totalItems > itemsPerView && (

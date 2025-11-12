@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import autoAnimate from '@formkit/auto-animate';
 import {
 	DndContext,
 	closestCenter,
@@ -29,6 +30,7 @@ export const AccountList: React.FC<Props> = ({ accounts }) => {
 	const [items, setItems] = useState(accounts);
 	const queryClient = useQueryClient();
 
+	const listRef = useRef<HTMLUListElement | null>(null);
 	const sensors = useSensors(useSensor(PointerSensor));
 
 	const reorderMutation = useMutation({
@@ -58,6 +60,19 @@ export const AccountList: React.FC<Props> = ({ accounts }) => {
 		reorderMutation.mutate(newItems);
 	};
 
+	useEffect(() => {
+		setItems(accounts);
+	}, [accounts]);
+
+	useEffect(() => {
+		if (listRef.current) {
+			autoAnimate(listRef.current, {
+				duration: 250,
+				easing: 'ease-in-out',
+			});
+		}
+	}, []);
+
 	return (
 		<DndContext
 			sensors={sensors}
@@ -65,7 +80,7 @@ export const AccountList: React.FC<Props> = ({ accounts }) => {
 			onDragEnd={handleDragEnd}
 		>
 			<SortableContext items={items} strategy={verticalListSortingStrategy}>
-				<ul className='flex flex-col gap-2.5'>
+				<ul className='flex flex-col gap-2.5' ref={listRef}>
 					{items.map(account => (
 						<AccountItem key={account.id} id={account.id} account={account} />
 					))}
