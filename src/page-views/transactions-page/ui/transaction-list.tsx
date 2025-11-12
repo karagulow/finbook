@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
+import autoAnimate from '@formkit/auto-animate';
 
 import { TransactionGroup } from './transaction-group';
 import { TransactionSkeleton } from './transaction-skeleton';
@@ -12,6 +13,13 @@ export const TransactionList: React.FC = () => {
 		useTransactions(25);
 
 	const loaderRef = useRef<HTMLDivElement | null>(null);
+	const listRef = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		if (listRef.current) {
+			autoAnimate(listRef.current, { duration: 250, easing: 'ease-in-out' });
+		}
+	}, []);
 
 	useEffect(() => {
 		if (!hasNextPage || !loaderRef.current) return;
@@ -35,7 +43,7 @@ export const TransactionList: React.FC = () => {
 	const isEmpty = !isLoading && allGroups.length === 0;
 
 	return (
-		<div className='flex flex-col gap-5'>
+		<div className='flex flex-col gap-5' ref={listRef}>
 			{isLoading ? (
 				<TransactionSkeleton count={10} />
 			) : isEmpty ? (
@@ -43,8 +51,8 @@ export const TransactionList: React.FC = () => {
 					Транзакции не найдены.
 				</div>
 			) : (
-				allGroups.map((group, index) => (
-					<TransactionGroup key={index} data={group} />
+				allGroups.map(group => (
+					<TransactionGroup key={group.date} data={group} />
 				))
 			)}
 
