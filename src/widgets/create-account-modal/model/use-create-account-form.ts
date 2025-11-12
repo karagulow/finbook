@@ -35,6 +35,7 @@ export const useCreateAccountForm = (onClose: () => void) => {
 			});
 
 			queryClient.invalidateQueries({ queryKey: ['accounts'] });
+			queryClient.invalidateQueries({ queryKey: ['balance'] });
 
 			toast.success('Счёт успешно создан!', toastOptions);
 			onClose();

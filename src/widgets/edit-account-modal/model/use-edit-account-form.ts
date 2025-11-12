@@ -48,6 +48,7 @@ export const useEditAccountForm = (
 			});
 
 			queryClient.invalidateQueries({ queryKey: ['accounts'] });
+			queryClient.invalidateQueries({ queryKey: ['balance'] });
 
 			toast.success('Счёт успешно обновлён!', toastOptions);
 			onClose();

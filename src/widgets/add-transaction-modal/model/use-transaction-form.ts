@@ -76,6 +76,7 @@ export const useTransactionForm = (
 			await axios.post('/api/transactions', { ...data, type });
 			queryClient.invalidateQueries({ queryKey: ['transactions'] });
 			queryClient.invalidateQueries({ queryKey: ['accounts'] });
+			queryClient.invalidateQueries({ queryKey: ['balance'] });
 			onClose();
 			toast.success('Транзакция добавлена!', toastOptions);
 		} catch (error: unknown) {

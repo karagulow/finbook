@@ -31,6 +31,7 @@ export const AccountItem: React.FC<Props> = ({ id, account }) => {
 		try {
 			await axios.delete(`/api/accounts/${account.id}`);
 			queryClient.invalidateQueries({ queryKey: ['accounts'] });
+			queryClient.invalidateQueries({ queryKey: ['balance'] });
 			setIsConfirmDeleteDialogOpen(false);
 			toast.success('Счёт успешно удалён!', toastOptions);
 		} catch (err) {

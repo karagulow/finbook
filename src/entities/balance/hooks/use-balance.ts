@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 interface BalanceResponse {
 	total: number;
@@ -9,30 +9,23 @@ interface BalanceResponse {
 }
 
 export const useBalance = () => {
-	const [total, setTotal] = useState(0);
-	const [currencyCode, setCurrencyCode] = useState('');
-	const [currencySymbol, setCurrencySymbol] = useState<string | null>(null);
-
-	const fetchBalance = useCallback(async () => {
-		try {
+	const { data, isLoading, isFetching } = useQuery<BalanceResponse>({
+		queryKey: ['balance'],
+		queryFn: async () => {
 			const res = await fetch('/api/balance', {
 				method: 'GET',
 				credentials: 'include',
 			});
+			if (!res.ok) throw new Error('Ошибка при получении баланса');
+			return res.json();
+		},
+		refetchOnWindowFocus: false,
+	});
 
-			if (!res.ok) {
-				throw new Error('Ошибка при получении баланса');
-			}
-
-			const data: BalanceResponse = await res.json();
-
-			setTotal(data.total);
-			setCurrencyCode(data.currencyCode);
-			setCurrencySymbol(data.currencySymbol);
-		} catch (err) {
-			console.error('[useBalance] Ошибка:', err);
-		}
-	}, []);
-
-	return { total, currencyCode, currencySymbol, fetchBalance };
+	return {
+		total: data?.total ?? 0,
+		currencyCode: data?.currencyCode ?? '',
+		currencySymbol: data?.currencySymbol ?? null,
+		loading: isLoading || isFetching,
+	};
 };
