@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
 	DndContext,
@@ -15,6 +15,7 @@ import {
 } from '@dnd-kit/sortable';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import autoAnimate from '@formkit/auto-animate';
 
 import { CategoryItem } from './category-item';
 import { CategoryItemSkeleton } from './category-item-skeleton';
@@ -31,6 +32,13 @@ export const CategoriesList: React.FC<Props> = ({ loading, categories }) => {
 	const queryClient = useQueryClient();
 
 	const sensors = useSensors(useSensor(PointerSensor));
+	const listRef = useRef<HTMLUListElement>(null);
+
+	useEffect(() => {
+		if (listRef.current) {
+			autoAnimate(listRef.current, { duration: 200, easing: 'ease-in-out' });
+		}
+	}, []);
 
 	const reorderMutation = useMutation({
 		mutationFn: async (newItems: Category[]) => {
@@ -73,7 +81,10 @@ export const CategoriesList: React.FC<Props> = ({ loading, categories }) => {
 				items={items.map(i => i.id)}
 				strategy={verticalListSortingStrategy}
 			>
-				<ul className='flex flex-col gap-2.5 flex-1 overflow-y-auto w-full'>
+				<ul
+					className='flex flex-col gap-2.5 flex-1 overflow-y-auto w-full'
+					ref={listRef}
+				>
 					{loading ? (
 						[...Array(5)].map((_, i) => <CategoryItemSkeleton key={i} />)
 					) : items.length ? (

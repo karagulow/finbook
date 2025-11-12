@@ -23,7 +23,7 @@ export const TransactionGroup: React.FC<Props> = ({ data }) => {
 
 	useEffect(() => {
 		if (listRef.current) {
-			autoAnimate(listRef.current, { duration: 200 });
+			autoAnimate(listRef.current, { duration: 200, easing: 'ease-in-out' });
 		}
 	}, []);
 
