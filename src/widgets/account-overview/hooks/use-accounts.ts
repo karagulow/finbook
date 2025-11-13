@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { getAccounts } from '../lib/get-accounts';
+import { api } from '@/src/shared/lib';
 
 export type Account = {
 	id: string;
@@ -22,18 +23,13 @@ export const useAccounts = () => {
 		queryKey: ['accounts'],
 		queryFn: async () => {
 			const accountsData = await getAccounts();
-
-			const balanceRes = await fetch('/api/balance', {
-				method: 'GET',
-				credentials: 'include',
-			});
-			const balanceData: BalanceResponse = await balanceRes.json();
+			const balanceData = await api.get<BalanceResponse>('/api/balance');
 
 			return {
 				accounts: accountsData,
-				totalBalance: balanceData.total,
-				currencyCode: balanceData.currencyCode,
-				currencySymbol: balanceData.currencySymbol,
+				totalBalance: balanceData.data.total,
+				currencyCode: balanceData.data.currencyCode,
+				currencySymbol: balanceData.data.currencySymbol,
 			};
 		},
 		refetchOnWindowFocus: false,

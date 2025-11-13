@@ -5,6 +5,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import axios from 'axios';
+import { api } from '@/src/shared/lib';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -117,10 +118,10 @@ export const useCategoryForm = ({
 			};
 
 			if (isEdit && category) {
-				await axios.put(`/api/categories/${category.id}`, payload);
+				await api.put(`/api/categories/${category.id}`, payload);
 				toast.success('Категория успешно обновлена!');
 			} else {
-				await axios.post('/api/categories', payload);
+				await api.post('/api/categories', payload);
 				toast.success('Категория успешно создана!');
 			}
 

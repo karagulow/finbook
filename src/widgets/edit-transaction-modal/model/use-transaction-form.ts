@@ -7,7 +7,7 @@ import { Resolver, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { toastOptions } from '@/src/shared/lib';
+import { api, toastOptions } from '@/src/shared/lib';
 import {
 	TransactionFormData,
 	transactionValidation,
@@ -54,8 +54,8 @@ export const useTransactionForm = (
 		const fetchData = async () => {
 			try {
 				const [accountsRes, categoriesRes] = await Promise.all([
-					axios.get('/api/accounts'),
-					axios.get('/api/categories'),
+					api.get('/api/accounts'),
+					api.get('/api/categories'),
 				]);
 				setAccounts(accountsRes.data);
 				setCategories(categoriesRes.data);
@@ -79,7 +79,7 @@ export const useTransactionForm = (
 
 		setLoading(true);
 		try {
-			await axios.put(`/api/transactions/${transaction.id}`, {
+			await api.put(`/api/transactions/${transaction.id}`, {
 				...data,
 				type,
 			});

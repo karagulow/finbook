@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { toastOptions } from '@/src/shared/lib';
+import { toastOptions, api } from '@/src/shared/lib';
 import { Currency, FormValues } from '../model/types';
 
 export const useCreateAccountForm = (onClose: () => void) => {
@@ -21,7 +20,7 @@ export const useCreateAccountForm = (onClose: () => void) => {
 	} = useForm<FormValues>();
 
 	useEffect(() => {
-		axios
+		api
 			.get<Currency[]>('/api/currencies')
 			.then(res => setCurrencies(res.data))
 			.catch(() => toast.error('Не удалось загрузить валюты', toastOptions));
@@ -29,12 +28,13 @@ export const useCreateAccountForm = (onClose: () => void) => {
 
 	const onSubmit = async (data: FormValues) => {
 		try {
-			await axios.post('/api/accounts', {
+			await api.post('/api/accounts', {
 				...data,
 				amount: Number(data.amount),
 			});
 
 			queryClient.invalidateQueries({ queryKey: ['accounts'] });
+			queryClient.invalidateQueries({ queryKey: ['balance'] });
 
 			toast.success('Счёт успешно создан!', toastOptions);
 			onClose();

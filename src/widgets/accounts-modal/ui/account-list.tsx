@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import autoAnimate from '@formkit/auto-animate';
 import {
 	DndContext,
 	closestCenter,
@@ -14,12 +15,11 @@ import {
 	SortableContext,
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import axios from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AccountItem } from './account-item';
 import { Account } from '../model/types';
 import toast from 'react-hot-toast';
-import { toastOptions } from '@/src/shared/lib';
+import { toastOptions, api } from '@/src/shared/lib';
 
 interface Props {
 	accounts: Account[];
@@ -29,11 +29,12 @@ export const AccountList: React.FC<Props> = ({ accounts }) => {
 	const [items, setItems] = useState(accounts);
 	const queryClient = useQueryClient();
 
+	const listRef = useRef<HTMLUListElement | null>(null);
 	const sensors = useSensors(useSensor(PointerSensor));
 
 	const reorderMutation = useMutation({
 		mutationFn: async (newItems: Account[]) => {
-			await axios.patch('/api/accounts/reorder', {
+			await api.patch('/api/accounts/reorder', {
 				orderedIds: newItems.map(i => i.id),
 			});
 		},
@@ -58,6 +59,19 @@ export const AccountList: React.FC<Props> = ({ accounts }) => {
 		reorderMutation.mutate(newItems);
 	};
 
+	useEffect(() => {
+		setItems(accounts);
+	}, [accounts]);
+
+	useEffect(() => {
+		if (listRef.current) {
+			autoAnimate(listRef.current, {
+				duration: 250,
+				easing: 'ease-in-out',
+			});
+		}
+	}, []);
+
 	return (
 		<DndContext
 			sensors={sensors}
@@ -65,7 +79,7 @@ export const AccountList: React.FC<Props> = ({ accounts }) => {
 			onDragEnd={handleDragEnd}
 		>
 			<SortableContext items={items} strategy={verticalListSortingStrategy}>
-				<ul className='flex flex-col gap-2.5'>
+				<ul className='flex flex-col gap-2.5' ref={listRef}>
 					{items.map(account => (
 						<AccountItem key={account.id} id={account.id} account={account} />
 					))}

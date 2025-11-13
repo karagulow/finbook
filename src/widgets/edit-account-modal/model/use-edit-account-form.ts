@@ -3,10 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 
-import { toastOptions } from '@/src/shared/lib';
+import { api, toastOptions } from '@/src/shared/lib';
 import {
 	Currency,
 	FormValues,
@@ -34,7 +33,7 @@ export const useEditAccountForm = (
 	});
 
 	useEffect(() => {
-		axios
+		api
 			.get<Currency[]>('/api/currencies')
 			.then(res => setCurrencies(res.data))
 			.catch(() => toast.error('Не удалось загрузить валюты', toastOptions));
@@ -42,12 +41,13 @@ export const useEditAccountForm = (
 
 	const onSubmit = async (data: FormValues) => {
 		try {
-			await axios.put(`/api/accounts/${account.id}`, {
+			await api.put(`/api/accounts/${account.id}`, {
 				...data,
 				amount: Number(data.amount),
 			});
 
 			queryClient.invalidateQueries({ queryKey: ['accounts'] });
+			queryClient.invalidateQueries({ queryKey: ['balance'] });
 
 			toast.success('Счёт успешно обновлён!', toastOptions);
 			onClose();

@@ -11,29 +11,30 @@ export async function GET() {
 		const token = cookieStore.get('authToken')?.value;
 
 		if (!token) {
-			throw new Error('Не авторизован');
+			return NextResponse.json({ message: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ message: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const categories = await prisma.category.findMany({
 			where: { userId },
-			include: {
-				subcategories: true,
-			},
-			orderBy: {
-				order: 'asc',
-			},
+			include: { subcategories: true },
+			orderBy: { order: 'asc' },
 		});
 
 		return NextResponse.json(categories);
 	} catch (error) {
 		console.error('Ошибка при получении категорий:', error);
-		return NextResponse.json(
-			{ message: 'Ошибка при получении категорий' },
-			{ status: 500 }
-		);
+		return NextResponse.json({ message: 'Ошибка сервера' }, { status: 500 });
 	}
 }
 
@@ -46,8 +47,16 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ message: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ message: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const body = await req.json();
 		const { name, type, icon, color, subcategories } = body;
@@ -79,9 +88,7 @@ export async function POST(req: NextRequest) {
 				userId,
 				subcategories: subcategories?.length
 					? {
-							create: subcategories.map((sub: string) => ({
-								name: sub,
-							})),
+							create: subcategories.map((sub: string) => ({ name: sub })),
 					  }
 					: undefined,
 			},
@@ -91,9 +98,6 @@ export async function POST(req: NextRequest) {
 		return NextResponse.json(newCategory, { status: 201 });
 	} catch (error) {
 		console.error('Ошибка при создании категории:', error);
-		return NextResponse.json(
-			{ message: 'Ошибка при создании категории' },
-			{ status: 500 }
-		);
+		return NextResponse.json({ message: 'Ошибка сервера' }, { status: 500 });
 	}
 }

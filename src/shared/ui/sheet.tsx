@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
 interface Props {
 	children?: React.ReactNode;
@@ -12,9 +13,16 @@ interface Props {
 }
 
 export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
+	const [mounted, setMounted] = useState(false);
 	const keydownListenerRef = useRef<(() => void) | null>(null);
 
 	useEffect(() => {
+		setMounted(true);
+	}, []);
+
+	useEffect(() => {
+		if (!mounted) return;
+
 		if (isOpen) {
 			document.body.style.overflow = 'hidden';
 
@@ -35,14 +43,11 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				}
 			};
 		}
-	}, [isOpen, onClose]);
+	}, [mounted, isOpen, onClose]);
 
-	useEffect(() => {
-		if (!isOpen) {
-		}
-	}, [isOpen]);
+	if (!mounted) return null;
 
-	return (
+	return createPortal(
 		<AnimatePresence
 			onExitComplete={() => {
 				document.body.style.overflow = '';
@@ -79,6 +84,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					</motion.div>
 				</motion.div>
 			)}
-		</AnimatePresence>
+		</AnimatePresence>,
+		document.body
 	);
 };

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -11,7 +10,7 @@ import { TransactionParams } from './transaction-params';
 import { TransactionSum } from './transaction-sum';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
 
-import { toastOptions } from '@/src/shared/lib';
+import { api, toastOptions } from '@/src/shared/lib';
 import { EditTransactionModal } from '../../edit-transaction-modal';
 
 interface Props {
@@ -40,7 +39,7 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 	const handleDelete = async () => {
 		setIsLoading(true);
 		try {
-			await axios.delete(`/api/transactions/${transaction.id}`);
+			await api.delete(`/api/transactions/${transaction.id}`);
 			queryClient.invalidateQueries({ queryKey: ['transactions'] });
 			setIsConfirmDeleteDialogOpen(false);
 			toast.success('Транзакция успешно удалена!', toastOptions);

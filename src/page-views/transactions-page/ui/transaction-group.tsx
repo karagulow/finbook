@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import autoAnimate from '@formkit/auto-animate';
 
 import { TransactionItem } from './transaction-item';
 import { TransferItem } from './transfer-item';
@@ -18,6 +19,14 @@ interface Props {
 }
 
 export const TransactionGroup: React.FC<Props> = ({ data }) => {
+	const listRef = useRef<HTMLUListElement>(null);
+
+	useEffect(() => {
+		if (listRef.current) {
+			autoAnimate(listRef.current, { duration: 200, easing: 'ease-in-out' });
+		}
+	}, []);
+
 	return (
 		<div className='flex flex-col gap-0.5'>
 			<div className='flex flex-col gap-2.5 items-start sm:flex-row sm:justify-between sm:items-center p-[0_10px_10px] border-b-[0.5px] border-[var(--divider)] font-medium text-[13px]'>
@@ -53,7 +62,7 @@ export const TransactionGroup: React.FC<Props> = ({ data }) => {
 				</div> */}
 			</div>
 
-			<ul className='flex flex-col'>
+			<ul ref={listRef} className='flex flex-col'>
 				{data.transactions.map(tx =>
 					tx.type === 'TRANSFER' ? (
 						<TransferItem key={tx.id} transfer={tx as TransferTransaction} />

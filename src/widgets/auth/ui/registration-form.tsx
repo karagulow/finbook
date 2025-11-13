@@ -10,7 +10,7 @@ import axios from 'axios';
 
 import { Currency, RegistrationFormData } from '../model/types';
 import { registrationValidation } from '../model/validations';
-import { toastOptions } from '@/src/shared/lib';
+import { api, toastOptions } from '@/src/shared/lib';
 import { Button, Input, Select } from '@/src/shared/ui';
 import { useAuthStore } from '@/src/shared/store/authStore';
 
@@ -31,9 +31,7 @@ export const RegistrationForm: React.FC = () => {
 	const [currencies, setCurrencies] = useState<Currency[]>([]);
 
 	useEffect(() => {
-		axios
-			.get<Currency[]>('/api/currencies')
-			.then(res => setCurrencies(res.data));
+		api.get<Currency[]>('/api/currencies').then(res => setCurrencies(res.data));
 	}, []);
 
 	const onSubmit = async (data: RegistrationFormData) => {
@@ -45,7 +43,7 @@ export const RegistrationForm: React.FC = () => {
 
 		setLoading(true);
 		try {
-			const response = await axios.post('/api/auth/registration', {
+			const response = await api.post('/api/auth/registration', {
 				email: data.email,
 				password: data.password,
 				currencyId: data.currencyId,

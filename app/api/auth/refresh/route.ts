@@ -33,10 +33,10 @@ export async function POST(req: Request) {
 			email: string;
 		};
 
-		const user = await prisma.user.findUnique({
-			where: { id: payload.userId },
+		const existing = await prisma.refreshToken.findFirst({
+			where: { token: refreshToken, userId: payload.userId },
 		});
-		if (!user || user.refreshToken !== refreshToken) {
+		if (!existing) {
 			return NextResponse.json(
 				{ message: 'Недействительный refresh токен' },
 				{ status: 401 }
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
 		}
 
 		const newAccessToken = jwt.sign(
-			{ userId: user.id, email: user.email },
+			{ userId: payload.userId, email: payload.email },
 			JWT_SECRET,
 			{ expiresIn: '15m' }
 		);

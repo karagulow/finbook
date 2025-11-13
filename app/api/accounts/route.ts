@@ -11,12 +11,22 @@ export async function GET() {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
 
+		// Если токена нет — 401
 		if (!token) {
-			throw new Error('Не авторизован');
+			return NextResponse.json({ message: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			// Если токен недействителен или истёк — тоже 401
+			return NextResponse.json(
+				{ message: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const accounts = await prisma.account.findMany({
 			where: { userId },
@@ -26,10 +36,7 @@ export async function GET() {
 		return NextResponse.json(accounts);
 	} catch (error) {
 		console.error(error);
-		return NextResponse.json(
-			{ message: 'Ошибка при получении счетов' },
-			{ status: 500 }
-		);
+		return NextResponse.json({ message: 'Ошибка сервера' }, { status: 500 });
 	}
 }
 
@@ -39,11 +46,19 @@ export async function POST(req: Request) {
 		const token = cookieStore.get('authToken')?.value;
 
 		if (!token) {
-			throw new Error('Не авторизован');
+			return NextResponse.json({ message: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ message: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const body = await req.json();
 		const { name, amount, currencyId } = body;
@@ -62,9 +77,6 @@ export async function POST(req: Request) {
 		return NextResponse.json(account);
 	} catch (error) {
 		console.error(error);
-		return NextResponse.json(
-			{ error: 'Failed to create account' },
-			{ status: 500 }
-		);
+		return NextResponse.json({ message: 'Ошибка сервера' }, { status: 500 });
 	}
 }

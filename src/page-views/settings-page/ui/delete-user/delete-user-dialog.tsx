@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import axios from 'axios';
+import { api } from '@/src/shared/lib';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
@@ -26,7 +26,7 @@ export const DeleteUserDialog: React.FC<Props> = ({
 	const handleDelete = async () => {
 		try {
 			setIsLoading(true);
-			await axios.delete('/api/user');
+			await api.delete('/api/user');
 			toast.success('Аккаунт успешно удалён');
 			onClose();
 

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import axios from 'axios';
+import { api } from '@/src/shared/lib';
 import toast from 'react-hot-toast';
 
 import { Button, Input } from '@/src/shared/ui';
@@ -54,7 +55,7 @@ export const ChangePasswordContent: React.FC<Props> = ({ onClose }) => {
 	const onSubmit = async (data: FormValues) => {
 		try {
 			setLoading(true);
-			await axios.post('/api/user/change-password', {
+			await api.post('/api/user/change-password', {
 				currentPassword: data.currentPassword,
 				newPassword: data.newPassword,
 			});
