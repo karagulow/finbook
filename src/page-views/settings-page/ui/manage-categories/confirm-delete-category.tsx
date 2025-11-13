@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { Button, Dialog } from '@/src/shared/ui';
-import { toastOptions } from '@/src/shared/lib';
+import { toastOptions, api } from '@/src/shared/lib';
 
 interface Props {
 	isOpen: boolean;
@@ -27,7 +26,7 @@ export const ConfirmDeleteCategory: React.FC<Props> = ({
 	const handleDelete = async () => {
 		try {
 			setLoading(true);
-			await axios.delete(`/api/categories/${category.id}`);
+			await api.delete(`/api/categories/${category.id}`);
 			queryClient.invalidateQueries({ queryKey: ['categories'] });
 
 			toast.success('Категория успешно удалена!', toastOptions);

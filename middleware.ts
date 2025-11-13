@@ -52,17 +52,22 @@ export async function middleware(request: NextRequest) {
 				};
 				const user = await prisma.user.findUnique({
 					where: { id: payload.userId },
+					include: { refreshTokens: true },
 				});
-				if (!user || user.refreshToken !== refreshToken)
-					throw new Error('Invalid refresh token');
+				if (!user) throw new Error('No user');
+
+				const isValid = user.refreshTokens.some(
+					rt => rt.token === refreshToken
+				);
+				if (!isValid) throw new Error('Invalid refresh token');
 
 				const newAccessToken = sign(
 					{ userId: user.id, email: user.email },
 					JWT_SECRET,
 					{ expiresIn: '15m' }
 				);
-				const redirectUrl = request.nextUrl.clone();
-				const response = NextResponse.redirect(redirectUrl);
+
+				const response = NextResponse.next();
 				response.cookies.set('authToken', newAccessToken, {
 					httpOnly: true,
 					secure: process.env.NODE_ENV === 'production',

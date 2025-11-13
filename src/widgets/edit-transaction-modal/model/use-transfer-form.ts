@@ -7,7 +7,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { toastOptions } from '@/src/shared/lib';
+import { api, toastOptions } from '@/src/shared/lib';
 import { TransferFormData, transferValidation } from './validations';
 import { Account, Currency, Transaction } from './types';
 
@@ -42,8 +42,8 @@ export const useTransferForm = (
 	const accountIdTo = watch('accountIdTo');
 
 	useEffect(() => {
-		axios.get('/api/accounts').then(res => setAccounts(res.data));
-		axios.get('/api/currencies').then(res => setCurrencies(res.data));
+		api.get('/api/accounts').then(res => setAccounts(res.data));
+		api.get('/api/currencies').then(res => setCurrencies(res.data));
 	}, []);
 
 	useEffect(() => {
@@ -52,7 +52,7 @@ export const useTransferForm = (
 			const accTo = accounts.find(a => a.id === accountIdTo);
 
 			if (accFrom && accTo && accFrom.currencyId !== accTo.currencyId) {
-				axios
+				api
 					.get(
 						`/api/exchange-rate?from=${accFrom.currencyId}&to=${accTo.currencyId}`
 					)
@@ -80,7 +80,7 @@ export const useTransferForm = (
 
 		setLoading(true);
 		try {
-			await axios.put(`/api/transfers/${transaction.id}`, data);
+			await api.put(`/api/transfers/${transaction.id}`, data);
 			queryClient.invalidateQueries({ queryKey: ['transactions'] });
 			toast.success('Перевод успешно обновлён!', toastOptions);
 			onClose();

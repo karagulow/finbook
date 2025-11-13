@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSortable } from '@dnd-kit/sortable';
@@ -10,7 +9,7 @@ import { ConfirmDeleteDialog } from './confirm-delete-dialog';
 import { EditAccountModal } from '../../edit-account-modal';
 
 import { Account } from '../model/types';
-import { toastOptions } from '@/src/shared/lib';
+import { toastOptions, api } from '@/src/shared/lib';
 import { GripVertical } from 'lucide-react';
 
 interface Props {
@@ -29,7 +28,7 @@ export const AccountItem: React.FC<Props> = ({ id, account }) => {
 	const handleDelete = async () => {
 		setIsLoading(true);
 		try {
-			await axios.delete(`/api/accounts/${account.id}`);
+			await api.delete(`/api/accounts/${account.id}`);
 			queryClient.invalidateQueries({ queryKey: ['accounts'] });
 			queryClient.invalidateQueries({ queryKey: ['balance'] });
 			setIsConfirmDeleteDialogOpen(false);

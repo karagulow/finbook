@@ -14,7 +14,7 @@ import {
 	TransactionFormData,
 } from '../model/types';
 import { transactionValidation } from '../model/validations';
-import { toastOptions } from '@/src/shared/lib';
+import { toastOptions, api } from '@/src/shared/lib';
 
 export const useTransactionForm = (
 	type: 'INCOME' | 'EXPENSE',
@@ -48,8 +48,8 @@ export const useTransactionForm = (
 		const fetchData = async () => {
 			try {
 				const [accountsRes, categoriesRes] = await Promise.all([
-					axios.get('/api/accounts'),
-					axios.get('/api/categories'),
+					api.get('/api/accounts'),
+					api.get('/api/categories'),
 				]);
 				setAccounts(accountsRes.data);
 				setCategories(categoriesRes.data);
@@ -73,7 +73,7 @@ export const useTransactionForm = (
 
 		setLoading(true);
 		try {
-			await axios.post('/api/transactions', { ...data, type });
+			await api.post('/api/transactions', { ...data, type });
 			queryClient.invalidateQueries({ queryKey: ['transactions'] });
 			queryClient.invalidateQueries({ queryKey: ['accounts'] });
 			queryClient.invalidateQueries({ queryKey: ['balance'] });

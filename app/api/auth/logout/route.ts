@@ -12,10 +12,7 @@ export async function POST(req: Request) {
 			?.split('=')[1];
 
 		if (refreshToken) {
-			await prisma.user.updateMany({
-				where: { refreshToken },
-				data: { refreshToken: null },
-			});
+			await prisma.refreshToken.deleteMany({ where: { token: refreshToken } });
 		}
 
 		return NextResponse.json(

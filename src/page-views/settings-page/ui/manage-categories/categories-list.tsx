@@ -14,13 +14,12 @@ import {
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import autoAnimate from '@formkit/auto-animate';
 
 import { CategoryItem } from './category-item';
 import { CategoryItemSkeleton } from './category-item-skeleton';
 import { Category } from '../../model/use-categories';
-import { toastOptions } from '@/src/shared/lib';
+import { toastOptions, api } from '@/src/shared/lib';
 
 interface Props {
 	loading: boolean;
@@ -42,7 +41,7 @@ export const CategoriesList: React.FC<Props> = ({ loading, categories }) => {
 
 	const reorderMutation = useMutation({
 		mutationFn: async (newItems: Category[]) => {
-			await axios.patch('/api/categories/reorder', {
+			await api.patch('/api/categories/reorder', {
 				orderedIds: newItems.map(i => i.id),
 			});
 		},

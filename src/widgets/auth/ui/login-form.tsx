@@ -10,7 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import { LoginFormData } from '../model/types';
 import { loginValidation } from '../model/validations';
-import { toastOptions } from '@/src/shared/lib';
+import { toastOptions, api } from '@/src/shared/lib';
 import { Button, Input } from '@/src/shared/ui';
 import { useAuthStore } from '@/src/shared/store/authStore';
 
@@ -36,7 +36,7 @@ export const LoginForm: React.FC = () => {
 
 		setLoading(true);
 		try {
-			const response = await axios.post('/api/auth/login', data);
+			const response = await api.post('/api/auth/login', data);
 			setAuth(response.data.token, { email: data.email });
 			toast.success('Успешный вход!', toastOptions);
 			setTimeout(() => router.push('/'), 1000);

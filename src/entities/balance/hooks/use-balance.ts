@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { api } from '@/src/shared/lib';
 
 interface BalanceResponse {
 	total: number;
@@ -12,12 +13,8 @@ export const useBalance = () => {
 	const { data, isLoading, isFetching } = useQuery<BalanceResponse>({
 		queryKey: ['balance'],
 		queryFn: async () => {
-			const res = await fetch('/api/balance', {
-				method: 'GET',
-				credentials: 'include',
-			});
-			if (!res.ok) throw new Error('Ошибка при получении баланса');
-			return res.json();
+			const res = await api.get('/api/balance');
+			return res.data;
 		},
 		refetchOnWindowFocus: false,
 	});

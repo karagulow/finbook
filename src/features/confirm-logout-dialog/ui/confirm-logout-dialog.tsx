@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
 import { Dialog } from '@/src/shared/ui/dialog';
 import { Button } from '@/src/shared/ui/button';
 
-import { toastOptions } from '@/src/shared/lib';
+import { toastOptions, api } from '@/src/shared/lib';
 import { useAuthStore } from '@/src/shared/store/authStore';
 
 interface Props {
@@ -24,7 +23,7 @@ export const ConfirmLogoutDialog: React.FC<Props> = ({ isOpen, onClose }) => {
 	const handleLogout = async () => {
 		setIsLoading(true);
 		try {
-			await axios.post('/api/auth/logout');
+			await api.post('/api/auth/logout');
 			logout();
 			router.replace('/login');
 		} catch (error) {

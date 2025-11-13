@@ -6,9 +6,10 @@ import { baseCategories } from '@/constants/base-categories';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 export async function POST(req: Request) {
-	if (!JWT_SECRET) {
+	if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
 		return NextResponse.json(
 			{ message: 'Произошла внутренняя ошибка сервера. Попробуйте позже.' },
 			{ status: 500 }
@@ -78,18 +79,21 @@ export async function POST(req: Request) {
 		});
 
 		const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
-			expiresIn: '1h',
+			expiresIn: '15m',
 		});
 
 		const refreshToken = jwt.sign(
 			{ userId: user.id, email: user.email },
-			JWT_SECRET,
+			JWT_REFRESH_SECRET,
 			{ expiresIn: '7d' }
 		);
 
-		await prisma.user.update({
-			where: { id: user.id },
-			data: { refreshToken },
+		await prisma.refreshToken.create({
+			data: {
+				token: refreshToken,
+				userId: user.id,
+				expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+			},
 		});
 
 		return NextResponse.json(
@@ -98,7 +102,7 @@ export async function POST(req: Request) {
 				status: 201,
 				headers: {
 					'Set-Cookie': [
-						`authToken=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=3600`,
+						`authToken=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=900`,
 						`refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${
 							7 * 24 * 60 * 60
 						}`,

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { api } from '@/src/shared/lib';
 
 import type { User } from './types';
 
@@ -15,7 +16,7 @@ export function useUser() {
 
 		const fetchUser = async () => {
 			try {
-				const { data } = await axios.get<User>('/api/user');
+				const { data } = await api.get<User>('/api/user');
 				if (isMounted) setUser(data);
 			} catch (err: unknown) {
 				if (isMounted) {

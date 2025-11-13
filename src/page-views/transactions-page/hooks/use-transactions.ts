@@ -2,6 +2,7 @@
 
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 import { DayGroup, Transaction } from '../model/types';
+import { api } from '@/src/shared/lib';
 
 interface ApiResponse {
 	items: Transaction[];
@@ -49,14 +50,11 @@ export function useTransactions(limit = 25) {
 			params.set('limit', String(limit));
 			if (pageParam) params.set('cursor', String(pageParam));
 
-			const res = await fetch(`/api/transactions?${params.toString()}`);
-			if (!res.ok) throw new Error('Ошибка загрузки транзакций');
-
-			const data: ApiResponse = await res.json();
-			const dayGroups = groupTransactionsByDay(data.items);
+			const res = await api.get(`/api/transactions?${params.toString()}`);
+			const data: ApiResponse = res.data;
 
 			return {
-				groups: dayGroups,
+				groups: groupTransactionsByDay(data.items),
 				nextCursor: data.nextCursor,
 			};
 		},

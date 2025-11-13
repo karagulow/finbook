@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { api } from '@/src/shared/lib';
 import toast from 'react-hot-toast';
 
 import { Button, Select } from '@/src/shared/ui';
@@ -27,7 +28,7 @@ export const ChangeCurrencyContent: React.FC<Props> = ({
 	useEffect(() => {
 		const fetchCurrencies = async () => {
 			try {
-				const { data } = await axios.get<Currency[]>('/api/currencies');
+				const { data } = await api.get<Currency[]>('/api/currencies');
 				setCurrencies(data);
 			} catch (error) {
 				console.error(error);
@@ -48,7 +49,7 @@ export const ChangeCurrencyContent: React.FC<Props> = ({
 
 		try {
 			setLoading(true);
-			await axios.post('/api/user/change-currency', {
+			await api.post('/api/user/change-currency', {
 				currencyId: selectedCurrencyId,
 			});
 			toast.success('Валюта успешно изменена');

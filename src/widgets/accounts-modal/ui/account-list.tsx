@@ -15,12 +15,11 @@ import {
 	SortableContext,
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import axios from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AccountItem } from './account-item';
 import { Account } from '../model/types';
 import toast from 'react-hot-toast';
-import { toastOptions } from '@/src/shared/lib';
+import { toastOptions, api } from '@/src/shared/lib';
 
 interface Props {
 	accounts: Account[];
@@ -35,7 +34,7 @@ export const AccountList: React.FC<Props> = ({ accounts }) => {
 
 	const reorderMutation = useMutation({
 		mutationFn: async (newItems: Account[]) => {
-			await axios.patch('/api/accounts/reorder', {
+			await api.patch('/api/accounts/reorder', {
 				orderedIds: newItems.map(i => i.id),
 			});
 		},
