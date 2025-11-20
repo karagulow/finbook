@@ -85,14 +85,14 @@ export async function POST(req: Request) {
 		const refreshToken = jwt.sign(
 			{ userId: user.id, email: user.email },
 			JWT_REFRESH_SECRET,
-			{ expiresIn: '7d' }
+			{ expiresIn: '30d' }
 		);
 
 		await prisma.refreshToken.create({
 			data: {
 				token: refreshToken,
 				userId: user.id,
-				expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+				expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 			},
 		});
 
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
 					'Set-Cookie': [
 						`authToken=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=900`,
 						`refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${
-							7 * 24 * 60 * 60
+							30 * 24 * 60 * 60
 						}`,
 					].join('; '),
 				},

@@ -1,87 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verify, sign } from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import { verify } from 'jsonwebtoken';
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || '';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || '';
+const JWT_SECRET = process.env.JWT_SECRET!;
+
+const GUEST_PATHS = ['/login', '/registration'] as const;
+const PROTECTED_PATHS = [
+	'/',
+	'/transactions',
+	'/analytics',
+	'/goals',
+	'/debts',
+	'/settings',
+	'/more',
+] as const;
 
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
-	const token = request.cookies.get('authToken')?.value;
+	const accessToken = request.cookies.get('authToken')?.value;
 	const refreshToken = request.cookies.get('refreshToken')?.value;
 
-	const guestPaths = ['/login', '/registration'];
-	const protectedPaths = [
-		'/',
-		'/transactions',
-		'/analytics',
-		'/goals',
-		'/debts',
-		'/settings',
-		'/more',
-	];
-
-	// Гостевые страницы
-	if (guestPaths.includes(pathname)) {
-		if (token) {
-			try {
-				verify(token, JWT_SECRET);
-				return NextResponse.redirect(new URL('/', request.url));
-			} catch {}
+	// 1. Гостевые страницы — если уже залогинен → домой
+	if (GUEST_PATHS.includes(pathname as any)) {
+		if (accessToken || refreshToken) {
+			return NextResponse.redirect(new URL('/', request.url));
 		}
+
 		return NextResponse.next();
 	}
 
-	// Защищенные страницы
-	if (protectedPaths.includes(pathname)) {
-		if (token) {
-			try {
-				verify(token, JWT_SECRET);
+	// 2. Защищённые страницы
+	const isProtected = PROTECTED_PATHS.some(path => pathname.startsWith(path));
+
+	if (isProtected) {
+		if (!accessToken) {
+			if (refreshToken) {
 				return NextResponse.next();
-			} catch {
-				// токен истек — будем пробовать refresh
 			}
+
+			return NextResponse.redirect(new URL('/login', request.url));
 		}
 
-		if (refreshToken) {
-			try {
-				const payload = verify(refreshToken, JWT_REFRESH_SECRET) as {
-					userId: string;
-					email: string;
-				};
-				const user = await prisma.user.findUnique({
-					where: { id: payload.userId },
-					include: { refreshTokens: true },
-				});
-				if (!user) throw new Error('No user');
-
-				const isValid = user.refreshTokens.some(
-					rt => rt.token === refreshToken
-				);
-				if (!isValid) throw new Error('Invalid refresh token');
-
-				const newAccessToken = sign(
-					{ userId: user.id, email: user.email },
-					JWT_SECRET,
-					{ expiresIn: '15m' }
-				);
-
-				const response = NextResponse.next();
-				response.cookies.set('authToken', newAccessToken, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === 'production',
-					sameSite: 'strict',
-					path: '/',
-					maxAge: 900,
-				});
-				return response;
-			} catch {
-				return NextResponse.redirect(new URL('/login', request.url));
-			}
+		try {
+			verify(accessToken, JWT_SECRET);
+			return NextResponse.next();
+		} catch {
+			return NextResponse.next();
 		}
-
-		return NextResponse.redirect(new URL('/login', request.url));
 	}
 
 	return NextResponse.next();
