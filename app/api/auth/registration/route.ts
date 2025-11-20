@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient, CategoryType } from '@prisma/client';
 import { baseCategories } from '@/constants/base-categories';
+import { UAParser } from 'ua-parser-js';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -18,6 +19,13 @@ export async function POST(req: Request) {
 
 	try {
 		const { email, password, currencyId } = await req.json();
+
+		const userAgent = req.headers.get('user-agent') ?? '';
+		const parser = new UAParser(userAgent);
+		const uaResult = parser.getResult();
+		const deviceInfo = `${uaResult.browser.name} on ${uaResult.os.name} ${
+			uaResult.os.version ?? ''
+		}`.trim();
 
 		if (await prisma.user.findUnique({ where: { email } })) {
 			return NextResponse.json(
@@ -93,6 +101,7 @@ export async function POST(req: Request) {
 				token: refreshToken,
 				userId: user.id,
 				expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+				deviceInfo,
 			},
 		});
 
