@@ -90,14 +90,17 @@ export async function POST(req: Request) {
 			expiresIn: '15m',
 		});
 
+		const jti = crypto.randomUUID();
+
 		const refreshToken = jwt.sign(
-			{ userId: user.id, email: user.email },
+			{ userId: user.id, email: user.email, jti },
 			JWT_REFRESH_SECRET,
 			{ expiresIn: '30d' }
 		);
 
 		await prisma.refreshToken.create({
 			data: {
+				id: jti,
 				token: refreshToken,
 				userId: user.id,
 				expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),

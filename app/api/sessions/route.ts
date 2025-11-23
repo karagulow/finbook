@@ -1,0 +1,98 @@
+import { NextResponse, NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
+import { prisma } from '@/prisma/prisma-client';
+import { verify } from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
+
+export async function GET(req: NextRequest) {
+	try {
+		const cookieStore = await cookies();
+		const token = cookieStore.get('authToken')?.value;
+		const refreshToken = cookieStore.get('refreshToken')?.value;
+
+		if (!token) {
+			return NextResponse.json({ message: 'Не авторизован' }, { status: 401 });
+		}
+
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ message: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
+
+		let currentId: string | null = null;
+
+		if (refreshToken) {
+			const payload = verify(refreshToken, JWT_REFRESH_SECRET) as any;
+			currentId = payload.jti;
+		}
+
+		const sessions = await prisma.refreshToken.findMany({
+			where: { userId },
+			orderBy: { createdAt: 'desc' },
+		});
+
+		return NextResponse.json(
+			sessions
+				.map(s => ({
+					id: s.id,
+					deviceInfo: s.deviceInfo,
+					createdAt: s.createdAt,
+					expiresAt: s.expiresAt,
+					isCurrent: s.id === currentId,
+				}))
+				.sort(s => (s.isCurrent ? -1 : 1))
+		);
+	} catch (error) {
+		console.error('Ошибка при получении сессий:', error);
+		return NextResponse.json({ message: 'Ошибка сервера' }, { status: 500 });
+	}
+}
+
+export async function DELETE(req: NextRequest) {
+	try {
+		const cookieStore = await cookies();
+		const token = cookieStore.get('authToken')?.value;
+		const refreshToken = cookieStore.get('refreshToken')?.value;
+
+		if (!token) {
+			return NextResponse.json({ message: 'Не авторизован' }, { status: 401 });
+		}
+
+		let userId: string;
+		try {
+			userId = (verify(token, JWT_SECRET) as any).userId;
+		} catch {
+			return NextResponse.json(
+				{ message: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
+
+		let currentId: string | null = null;
+		if (refreshToken) {
+			const payload = verify(refreshToken, JWT_REFRESH_SECRET) as any;
+			currentId = payload.jti;
+		}
+
+		await prisma.refreshToken.deleteMany({
+			where: {
+				userId,
+				NOT: { id: currentId ?? '' },
+			},
+		});
+
+		return NextResponse.json({
+			message: 'Все остальные сессии завершены',
+		});
+	} catch (e) {
+		return NextResponse.json({ message: 'Ошибка сервера' }, { status: 500 });
+	}
+}
