@@ -46,8 +46,10 @@ export async function GET(req: NextRequest) {
 					deviceInfo: s.deviceInfo,
 					createdAt: s.createdAt,
 					expiresAt: s.expiresAt,
+					revoked: s.revoked,
 					isCurrent: s.id === currentId,
 				}))
+				.filter(s => !s.revoked)
 				.sort(s => (s.isCurrent ? -1 : 1))
 		);
 	} catch (error) {
@@ -56,7 +58,7 @@ export async function GET(req: NextRequest) {
 	}
 }
 
-export async function DELETE(req: NextRequest) {
+export async function POST(req: NextRequest) {
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -82,11 +84,13 @@ export async function DELETE(req: NextRequest) {
 			currentId = payload.jti;
 		}
 
-		await prisma.refreshToken.deleteMany({
+		await prisma.refreshToken.updateMany({
 			where: {
 				userId,
+				revoked: false,
 				NOT: { id: currentId ?? '' },
 			},
+			data: { revoked: true },
 		});
 
 		return NextResponse.json({

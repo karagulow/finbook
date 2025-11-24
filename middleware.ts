@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verify } from 'jsonwebtoken';
+import { prisma } from './prisma/prisma-client';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -19,32 +20,66 @@ export async function middleware(request: NextRequest) {
 	const accessToken = request.cookies.get('authToken')?.value;
 	const refreshToken = request.cookies.get('refreshToken')?.value;
 
-	// 1. Гостевые страницы — если уже залогинен → домой
+	let session = null;
+	if (refreshToken) {
+		session = await prisma.refreshToken.findUnique({
+			where: { token: refreshToken },
+		});
+	}
+
+	const refreshInvalid =
+		!refreshToken ||
+		!session ||
+		session.revoked ||
+		session.expiresAt < new Date();
+
+	// ---------- ГОСТЕВЫЕ ----------
 	if (GUEST_PATHS.includes(pathname as any)) {
-		if (accessToken || refreshToken) {
+		if (accessToken && !refreshInvalid) {
 			return NextResponse.redirect(new URL('/', request.url));
+		}
+
+		if (refreshToken && refreshInvalid) {
+			const res = NextResponse.next();
+			res.cookies.delete('authToken');
+			res.cookies.delete('refreshToken');
+			return res;
 		}
 
 		return NextResponse.next();
 	}
 
-	// 2. Защищённые страницы
+	// ---------- ЗАЩИЩЁННЫЕ ----------
 	const isProtected = PROTECTED_PATHS.some(path => pathname.startsWith(path));
 
 	if (isProtected) {
-		if (!accessToken) {
-			if (refreshToken) {
-				return NextResponse.next();
-			}
-
+		if (!accessToken && refreshInvalid) {
 			return NextResponse.redirect(new URL('/login', request.url));
 		}
 
+		if (!accessToken && !refreshInvalid) {
+			return NextResponse.next();
+		}
+
 		try {
-			verify(accessToken, JWT_SECRET);
+			if (refreshInvalid) {
+				const res = NextResponse.redirect(new URL('/login', request.url));
+				res.cookies.delete('authToken');
+				res.cookies.delete('refreshToken');
+				return res;
+			}
+
+			verify(accessToken!, JWT_SECRET);
 			return NextResponse.next();
 		} catch {
-			return NextResponse.next();
+			if (!refreshInvalid) {
+				return NextResponse.next();
+			}
+
+			const res = NextResponse.redirect(new URL('/login', request.url));
+			res.cookies.delete('authToken');
+			res.cookies.delete('refreshToken');
+			return res;
 		}
 	}
 

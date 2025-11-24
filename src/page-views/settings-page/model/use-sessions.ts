@@ -24,7 +24,7 @@ export function useSessions() {
 
 	const deleteSession = useMutation({
 		mutationFn: async (id: string) => {
-			return api.delete(`/api/sessions/${id}`);
+			return api.post(`/api/sessions/${id}`);
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['sessions'] });
@@ -33,7 +33,7 @@ export function useSessions() {
 
 	const deleteOtherSessions = useMutation({
 		mutationFn: async () => {
-			return api.delete('/api/sessions');
+			return api.post('/api/sessions');
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['sessions'] });

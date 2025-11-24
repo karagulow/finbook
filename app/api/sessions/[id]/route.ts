@@ -6,7 +6,7 @@ import { verify } from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
 
-export async function DELETE(
+export async function POST(
 	req: NextRequest,
 	{ params }: { params: { id: string } }
 ) {
@@ -32,8 +32,12 @@ export async function DELETE(
 
 	let currentId: string | null = null;
 	if (refreshToken) {
-		const payload = verify(refreshToken, JWT_REFRESH_SECRET) as any;
-		currentId = payload.jti;
+		try {
+			const payload = verify(refreshToken, JWT_REFRESH_SECRET) as any;
+			currentId = payload.jti;
+		} catch {
+			currentId = null;
+		}
 	}
 
 	if (sessionId === currentId) {
@@ -51,8 +55,9 @@ export async function DELETE(
 		return NextResponse.json({ message: 'Сессия не найдена' }, { status: 404 });
 	}
 
-	await prisma.refreshToken.delete({
+	await prisma.refreshToken.update({
 		where: { id: sessionId },
+		data: { revoked: true },
 	});
 
 	return NextResponse.json({ message: 'Сессия удалена' });
