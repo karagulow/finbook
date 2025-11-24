@@ -9,6 +9,7 @@ import { toastOptions, api } from '@/src/shared/lib';
 import { Currency, FormValues } from '../model/types';
 
 export const useCreateAccountForm = (onClose: () => void) => {
+	const [isLoading, setIsLoading] = useState(false);
 	const [currencies, setCurrencies] = useState<Currency[]>([]);
 	const queryClient = useQueryClient();
 
@@ -16,7 +17,7 @@ export const useCreateAccountForm = (onClose: () => void) => {
 		register,
 		handleSubmit,
 		control,
-		formState: { errors, isLoading },
+		formState: { errors },
 	} = useForm<FormValues>();
 
 	useEffect(() => {
@@ -27,6 +28,7 @@ export const useCreateAccountForm = (onClose: () => void) => {
 	}, []);
 
 	const onSubmit = async (data: FormValues) => {
+		setIsLoading(true);
 		try {
 			await api.post('/api/accounts', {
 				...data,
@@ -41,6 +43,8 @@ export const useCreateAccountForm = (onClose: () => void) => {
 		} catch (error) {
 			console.error('Ошибка при создании счёта:', error);
 			toast.error('Ошибка при создании счёта', toastOptions);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 

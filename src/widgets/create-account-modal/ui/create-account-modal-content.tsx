@@ -64,7 +64,7 @@ export const CreateAccountModalContent: React.FC<
 				/>
 			</div>
 
-			<Button className='mt-5 shrink-0' type='submit'>
+			<Button className='mt-5 shrink-0' type='submit' disabled={isLoading}>
 				{isLoading ? 'Создание...' : 'Создать'}
 			</Button>
 		</form>

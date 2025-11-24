@@ -16,6 +16,7 @@ export const useEditAccountForm = (
 	onClose: () => void,
 	account: EditAccountModalContentProps['account']
 ) => {
+	const [isLoading, setIsLoading] = useState(false);
 	const [currencies, setCurrencies] = useState<Currency[]>([]);
 	const queryClient = useQueryClient();
 
@@ -23,7 +24,7 @@ export const useEditAccountForm = (
 		register,
 		handleSubmit,
 		control,
-		formState: { errors, isLoading },
+		formState: { errors },
 	} = useForm<FormValues>({
 		defaultValues: {
 			name: account.name,
@@ -40,6 +41,7 @@ export const useEditAccountForm = (
 	}, []);
 
 	const onSubmit = async (data: FormValues) => {
+		setIsLoading(true);
 		try {
 			await api.put(`/api/accounts/${account.id}`, {
 				...data,
@@ -54,6 +56,8 @@ export const useEditAccountForm = (
 		} catch (error) {
 			console.error('Ошибка при обновлении счёта:', error);
 			toast.error('Ошибка при обновлении счёта', toastOptions);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
