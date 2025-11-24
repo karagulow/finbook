@@ -51,9 +51,14 @@ export const TransactionList: React.FC = () => {
 					Транзакции не найдены.
 				</div>
 			) : (
-				allGroups.map(group => (
-					<TransactionGroup key={group.date} data={group} />
-				))
+				data?.pages.map((page, pageIndex) =>
+					page.groups.map((group, groupIndex) => (
+						<TransactionGroup
+							key={`${group.date}-${pageIndex}-${groupIndex}`}
+							data={group}
+						/>
+					))
+				)
 			)}
 
 			{hasNextPage && (

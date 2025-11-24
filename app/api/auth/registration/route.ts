@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient, CategoryType } from '@prisma/client';
 import { baseCategories } from '@/constants/base-categories';
+import { UAParser } from 'ua-parser-js';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -18,6 +19,13 @@ export async function POST(req: Request) {
 
 	try {
 		const { email, password, currencyId } = await req.json();
+
+		const userAgent = req.headers.get('user-agent') ?? '';
+		const parser = new UAParser(userAgent);
+		const uaResult = parser.getResult();
+		const deviceInfo = `${uaResult.browser.name} on ${uaResult.os.name} ${
+			uaResult.os.version ?? ''
+		}`.trim();
 
 		if (await prisma.user.findUnique({ where: { email } })) {
 			return NextResponse.json(
@@ -82,17 +90,21 @@ export async function POST(req: Request) {
 			expiresIn: '15m',
 		});
 
+		const jti = crypto.randomUUID();
+
 		const refreshToken = jwt.sign(
-			{ userId: user.id, email: user.email },
+			{ userId: user.id, email: user.email, jti },
 			JWT_REFRESH_SECRET,
-			{ expiresIn: '7d' }
+			{ expiresIn: '30d' }
 		);
 
 		await prisma.refreshToken.create({
 			data: {
+				id: jti,
 				token: refreshToken,
 				userId: user.id,
-				expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+				expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+				deviceInfo,
 			},
 		});
 
@@ -104,7 +116,7 @@ export async function POST(req: Request) {
 					'Set-Cookie': [
 						`authToken=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=900`,
 						`refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${
-							7 * 24 * 60 * 60
+							30 * 24 * 60 * 60
 						}`,
 					].join('; '),
 				},

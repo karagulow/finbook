@@ -36,10 +36,18 @@ export async function POST(req: Request) {
 		const existing = await prisma.refreshToken.findFirst({
 			where: { token: refreshToken, userId: payload.userId },
 		});
-		if (!existing) {
+		if (!existing || existing.revoked || existing.expiresAt < new Date()) {
 			return NextResponse.json(
 				{ message: 'Недействительный refresh токен' },
-				{ status: 401 }
+				{
+					status: 401,
+					headers: {
+						'Set-Cookie': [
+							`authToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0`,
+							`refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0`,
+						].join(', '),
+					},
+				}
 			);
 		}
 

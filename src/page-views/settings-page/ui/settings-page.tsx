@@ -8,9 +8,19 @@ import { UserSettings } from './user-settings';
 import { useUser } from '../model/use-user';
 import { SettingsBlockSkeleton } from './settings-block-skeleton';
 import { DataSettings } from './data-settings';
+import { DeviceSettings } from './device-settings';
+import { useSessions } from '../model/use-sessions';
 
 export const SettingsPage: React.FC = () => {
-	const { user, isLoading, error } = useUser();
+	const { user, isLoading: isLoadingUser, error: errorUser } = useUser();
+	const {
+		sessions,
+		loading: isLoadingSessions,
+		error: errorSessions,
+	} = useSessions();
+
+	const isLoading = isLoadingUser || isLoadingSessions;
+	const error = errorUser || errorSessions;
 
 	return (
 		<>
@@ -31,6 +41,7 @@ export const SettingsPage: React.FC = () => {
 								<div className='flex flex-col gap-5 w-full'>
 									<AppSettings />
 									<DataSettings user={user} />
+									<DeviceSettings sessions={sessions} />
 									<UserSettings user={user} />
 								</div>
 							</div>
