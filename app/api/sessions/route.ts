@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { prisma } from '@/prisma/prisma-client';
 import { verify } from 'jsonwebtoken';
@@ -6,7 +6,7 @@ import { verify } from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
 
-export async function GET(req: NextRequest) {
+export async function GET() {
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -30,7 +30,10 @@ export async function GET(req: NextRequest) {
 		let currentId: string | null = null;
 
 		if (refreshToken) {
-			const payload = verify(refreshToken, JWT_REFRESH_SECRET) as any;
+			const payload = verify(refreshToken, JWT_REFRESH_SECRET) as {
+				jti: string;
+				userId: string;
+			};
 			currentId = payload.jti;
 		}
 
@@ -58,7 +61,7 @@ export async function GET(req: NextRequest) {
 	}
 }
 
-export async function POST(req: NextRequest) {
+export async function POST() {
 	try {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
@@ -70,7 +73,7 @@ export async function POST(req: NextRequest) {
 
 		let userId: string;
 		try {
-			userId = (verify(token, JWT_SECRET) as any).userId;
+			userId = (verify(token, JWT_SECRET) as { userId: string }).userId;
 		} catch {
 			return NextResponse.json(
 				{ message: 'Токен недействителен или истёк' },
@@ -80,7 +83,10 @@ export async function POST(req: NextRequest) {
 
 		let currentId: string | null = null;
 		if (refreshToken) {
-			const payload = verify(refreshToken, JWT_REFRESH_SECRET) as any;
+			const payload = verify(refreshToken, JWT_REFRESH_SECRET) as {
+				jti: string;
+				userId: string;
+			};
 			currentId = payload.jti;
 		}
 
@@ -96,7 +102,7 @@ export async function POST(req: NextRequest) {
 		return NextResponse.json({
 			message: 'Все остальные сессии завершены',
 		});
-	} catch (e) {
+	} catch {
 		return NextResponse.json({ message: 'Ошибка сервера' }, { status: 500 });
 	}
 }

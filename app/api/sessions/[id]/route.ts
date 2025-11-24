@@ -6,11 +6,12 @@ import { verify } from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
 
-export async function POST(
-	req: NextRequest,
-	{ params }: { params: { id: string } }
-) {
-	const sessionId = params.id;
+type RouteContext = {
+	params: Promise<{ id: string }>;
+};
+
+export async function POST(req: NextRequest, context: RouteContext) {
+	const sessionId = (await context.params).id;
 
 	const cookieStore = await cookies();
 	const token = cookieStore.get('authToken')?.value;
@@ -22,7 +23,7 @@ export async function POST(
 
 	let userId: string;
 	try {
-		userId = (verify(token, JWT_SECRET) as any).userId;
+		userId = (verify(token, JWT_SECRET) as { userId: string }).userId;
 	} catch {
 		return NextResponse.json(
 			{ message: 'Токен истёк или недействителен' },
@@ -33,7 +34,10 @@ export async function POST(
 	let currentId: string | null = null;
 	if (refreshToken) {
 		try {
-			const payload = verify(refreshToken, JWT_REFRESH_SECRET) as any;
+			const payload = verify(refreshToken, JWT_REFRESH_SECRET) as {
+				jti: string;
+				userId: string;
+			};
 			currentId = payload.jti;
 		} catch {
 			currentId = null;
