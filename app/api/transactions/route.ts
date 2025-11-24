@@ -28,7 +28,7 @@ export async function GET(req: Request) {
 			take: limit + 1,
 			...(cursor
 				? {
-						skip: 1,
+						skip: 0,
 						cursor: { id: cursor },
 				  }
 				: {}),
