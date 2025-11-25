@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getTransactionsByMonth } from '../lib/get-transactions-by-month';
 import { useSelectedAccount } from '@/src/widgets/account-overview/hooks/use-selected-account';
 
@@ -14,7 +14,7 @@ export type CategoryStat = {
 export const useTransactionsByCategory = () => {
 	const { selectedAccountId } = useSelectedAccount();
 
-	const { data, isLoading, isFetching } = useQuery<{
+	const { data, isLoading } = useQuery<{
 		incomes: CategoryStat[];
 		expenses: CategoryStat[];
 	}>({
@@ -55,11 +55,12 @@ export const useTransactionsByCategory = () => {
 			};
 		},
 		refetchOnWindowFocus: false,
+		placeholderData: keepPreviousData,
 	});
 
 	return {
 		incomes: data?.incomes ?? [],
 		expenses: data?.expenses ?? [],
-		loading: isLoading || isFetching,
+		isLoading,
 	};
 };

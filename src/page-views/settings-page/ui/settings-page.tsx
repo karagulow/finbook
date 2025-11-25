@@ -15,7 +15,7 @@ export const SettingsPage: React.FC = () => {
 	const { user, isLoading: isLoadingUser, error: errorUser } = useUser();
 	const {
 		sessions,
-		loading: isLoadingSessions,
+		isLoading: isLoadingSessions,
 		error: errorSessions,
 	} = useSessions();
 

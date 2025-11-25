@@ -12,7 +12,7 @@ import { AccountOverview } from '@/src/widgets/account-overview';
 import { AddTransaction } from '@/src/features/add-transaction';
 
 export const HomePage: React.FC = () => {
-	const { incomes, expenses, loading } = useTransactionsByCategory();
+	const { incomes, expenses, isLoading } = useTransactionsByCategory();
 
 	return (
 		<>
@@ -27,7 +27,7 @@ export const HomePage: React.FC = () => {
 				<AccountOverview />
 
 				<div className='grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-7.5'>
-					{loading ? (
+					{isLoading ? (
 						<>
 							<CategoryDoughnutChartSkeleton />
 							<CategoryDoughnutChartSkeleton />

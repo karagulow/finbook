@@ -12,6 +12,4 @@ const nextConfig = {
 	},
 };
 
-module.exports = withPWA({});
-
-export default nextConfig;
+module.exports = withPWA(nextConfig);
