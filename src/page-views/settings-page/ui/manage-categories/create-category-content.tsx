@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button, Input, Select } from '@/src/shared/ui';
-import { EmojiPicker } from './emoji-picker';
+import { Button, Input, Select, EmojiPicker } from '@/src/shared/ui';
 import { Subcategories } from './subcategories';
 import { Controller } from 'react-hook-form';
 import { useCategoryForm } from '../../model/use-category-form';
