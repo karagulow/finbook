@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { cn } from '../lib';
 
 interface Props {
 	children?: React.ReactNode;
@@ -11,25 +11,50 @@ interface Props {
 }
 
 export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
-	const [dragEnabled, setDragEnabled] = useState(true);
 	const [mounted, setMounted] = useState(false);
+	const [animate, setAnimate] = useState(false);
+
+	const dragStartY = useRef<number | null>(null);
+	const dragOffset = useRef(0);
+	const [, forceUpdate] = useState(0);
+	const animationFrameRef = useRef<number | null>(null);
+
 	const keydownListenerRef = useRef<(() => void) | null>(null);
+	const drawerRef = useRef<HTMLDivElement>(null);
+
+	const MAX_UPWARD_OFFSET = 20;
+	const CLOSE_THRESHOLD = 120;
+	const UPWARD_RESISTANCE = 0.3;
 
 	useEffect(() => {
 		setMounted(true);
 	}, []);
 
+	const close = useCallback(() => {
+		setAnimate(false);
+		dragOffset.current = 0;
+		forceUpdate(n => n + 1);
+		setTimeout(() => {
+			onClose();
+			document.body.style.overflow = '';
+		}, 300);
+	}, [onClose]);
+
 	useEffect(() => {
 		if (!mounted) return;
 
 		if (isOpen) {
+			setAnimate(true);
 			document.body.style.overflow = 'hidden';
+
 			const handleKeyDown = (e: KeyboardEvent) => {
-				if (e.key === 'Escape') onClose();
+				if (e.key === 'Escape') close();
 			};
+
 			document.addEventListener('keydown', handleKeyDown);
 			keydownListenerRef.current = () =>
 				document.removeEventListener('keydown', handleKeyDown);
+
 			return () => {
 				if (keydownListenerRef.current) {
 					keydownListenerRef.current();
@@ -37,76 +62,116 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				}
 			};
 		}
-	}, [mounted, isOpen, onClose]);
+	}, [mounted, isOpen, close]);
 
 	useEffect(() => {
-		const handleDragStart = () => setDragEnabled(false);
-		const handleDragEnd = () => setDragEnabled(true);
+		if (!isOpen) return;
 
-		// Слушаем кастомные события или используем таймаут
-		document.addEventListener('dragstart', handleDragStart);
-		document.addEventListener('dragend', handleDragEnd);
+		const handlePointerMove = (e: PointerEvent) => {
+			if (dragStartY.current === null) return;
+
+			if (animationFrameRef.current) {
+				cancelAnimationFrame(animationFrameRef.current);
+			}
+
+			animationFrameRef.current = requestAnimationFrame(() => {
+				const rawOffset = e.clientY - dragStartY.current!;
+				let processedOffset = rawOffset;
+
+				if (rawOffset < 0) {
+					processedOffset = rawOffset * UPWARD_RESISTANCE;
+				} else {
+					processedOffset = rawOffset;
+				}
+
+				if (processedOffset > -MAX_UPWARD_OFFSET) {
+					dragOffset.current = processedOffset;
+					forceUpdate(n => n + 1);
+				}
+			});
+		};
+
+		const handlePointerUp = () => {
+			if (animationFrameRef.current) {
+				cancelAnimationFrame(animationFrameRef.current);
+			}
+
+			if (dragOffset.current > CLOSE_THRESHOLD) {
+				close();
+			} else {
+				dragOffset.current = 0;
+				forceUpdate(n => n + 1);
+			}
+			dragStartY.current = null;
+		};
+
+		if (dragStartY.current !== null) {
+			document.addEventListener('pointermove', handlePointerMove, {
+				passive: true,
+			});
+			document.addEventListener('pointerup', handlePointerUp);
+			document.body.style.userSelect = 'none';
+			document.body.style.touchAction = 'none';
+		}
 
 		return () => {
-			document.removeEventListener('dragstart', handleDragStart);
-			document.removeEventListener('dragend', handleDragEnd);
+			document.removeEventListener('pointermove', handlePointerMove);
+			document.removeEventListener('pointerup', handlePointerUp);
+			document.body.style.userSelect = '';
+			document.body.style.touchAction = '';
+
+			if (animationFrameRef.current) {
+				cancelAnimationFrame(animationFrameRef.current);
+			}
 		};
-	}, []);
+	}, [dragStartY.current, close, isOpen]);
+
+	const onHandleDown = (e: React.PointerEvent) => {
+		dragStartY.current = e.clientY;
+		dragOffset.current = 0;
+		forceUpdate(n => n + 1);
+	};
 
 	if (!mounted) return null;
 
 	return createPortal(
-		<AnimatePresence
-			onExitComplete={() => {
-				document.body.style.overflow = '';
-			}}
-		>
+		<>
 			{isOpen && (
-				<motion.div
-					className='fixed inset-0 z-10 flex items-end'
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					exit={{ opacity: 0 }}
-					transition={{ duration: 0.3 }}
-					onClick={onClose}
-				>
-					<motion.div
-						className='absolute inset-0 bg-black/50 backdrop-blur-[2px]'
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						transition={{ duration: 0.3 }}
+				<div className='fixed inset-0 z-10 flex items-end' onClick={close}>
+					<div
+						className={cn(
+							'absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity duration-300',
+							animate ? 'opacity-100' : 'opacity-0'
+						)}
 					/>
 
-					<motion.div
-						className='relative w-full h-[90vh] bottom-[-100px] rounded-t-[12px] bg-[var(--card)] p-5 pb-[calc(env(safe-area-inset-bottom)+120px)] shadow-xl flex flex-col'
-						initial={{ y: '100%' }}
-						animate={{ y: 0 }}
-						exit={{ y: '100%' }}
-						transition={{ type: 'tween', stiffness: 300, damping: 30 }}
-						drag={dragEnabled ? 'y' : false}
-						dragConstraints={{ top: 0, bottom: 0 }}
-						dragElastic={0.1}
-						onDragEnd={(_, info) => {
-							if (info.offset.y > 100 || info.velocity.y > 500) onClose();
+					<div
+						ref={drawerRef}
+						className={cn(
+							'relative w-full h-[80vh] rounded-t-[12px] bg-[var(--card)] p-5 pb-[calc(env(safe-area-inset-bottom)+20px)] shadow-xl flex flex-col',
+							dragStartY.current === null && 'transition-transform duration-300'
+						)}
+						style={{
+							transform: animate
+								? `translateY(${dragOffset.current}px)`
+								: 'translateY(100%)',
 						}}
 						onClick={e => e.stopPropagation()}
 					>
-						<div className='mx-auto mb-4 w-full flex items-center justify-center cursor-grab active:cursor-grabbing'>
+						<div
+							className='mx-auto mb-4 w-full flex items-center justify-center cursor-grab active:cursor-grabbing touch-none'
+							onPointerDown={onHandleDown}
+						>
 							<div className='h-1.5 w-20 rounded-full bg-[var(--muted)]' />
 						</div>
 
-						<div
-							className='flex-1 overflow-y-auto'
-							onPointerDown={() => setDragEnabled(false)}
-							onPointerUp={() => setDragEnabled(true)}
-						>
-							{children}
-						</div>
-					</motion.div>
-				</motion.div>
+						<div className='flex-1 overflow-y-auto'>{children}</div>
+
+						<div className='fixed left-[-20px] bottom-[-40px] w-[calc(100%+20px)] h-10 bg-[var(--card)]'></div>
+					</div>
+				</div>
 			)}
-		</AnimatePresence>,
+		</>,
 		document.body
 	);
 };
