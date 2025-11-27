@@ -50,31 +50,24 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE() {
+	const cookieStore = await cookies();
+	const token = cookieStore.get('authToken')?.value;
+
+	if (!token) {
+		return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+	}
+
 	try {
-		const cookieStore = await cookies();
-		const token = cookieStore.get('authToken')?.value;
+		const { userId } = verify(token, JWT_SECRET) as { userId: string };
 
-		if (!token) {
-			return NextResponse.json({ error: 'Неавторизован' }, { status: 401 });
-		}
-
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
-
-		await prisma.transaction.deleteMany({ where: { userId } });
-		await prisma.account.deleteMany({ where: { userId } });
-		await prisma.goal.deleteMany({ where: { userId } });
-		await prisma.debt.deleteMany({ where: { userId } });
-		await prisma.subcategory.deleteMany({
-			where: { category: { userId } },
+		await prisma.user.delete({
+			where: { id: userId },
 		});
-		await prisma.category.deleteMany({ where: { userId } });
 
-		await prisma.user.delete({ where: { id: userId } });
-
-		cookieStore.delete('authToken');
-		cookieStore.delete('refreshToken');
-		cookieStore.delete('userEmail');
+		const expired = { expires: new Date(0), path: '/' };
+		cookieStore.set('authToken', '', expired);
+		cookieStore.set('refreshToken', '', expired);
+		cookieStore.set('userEmail', '', expired);
 
 		return NextResponse.json({ message: 'Пользователь успешно удалён' });
 	} catch (error) {

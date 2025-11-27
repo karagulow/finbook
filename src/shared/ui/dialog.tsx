@@ -22,6 +22,7 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 	const close = () => {
 		setAnimate(false);
 		setTimeout(onClose, 300);
+		document.body.style.overflow = '';
 	};
 
 	useEffect(() => {
