@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '../lib';
 
@@ -19,11 +19,11 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 		setMounted(true);
 	}, []);
 
-	const close = () => {
+	const close = useCallback(() => {
 		setAnimate(false);
 		setTimeout(onClose, 300);
 		document.body.style.overflow = '';
-	};
+	}, [onClose]);
 
 	useEffect(() => {
 		if (!mounted) return;
@@ -49,7 +49,7 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				}
 			};
 		}
-	}, [mounted, isOpen]);
+	}, [mounted, isOpen, close]);
 
 	if (!mounted) return null;
 

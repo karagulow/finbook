@@ -14,6 +14,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 	const [mounted, setMounted] = useState(false);
 	const [animate, setAnimate] = useState(false);
 
+	const [dragVersion, bumpDragVersion] = useState(0);
 	const dragStartY = useRef<number | null>(null);
 	const dragOffset = useRef(0);
 	const [, forceUpdate] = useState(0);
@@ -124,12 +125,12 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				cancelAnimationFrame(animationFrameRef.current);
 			}
 		};
-	}, [dragStartY.current, close, isOpen]);
+	}, [dragVersion, close, isOpen]);
 
 	const onHandleDown = (e: React.PointerEvent) => {
 		dragStartY.current = e.clientY;
 		dragOffset.current = 0;
-		forceUpdate(n => n + 1);
+		bumpDragVersion(n => n + 1);
 	};
 
 	if (!mounted) return null;
