@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Check } from 'lucide-react';
 import { cn } from '../lib';
 
@@ -29,6 +28,7 @@ export function Select<T extends string | number = string>({
 	error,
 }: Props<T>) {
 	const [open, setOpen] = useState(false);
+	const [animate, setAnimate] = useState(false);
 	const [highlighted, setHighlighted] = useState<number>(-1);
 	const [showError, setShowError] = useState(false);
 
@@ -122,6 +122,16 @@ export function Select<T extends string | number = string>({
 		}
 	}, [open, value, options]);
 
+	const openDropdown = () => {
+		if (!open) {
+			setAnimate(true);
+			requestAnimationFrame(() => setOpen(true));
+		} else {
+			setOpen(false);
+			setTimeout(() => setAnimate(false), 150);
+		}
+	};
+
 	return (
 		<label className='flex flex-col gap-1.5'>
 			{label && (
@@ -134,10 +144,7 @@ export function Select<T extends string | number = string>({
 				<div
 					role='button'
 					tabIndex={0}
-					onClick={() => {
-						setOpen(o => !o);
-						setHighlighted(options.findIndex(o => o.value === value));
-					}}
+					onClick={openDropdown}
 					className={`h-11.5 w-full flex items-center justify-between rounded-[6px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none transition cursor-pointer ${
 						open
 							? 'border-[var(--border-primary-hover)]'
@@ -162,46 +169,44 @@ export function Select<T extends string | number = string>({
 					</div>
 				</div>
 
-				<AnimatePresence>
-					{open && (
-						<motion.ul
-							initial={{ opacity: 0, y: -4 }}
-							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: -4 }}
-							transition={{ duration: 0.15 }}
-							className='absolute left-0 top-full mt-1 flex flex-col gap-1 p-1 max-h-60 w-full overflow-auto rounded-[6px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg z-50'
-						>
-							{options.map((opt, idx) => {
-								const active = value === opt.value;
-								const isHighlighted = highlighted === idx;
-
-								return (
-									<li
-										key={String(opt.value)}
-										ref={el => {
-											optionRefs.current[idx] = el;
-										}}
-										onClick={() => {
-											if (opt.disabled) return;
-											onChange?.(opt.value);
-											setTimeout(() => setOpen(false), 0);
-										}}
-										className={`flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] text-[var(--foreground-primary)] rounded-[4px] ${
-											opt.disabled
-												? 'opacity-50 cursor-not-allowed'
-												: isHighlighted
-												? 'bg-[var(--button-tertiary-hover)]'
-												: 'hover:bg-[var(--button-tertiary-hover)]'
-										}`}
-									>
-										{opt.label}
-										{active && <Check size={16} />}
-									</li>
-								);
-							})}
-						</motion.ul>
+				<ul
+					className={cn(
+						'absolute left-0 top-full mt-1 flex flex-col gap-1 p-1 max-h-60 w-full overflow-auto rounded-[6px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg z-50 transition-all duration-150',
+						open
+							? 'opacity-100 translate-y-0 pointer-events-auto'
+							: 'opacity-0 -translate-y-1 pointer-events-none',
+						animate ? '' : 'hidden'
 					)}
-				</AnimatePresence>
+				>
+					{options.map((opt, idx) => {
+						const active = value === opt.value;
+						const isHighlighted = highlighted === idx;
+
+						return (
+							<li
+								key={String(opt.value)}
+								ref={el => {
+									optionRefs.current[idx] = el;
+								}}
+								onClick={() => {
+									if (opt.disabled) return;
+									onChange?.(opt.value);
+									setTimeout(() => setOpen(false), 0);
+								}}
+								className={`flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] text-[var(--foreground-primary)] rounded-[4px] ${
+									opt.disabled
+										? 'opacity-50 cursor-not-allowed'
+										: isHighlighted
+										? 'bg-[var(--button-tertiary-hover)]'
+										: 'hover:bg-[var(--button-tertiary-hover)]'
+								}`}
+							>
+								{opt.label}
+								{active && <Check size={16} />}
+							</li>
+						);
+					})}
+				</ul>
 			</div>
 
 			<div
