@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '../lib';
@@ -18,6 +24,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 
 	useEffect(() => {
 		setMounted(true);
+		return () => setMounted(false);
 	}, []);
 
 	const close = useCallback(() => {
@@ -26,9 +33,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 		document.body.style.overflow = '';
 	}, [onClose]);
 
-	useEffect(() => {
-		if (!mounted) return;
-
+	useLayoutEffect(() => {
 		if (isOpen) {
 			setAnimate(true);
 			document.body.style.overflow = 'hidden';
@@ -50,7 +55,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				}
 			};
 		}
-	}, [mounted, isOpen, close]);
+	}, [isOpen, close]);
 
 	if (!mounted) return null;
 
@@ -68,7 +73,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 
 					<div
 						className={cn(
-							'fixed inset-y-0 right-0 z-11 flex flex-row items-start m-5 transform transition-transform duration-300',
+							'fixed inset-y-0 right-0 z-11 flex flex-row items-start m-5 transform transition-all duration-300',
 							animate ? 'translate-x-0' : 'translate-x-full'
 						)}
 						onClick={e => e.stopPropagation()}
