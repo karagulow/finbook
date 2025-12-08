@@ -1,12 +1,6 @@
 'use client';
 
-import React, {
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useRef,
-	useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '../lib';
 
@@ -31,9 +25,13 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 		document.body.style.overflow = '';
 	}, [onClose]);
 
-	useLayoutEffect(() => {
+	useEffect(() => {
+		if (!mounted) return;
+
 		if (isOpen) {
-			setAnimate(true);
+			requestAnimationFrame(() => {
+				setAnimate(true);
+			});
 			document.body.style.overflow = 'hidden';
 
 			const handleKeyDown = (e: KeyboardEvent) => {
@@ -53,7 +51,7 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				}
 			};
 		}
-	}, [isOpen, close]);
+	}, [mounted, isOpen, close]);
 
 	if (!mounted) return null;
 
