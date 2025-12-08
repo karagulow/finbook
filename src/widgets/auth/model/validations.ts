@@ -1,7 +1,10 @@
 import * as yup from 'yup';
 
 export const loginValidation = yup.object({
-	email: yup.string().email('Неверный email').required('Email обязателен'),
+	email: yup
+		.string()
+		// .matches(/^[^\s@]+@[^\s@]+\.[A-Za-z0-9\-]{2,}$/, 'Неверный email')
+		.required('Email обязателен'),
 	password: yup
 		.string()
 		.min(8, 'Минимум 8 символов')
@@ -9,7 +12,10 @@ export const loginValidation = yup.object({
 });
 
 export const registrationValidation = yup.object({
-	email: yup.string().email('Неверный email').required('Email обязателен'),
+	email: yup
+		.string()
+		.matches(/^[^\s@]+@[^\s@]+\.[A-Za-z0-9\-]{2,}$/, 'Неверный email')
+		.required('Email обязателен'),
 	password: yup
 		.string()
 		.min(8, 'Минимум 8 символов')
@@ -21,6 +27,6 @@ export const registrationValidation = yup.object({
 	confirmPassword: yup
 		.string()
 		.oneOf([yup.ref('password')], 'Пароли не совпадают')
-		.required(),
+		.required('Подтверждение пароля обязательно'),
 	currencyId: yup.string().required('Валюта обязательна'),
 });

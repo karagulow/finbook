@@ -20,6 +20,8 @@ export function useSessions() {
 			return data;
 		},
 		refetchOnWindowFocus: false,
+		staleTime: 5 * 60 * 1000,
+		gcTime: 10 * 60 * 1000,
 	});
 
 	const deleteSession = useMutation({
@@ -42,7 +44,7 @@ export function useSessions() {
 
 	return {
 		sessions: data ?? [],
-		loading: isLoading,
+		isLoading,
 		error: isError ? error : null,
 
 		deleteSession: deleteSession.mutateAsync,

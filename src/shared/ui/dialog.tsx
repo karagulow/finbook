@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { cn } from '../lib';
 
 interface Props {
 	children?: React.ReactNode;
@@ -12,21 +12,29 @@ interface Props {
 
 export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 	const [mounted, setMounted] = useState(false);
+	const [animate, setAnimate] = useState(false);
 	const keydownListenerRef = useRef<(() => void) | null>(null);
 
 	useEffect(() => {
 		setMounted(true);
 	}, []);
 
+	const close = useCallback(() => {
+		setAnimate(false);
+		setTimeout(onClose, 300);
+		document.body.style.overflow = '';
+	}, [onClose]);
+
 	useEffect(() => {
 		if (!mounted) return;
 
 		if (isOpen) {
+			setAnimate(true);
 			document.body.style.overflow = 'hidden';
 
 			const handleKeyDown = (e: KeyboardEvent) => {
 				if (e.key === 'Escape') {
-					onClose();
+					close();
 				}
 			};
 
@@ -41,39 +49,34 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				}
 			};
 		}
-	}, [mounted, isOpen, onClose]);
+	}, [mounted, isOpen, close]);
 
 	if (!mounted) return null;
 
 	return createPortal(
-		<AnimatePresence
-			onExitComplete={() => {
-				document.body.style.overflow = '';
-			}}
-		>
+		<>
 			{isOpen && (
-				<motion.div
-					key='dialog'
-					className='fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-[2px]'
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					exit={{ opacity: 0 }}
-					transition={{ duration: 0.25, ease: 'easeInOut' }}
-					onClick={onClose}
-				>
-					<motion.div
-						className='relative w-full max-w-lg rounded-[12px] bg-[var(--card)] p-6 shadow-xl'
-						initial={{ scale: 0.9, opacity: 0 }}
-						animate={{ scale: 1, opacity: 1 }}
-						exit={{ scale: 0.9, opacity: 0 }}
-						transition={{ duration: 0.25, ease: 'easeInOut' }}
+				<>
+					<div
+						className={cn(
+							'fixed inset-0 z-20 bg-black/50 backdrop-blur-[2px] transition-opacity duration-300',
+							animate ? 'opacity-100' : 'opacity-0'
+						)}
+						onClick={close}
+					></div>
+
+					<div
+						className={cn(
+							'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-21 w-full max-w-lg rounded-[12px] bg-[var(--card)] p-6 shadow-xl transform transition-all duration-300',
+							animate ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
+						)}
 						onClick={e => e.stopPropagation()}
 					>
 						{children}
-					</motion.div>
-				</motion.div>
+					</div>
+				</>
 			)}
-		</AnimatePresence>,
+		</>,
 		document.body
 	);
 };

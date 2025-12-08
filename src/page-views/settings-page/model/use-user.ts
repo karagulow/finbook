@@ -1,48 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '@/src/shared/lib';
 
 import type { User } from './types';
 
 export function useUser() {
-	const [user, setUser] = useState<User | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+	const { data, isLoading, error, isError } = useQuery<User>({
+		queryKey: ['user'],
+		queryFn: async () => {
+			const { data } = await api.get<User>('/api/user');
+			return data;
+		},
+		refetchOnWindowFocus: false,
+		staleTime: 5 * 60 * 1000,
+		gcTime: 10 * 60 * 1000,
+	});
 
-	useEffect(() => {
-		let isMounted = true;
-
-		const fetchUser = async () => {
-			try {
-				const { data } = await api.get<User>('/api/user');
-				if (isMounted) setUser(data);
-			} catch (err: unknown) {
-				if (isMounted) {
-					let message = 'Неизвестная ошибка';
-
-					if (axios.isAxiosError(err)) {
-						message =
-							err.response?.data?.error ||
-							err.message ||
-							'Ошибка при загрузке пользователя';
-					} else if (err instanceof Error) {
-						message = err.message;
-					}
-
-					setError(message);
-				}
-			} finally {
-				if (isMounted) setIsLoading(false);
-			}
-		};
-
-		fetchUser();
-		return () => {
-			isMounted = false;
-		};
-	}, []);
-
-	return { user, isLoading, error };
+	return { user: data, isLoading, error, isError };
 }

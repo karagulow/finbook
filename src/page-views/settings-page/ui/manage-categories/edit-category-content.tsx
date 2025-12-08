@@ -3,8 +3,7 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
 
-import { Button, Input, Select } from '@/src/shared/ui';
-import { EmojiPicker } from './emoji-picker';
+import { Button, Input, Select, EmojiPicker } from '@/src/shared/ui';
 import { Subcategories } from './subcategories';
 import { useCategoryForm } from '../../model/use-category-form';
 

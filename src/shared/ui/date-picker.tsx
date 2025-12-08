@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { DayPicker } from 'react-day-picker';
@@ -25,6 +24,7 @@ export const DatePicker: React.FC<Props> = ({
 	error,
 }) => {
 	const [open, setOpen] = useState(false);
+	const [animate, setAnimate] = useState(false);
 	const [showError, setShowError] = useState(false);
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -49,6 +49,16 @@ export const DatePicker: React.FC<Props> = ({
 		return () => document.removeEventListener('mousedown', handleClick);
 	}, []);
 
+	const openPicker = () => {
+		if (!open) {
+			setAnimate(true);
+			requestAnimationFrame(() => setOpen(true));
+		} else {
+			setOpen(false);
+			setTimeout(() => setAnimate(false), 150);
+		}
+	};
+
 	return (
 		<label className='flex flex-col gap-1.5'>
 			{label && (
@@ -60,7 +70,7 @@ export const DatePicker: React.FC<Props> = ({
 			<div ref={wrapperRef} className='relative'>
 				<button
 					type='button'
-					onClick={() => setOpen(o => !o)}
+					onClick={openPicker}
 					className={cn(
 						'h-11.5 w-full flex items-center justify-between rounded-[6px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none transition cursor-pointer',
 						open
@@ -77,43 +87,41 @@ export const DatePicker: React.FC<Props> = ({
 					<Calendar size={16} className='opacity-70' />
 				</button>
 
-				<AnimatePresence>
-					{open && (
-						<motion.div
-							initial={{ opacity: 0, y: -4 }}
-							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: -4 }}
-							transition={{ duration: 0.15 }}
-							className='absolute left-0 top-full mt-1 rounded-[6px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg p-2 z-50'
-						>
-							<DayPicker
-								mode='single'
-								selected={value ?? undefined}
-								onSelect={date => {
-									if (date) {
-										onChange?.(date);
-										setOpen(false);
-									}
-								}}
-								navLayout='around'
-								showOutsideDays
-								weekStartsOn={1}
-								locale={ru}
-								className='!bg-[var(--muted)] text-[13px] text-[var(--foreground-primary)]'
-								classNames={{
-									day: 'rounded-[4px] transition hover:bg-[var(--button-secondary)]',
-								}}
-								modifiersClassNames={{
-									outside: 'text-[var(--foreground-secondary)] opacity-60',
-									selected:
-										'bg-[var(--foreground-primary)] font-semibold text-[var(--muted)] rounded-[4px]',
-									today:
-										'text-[var(--foreground-primary)] bg-[var(--button-secondary)] rounded-[4px]',
-								}}
-							/>
-						</motion.div>
+				<div
+					className={cn(
+						'absolute left-0 top-full mt-1 rounded-[6px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg p-2 z-50 transition-all duration-150',
+						open
+							? 'opacity-100 translate-y-0 pointer-events-auto'
+							: 'opacity-0 -translate-y-1 pointer-events-none',
+						animate ? '' : 'hidden'
 					)}
-				</AnimatePresence>
+				>
+					<DayPicker
+						mode='single'
+						selected={value ?? undefined}
+						onSelect={date => {
+							if (date) {
+								onChange?.(date);
+								setOpen(false);
+							}
+						}}
+						navLayout='around'
+						showOutsideDays
+						weekStartsOn={1}
+						locale={ru}
+						className='!bg-[var(--muted)] text-[13px] text-[var(--foreground-primary)]'
+						classNames={{
+							day: 'rounded-[4px] transition hover:bg-[var(--button-secondary)]',
+						}}
+						modifiersClassNames={{
+							outside: 'text-[var(--foreground-secondary)] opacity-60',
+							selected:
+								'bg-[var(--foreground-primary)] font-semibold text-[var(--muted)] rounded-[4px]',
+							today:
+								'text-[var(--foreground-primary)] bg-[var(--button-secondary)] rounded-[4px]',
+						}}
+					/>
+				</div>
 			</div>
 
 			<div
