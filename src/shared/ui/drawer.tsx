@@ -1,12 +1,6 @@
 'use client';
 
-import React, {
-	useEffect,
-	useRef,
-	useState,
-	useCallback,
-	useLayoutEffect,
-} from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '../lib';
 
@@ -35,7 +29,6 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 
 	useEffect(() => {
 		setMounted(true);
-		return () => setMounted(false);
 	}, []);
 
 	const close = useCallback(() => {
@@ -48,9 +41,13 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 		}, 300);
 	}, [onClose]);
 
-	useLayoutEffect(() => {
+	useEffect(() => {
+		if (!mounted) return;
+
 		if (isOpen) {
-			setAnimate(true);
+			requestAnimationFrame(() => {
+				setAnimate(true);
+			});
 			document.body.style.overflow = 'hidden';
 
 			const handleKeyDown = (e: KeyboardEvent) => {
@@ -68,7 +65,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				}
 			};
 		}
-	}, [isOpen, close]);
+	}, [mounted, isOpen, close]);
 
 	useEffect(() => {
 		if (!isOpen) return;
@@ -155,7 +152,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 						ref={drawerRef}
 						className={cn(
 							'relative w-full h-[80vh] rounded-t-[12px] bg-[var(--card)] p-5 pb-[calc(env(safe-area-inset-bottom)+20px)] shadow-xl flex flex-col',
-							dragStartY.current === null && 'transition-all duration-300'
+							dragStartY.current === null && 'transition-transform duration-300'
 						)}
 						style={{
 							transform: animate
