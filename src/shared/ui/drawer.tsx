@@ -22,6 +22,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 
 	const keydownListenerRef = useRef<(() => void) | null>(null);
 	const drawerRef = useRef<HTMLDivElement>(null);
+	const scrollYRef = useRef(0);
 
 	const MAX_UPWARD_OFFSET = 20;
 	const CLOSE_THRESHOLD = 120;
@@ -37,7 +38,13 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 		forceUpdate(n => n + 1);
 		setTimeout(() => {
 			onClose();
-			document.body.style.overflow = '';
+
+			document.body.style.position = '';
+			document.body.style.top = '';
+			document.body.style.left = '';
+			document.body.style.right = '';
+
+			window.scrollTo(0, scrollYRef.current);
 		}, 300);
 	}, [onClose]);
 
@@ -48,7 +55,13 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 			requestAnimationFrame(() => {
 				setAnimate(true);
 			});
-			document.body.style.overflow = 'hidden';
+
+			scrollYRef.current = window.scrollY;
+
+			document.body.style.position = 'fixed';
+			document.body.style.top = `-${scrollYRef.current}px`;
+			document.body.style.left = '0';
+			document.body.style.right = '0';
 
 			const handleKeyDown = (e: KeyboardEvent) => {
 				if (e.key === 'Escape') close();
