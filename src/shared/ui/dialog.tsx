@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '../lib';
 
@@ -25,9 +31,7 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 		document.body.style.overflow = '';
 	}, [onClose]);
 
-	useEffect(() => {
-		if (!mounted) return;
-
+	useLayoutEffect(() => {
 		if (isOpen) {
 			setAnimate(true);
 			document.body.style.overflow = 'hidden';
@@ -49,7 +53,7 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				}
 			};
 		}
-	}, [mounted, isOpen, close]);
+	}, [isOpen, close]);
 
 	if (!mounted) return null;
 
