@@ -15,7 +15,6 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 	const [mounted, setMounted] = useState(false);
 	const [animate, setAnimate] = useState(false);
 	const keydownListenerRef = useRef<(() => void) | null>(null);
-	const scrollYRef = useRef(0);
 
 	useEffect(() => {
 		setMounted(true);
@@ -24,13 +23,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 	const close = useCallback(() => {
 		setAnimate(false);
 		setTimeout(onClose, 300);
-
-		document.body.style.position = '';
-		document.body.style.top = '';
-		document.body.style.left = '';
-		document.body.style.right = '';
-
-		window.scrollTo(0, scrollYRef.current);
+		document.body.style.overflow = '';
 	}, [onClose]);
 
 	useEffect(() => {
@@ -40,13 +33,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 			requestAnimationFrame(() => {
 				setAnimate(true);
 			});
-
-			scrollYRef.current = window.scrollY;
-
-			document.body.style.position = 'fixed';
-			document.body.style.top = `-${scrollYRef.current}px`;
-			document.body.style.left = '0';
-			document.body.style.right = '0';
+			document.body.style.overflow = 'hidden';
 
 			const handleKeyDown = (e: KeyboardEvent) => {
 				if (e.key === 'Escape') {
