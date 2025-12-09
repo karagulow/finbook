@@ -32,7 +32,7 @@ model RefreshToken {
   expiresAt  DateTime
   revoked    Boolean  @default(false)
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 
@@ -46,7 +46,7 @@ model Account {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   currency         Currency      @relation(fields: [currencyId], references: [id])
-  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User          @relation(fields: [userId], references: [id])
   transactionsFrom Transaction[] @relation("TransactionFrom")
   transactionsTo   Transaction[] @relation("TransactionTo")
   transactions     Transaction[] @relation("TransactionAccount")
@@ -62,7 +62,7 @@ model Category {
   userId        String        @db.Uuid
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id])
   subcategories Subcategory[]
   transactions  Transaction[]
 }
@@ -73,7 +73,7 @@ model Subcategory {
   categoryId   String        @db.Uuid
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category     Category      @relation(fields: [categoryId], references: [id])
   transactions Transaction[]
 }
 
@@ -103,7 +103,7 @@ model Transaction {
   debt          Debt?                @relation(fields: [debtId], references: [id])
   goal          Goal?                @relation(fields: [goalId], references: [id])
   subcategory   Subcategory?         @relation(fields: [subcategoryId], references: [id])
-  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User                 @relation(fields: [userId], references: [id])
 }
 
 model Currency {
@@ -144,7 +144,7 @@ model Goal {
   userId        String        @db.Uuid
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id])
   transactions  Transaction[]
 }
 
@@ -160,7 +160,7 @@ model Debt {
   userId        String        @db.Uuid
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id])
   transactions  Transaction[]
 }
 
