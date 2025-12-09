@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { cn } from '../lib';
+import { cn, lockBody, unlockBody } from '../lib';
 
 interface Props {
 	children?: React.ReactNode;
@@ -31,7 +31,7 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 			requestAnimationFrame(() => {
 				setAnimate(true);
 			});
-			document.body.style.overflow = 'hidden';
+			lockBody();
 
 			const handleKeyDown = (e: KeyboardEvent) => {
 				if (e.key === 'Escape') {
@@ -48,6 +48,7 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					keydownListenerRef.current();
 					keydownListenerRef.current = null;
 				}
+				unlockBody();
 			};
 		}
 	}, [mounted, isOpen, close]);

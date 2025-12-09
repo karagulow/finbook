@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import { cn } from '../lib';
+import { cn, lockBody, unlockBody } from '../lib';
 
 interface Props {
 	children?: React.ReactNode;
@@ -23,7 +23,6 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 	const close = useCallback(() => {
 		setAnimate(false);
 		setTimeout(onClose, 300);
-		document.body.style.overflow = '';
 	}, [onClose]);
 
 	useEffect(() => {
@@ -33,7 +32,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 			requestAnimationFrame(() => {
 				setAnimate(true);
 			});
-			document.body.style.overflow = 'hidden';
+			lockBody();
 
 			const handleKeyDown = (e: KeyboardEvent) => {
 				if (e.key === 'Escape') {
@@ -50,6 +49,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					keydownListenerRef.current();
 					keydownListenerRef.current = null;
 				}
+				unlockBody();
 			};
 		}
 	}, [mounted, isOpen, close]);
