@@ -130,7 +130,7 @@ model ExchangeRate {
   from      Currency @relation("FromCurrency", fields: [fromId], references: [id])
   to        Currency @relation("ToCurrency", fields: [toId], references: [id])
 
-  @@unique([fromId, toId, date])
+  @@unique([fromId, toId], name: "fromId_toId")
 }
 
 model Goal {
