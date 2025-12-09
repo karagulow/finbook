@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { cn } from '../lib';
+import { cn, lockBody, unlockBody } from '../lib';
 
 interface Props {
 	children?: React.ReactNode;
@@ -35,10 +35,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 		setAnimate(false);
 		dragOffset.current = 0;
 		forceUpdate(n => n + 1);
-		setTimeout(() => {
-			onClose();
-			document.body.style.overflow = '';
-		}, 300);
+		setTimeout(onClose, 300);
 	}, [onClose]);
 
 	useEffect(() => {
@@ -48,7 +45,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 			requestAnimationFrame(() => {
 				setAnimate(true);
 			});
-			document.body.style.overflow = 'hidden';
+			lockBody();
 
 			const handleKeyDown = (e: KeyboardEvent) => {
 				if (e.key === 'Escape') close();
@@ -63,6 +60,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					keydownListenerRef.current();
 					keydownListenerRef.current = null;
 				}
+				unlockBody();
 			};
 		}
 	}, [mounted, isOpen, close]);
