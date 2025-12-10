@@ -32,9 +32,8 @@ model RefreshToken {
   expiresAt  DateTime
   revoked    Boolean  @default(false)
 
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
-
 
 model Account {
   id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -46,7 +45,7 @@ model Account {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   currency         Currency      @relation(fields: [currencyId], references: [id])
-  user             User          @relation(fields: [userId], references: [id])
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactionsFrom Transaction[] @relation("TransactionFrom")
   transactionsTo   Transaction[] @relation("TransactionTo")
   transactions     Transaction[] @relation("TransactionAccount")
@@ -62,7 +61,7 @@ model Category {
   userId        String        @db.Uuid
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  user          User          @relation(fields: [userId], references: [id])
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   subcategories Subcategory[]
   transactions  Transaction[]
 }
@@ -73,7 +72,7 @@ model Subcategory {
   categoryId   String        @db.Uuid
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  category     Category      @relation(fields: [categoryId], references: [id])
+  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   transactions Transaction[]
 }
 
@@ -96,14 +95,45 @@ model Transaction {
   userId        String               @db.Uuid
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
-  accountFrom   Account?             @relation("TransactionFrom", fields: [accountIdFrom], references: [id])
-  accountTo     Account?             @relation("TransactionTo", fields: [accountIdTo], references: [id])
-  account       Account?             @relation("TransactionAccount", fields: [accountId], references: [id])
-  category      Category?            @relation(fields: [categoryId], references: [id])
-  debt          Debt?                @relation(fields: [debtId], references: [id])
-  goal          Goal?                @relation(fields: [goalId], references: [id])
-  subcategory   Subcategory?         @relation(fields: [subcategoryId], references: [id])
-  user          User                 @relation(fields: [userId], references: [id])
+  accountFrom   Account?             @relation("TransactionFrom", fields: [accountIdFrom], references: [id], onDelete: Cascade)
+  accountTo     Account?             @relation("TransactionTo", fields: [accountIdTo], references: [id], onDelete: Cascade)
+  account       Account?             @relation("TransactionAccount", fields: [accountId], references: [id], onDelete: Cascade)
+  category      Category?            @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  debt          Debt?                @relation(fields: [debtId], references: [id], onDelete: Cascade)
+  goal          Goal?                @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  subcategory   Subcategory?         @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Goal {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  target_amount Float
+  saved_amount  Float
+  deadline      DateTime
+  description   String?
+  icon          String
+  userId        String        @db.Uuid
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
+}
+
+model Debt {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  target_amount Float
+  saved_amount  Float
+  deadline      DateTime
+  paid          Boolean
+  type          DebtType
+  description   String?
+  userId        String        @db.Uuid
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
 }
 
 model Currency {
@@ -127,46 +157,15 @@ model ExchangeRate {
   date      DateTime @default(now()) @db.Timestamp(6)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  from      Currency @relation("FromCurrency", fields: [fromId], references: [id])
-  to        Currency @relation("ToCurrency", fields: [toId], references: [id])
+  from      Currency @relation("FromCurrency", fields: [fromId], references: [id], onDelete: Cascade)
+  to        Currency @relation("ToCurrency", fields: [toId], references: [id], onDelete: Cascade)
 
   @@unique([fromId, toId], name: "fromId_toId")
 }
 
-model Goal {
-  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String
-  target_amount Float
-  saved_amount  Float
-  deadline      DateTime
-  description   String?
-  icon          String
-  userId        String        @db.Uuid
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  user          User          @relation(fields: [userId], references: [id])
-  transactions  Transaction[]
-}
-
-model Debt {
-  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String
-  target_amount Float
-  saved_amount  Float
-  deadline      DateTime
-  paid          Boolean
-  type          DebtType
-  description   String?
-  userId        String        @db.Uuid
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  user          User          @relation(fields: [userId], references: [id])
-  transactions  Transaction[]
-}
-
-enum CategoryType {
-  INCOME
-  EXPENSE
+enum DebtType {
+  OWED_TO_ME
+  OWED_BY_ME
 }
 
 enum TransactionType {
@@ -177,12 +176,12 @@ enum TransactionType {
   DEBT
 }
 
-enum DebtType {
-  OWED_TO_ME
-  OWED_BY_ME
-}
-
 enum GoalTransactionType {
   DEPOSIT
   WITHDRAW
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
 }
