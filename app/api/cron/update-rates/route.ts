@@ -9,8 +9,6 @@ export async function GET() {
 
 	const valutes = data.Valute;
 
-	// Главное: RUB — базовая валюта
-	// У ЦБ нет записи для RUB, поэтому считаем курс RUB = 1
 	const currencies = await prisma.currency.findMany();
 
 	const rubCurrency = currencies.find(c => c.code === 'RUB');
@@ -25,9 +23,6 @@ export async function GET() {
 	const operations = [];
 
 	for (const currency of currencies) {
-		const fromId = currency.id;
-
-		// 1) RUB -> RUB = 1
 		if (currency.code === 'RUB') {
 			operations.push(
 				prisma.exchangeRate.upsert({
@@ -44,13 +39,11 @@ export async function GET() {
 			continue;
 		}
 
-		// 2) Берем данные по валюте
 		const cbData = valutes[currency.code];
-		if (!cbData) continue; // валюты нет у ЦБ
+		if (!cbData) continue;
 
-		const valueRUB = cbData.Value; // сколько рублей стоит 1 единица валюты
+		const valueRUB = cbData.Value;
 
-		// 3) Запись: валюта -> RUB
 		operations.push(
 			prisma.exchangeRate.upsert({
 				where: { fromId_toId: { fromId: currency.id, toId: rubCurrency.id } },
@@ -64,7 +57,6 @@ export async function GET() {
 			})
 		);
 
-		// 4) Запись: RUB -> валюта (обратный курс)
 		const rateFromRub = 1 / valueRUB;
 
 		operations.push(
