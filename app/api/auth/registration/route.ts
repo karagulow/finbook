@@ -118,7 +118,7 @@ export async function POST(req: Request) {
 						`refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${
 							30 * 24 * 60 * 60
 						}`,
-					].join('; '),
+					].join(', '),
 				},
 			}
 		);
