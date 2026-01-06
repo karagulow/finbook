@@ -130,7 +130,7 @@ export async function POST(req: Request) {
 				categoryId,
 				subcategoryId,
 				description,
-				date: new Date(date).toISOString(),
+				date: new Date(date),
 				userId,
 			},
 		});

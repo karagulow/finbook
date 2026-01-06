@@ -21,8 +21,8 @@ export async function getTransactionsByMonth(accountId?: string | null) {
 	const y = now.getFullYear();
 	const m = now.getMonth() + 1;
 
-	const startDate = new Date(Date.UTC(y, m - 1, 1, 0, 0, 0));
-	const endDate = new Date(Date.UTC(y, m, 0, 23, 59, 59));
+	const startDate = new Date(y, m - 1, 1);
+	const endDate = new Date(y, m, 0, 23, 59, 59);
 
 	// Берём пользователя с валютой
 	const user = await prisma.user.findUnique({
