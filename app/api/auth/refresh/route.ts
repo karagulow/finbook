@@ -8,6 +8,26 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
 
+type RefreshTokenPayload = {
+	userId: string;
+	email: string;
+	jti?: string;
+	iat?: number;
+	exp?: number;
+};
+
+function isRefreshTokenPayload(
+	payload: unknown
+): payload is RefreshTokenPayload {
+	if (typeof payload !== 'object' || payload === null) {
+		return false;
+	}
+
+	const data = payload as Record<string, unknown>;
+
+	return typeof data.userId === 'string' && typeof data.email === 'string';
+}
+
 export async function POST(req: Request) {
 	const cookies = req.headers.get('cookie') ?? '';
 	const oldRefreshToken = cookies
@@ -22,10 +42,19 @@ export async function POST(req: Request) {
 		);
 	}
 
-	let payload: { userId: string; email: string };
+	let payload: RefreshTokenPayload;
 
 	try {
-		payload = jwt.verify(oldRefreshToken, JWT_REFRESH_SECRET) as any;
+		const decoded = jwt.verify(oldRefreshToken, JWT_REFRESH_SECRET);
+
+		if (!isRefreshTokenPayload(decoded)) {
+			return NextResponse.json(
+				{ message: 'Некорректный payload refresh токена' },
+				{ status: 401 }
+			);
+		}
+
+		payload = decoded;
 	} catch {
 		return NextResponse.json(
 			{ message: 'Невалидный refresh токен' },
