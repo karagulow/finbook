@@ -14,13 +14,18 @@ export type CategoryStat = {
 export const useTransactionsByCategory = () => {
 	const { selectedAccountId } = useSelectedAccount();
 
+	const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 	const { data, isLoading } = useQuery<{
 		incomes: CategoryStat[];
 		expenses: CategoryStat[];
 	}>({
-		queryKey: ['transactions', selectedAccountId],
+		queryKey: ['transactions', selectedAccountId, timeZone],
 		queryFn: async () => {
-			const transactions = await getTransactionsByMonth(selectedAccountId);
+			const transactions = await getTransactionsByMonth({
+				accountId: selectedAccountId,
+				timeZone,
+			});
 
 			const incomeMap = new Map<string, CategoryStat>();
 			const expenseMap = new Map<string, CategoryStat>();
