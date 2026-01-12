@@ -1,7 +1,14 @@
 'use client';
 
 import React, { memo } from 'react';
-import { Button, DatePicker, Input, Select, Textarea } from '@/src/shared/ui';
+import { Controller } from 'react-hook-form';
+import {
+	Button,
+	CurrencyInput,
+	DatePicker,
+	Select,
+	Textarea,
+} from '@/src/shared/ui';
 import { Transaction } from '../model/types';
 import { useTransactionForm } from '../model/use-transaction-form';
 
@@ -18,6 +25,7 @@ const TransactionFormComponent: React.FC<Props> = ({
 }) => {
 	const {
 		register,
+		control,
 		handleSubmit,
 		setValue,
 		watch,
@@ -35,19 +43,29 @@ const TransactionFormComponent: React.FC<Props> = ({
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<div className='flex flex-col gap-5 flex-1 overflow-y-auto'>
-				<Input
-					label='Сумма'
-					type='number'
-					step='any'
-					{...register('amount')}
-					error={errors.amount?.message}
+				<Controller
+					name='amount'
+					control={control}
+					rules={{ required: 'Введите сумму' }}
+					render={({ field, fieldState }) => (
+						<CurrencyInput
+							label='Сумма'
+							placeholder={`${type === 'INCOME' ? '+' : '-'}0,00`}
+							prefix={type === 'INCOME' ? '+' : '-'}
+							value={field.value}
+							onValueChange={field.onChange}
+							error={fieldState.error?.message}
+						/>
+					)}
 				/>
+
 				<DatePicker
 					label='Дата'
 					value={watch('date')}
 					onChange={date => setValue('date', date)}
 					error={errors.date?.message}
 				/>
+
 				<Select
 					label='Счёт'
 					placeholder='Выберите счёт'
@@ -59,6 +77,7 @@ const TransactionFormComponent: React.FC<Props> = ({
 					onChange={val => setValue('accountId', val)}
 					error={errors.accountId?.message}
 				/>
+
 				<Select
 					label='Категория'
 					placeholder='Выберите категорию'
@@ -69,6 +88,7 @@ const TransactionFormComponent: React.FC<Props> = ({
 					onChange={val => setValue('categoryId', val)}
 					error={errors.categoryId?.message}
 				/>
+
 				<Select
 					label='Подкатегория'
 					placeholder='Выберите подкатегорию'
@@ -80,6 +100,7 @@ const TransactionFormComponent: React.FC<Props> = ({
 					onChange={val => setValue('subcategoryId', val)}
 					error={errors.subcategoryId?.message}
 				/>
+
 				<Textarea
 					label='Описание'
 					placeholder='Введите описание'

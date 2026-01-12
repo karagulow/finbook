@@ -30,8 +30,8 @@ export async function getTransactionsByMonth({
 		throw new Error('Invalid timezone');
 	}
 
-	const startDateUtc = now.startOf('month').toUTC().toJSDate();
-	const endDateUtc = now.endOf('month').toUTC().toJSDate();
+	const startDate = now.startOf('month').toUTC().toJSDate();
+	const endDate = now.endOf('month').toUTC().toJSDate();
 
 	// Берём пользователя с валютой
 	const user = await prisma.user.findUnique({
@@ -43,7 +43,7 @@ export async function getTransactionsByMonth({
 	const transactions = await prisma.transaction.findMany({
 		where: {
 			userId,
-			date: { gte: startDateUtc, lte: endDateUtc },
+			date: { gte: startDate, lte: endDate },
 			type: { in: ['INCOME', 'EXPENSE'] },
 			...(accountId && accountId !== 'all' ? { accountId } : {}),
 		},

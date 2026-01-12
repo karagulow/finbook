@@ -20,6 +20,7 @@ export const useTransferForm = (onClose: () => void) => {
 
 	const {
 		register,
+		control,
 		handleSubmit,
 		setValue,
 		watch,
@@ -96,6 +97,7 @@ export const useTransferForm = (onClose: () => void) => {
 
 	return {
 		register,
+		control,
 		handleSubmit,
 		onSubmit,
 		watch,

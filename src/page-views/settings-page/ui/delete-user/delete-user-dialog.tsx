@@ -59,6 +59,7 @@ export const DeleteUserDialog: React.FC<Props> = ({
 					onChange={e => setEmailInput(e.target.value)}
 					placeholder={user.email}
 					disabled={isLoading}
+					inputMode='email'
 				/>
 
 				<div className='flex justify-end gap-3 w-full'>

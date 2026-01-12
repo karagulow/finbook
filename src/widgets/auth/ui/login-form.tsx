@@ -67,6 +67,7 @@ export const LoginForm: React.FC = () => {
 			<div className='flex flex-col w-full gap-4'>
 				<Input
 					placeholder='Введите почту'
+					inputMode='email'
 					{...register('email')}
 					error={errors.email?.message}
 				/>

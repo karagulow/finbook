@@ -37,6 +37,7 @@ export const useTransactionForm = (
 	const {
 		watch,
 		setValue,
+		control,
 		handleSubmit,
 		register,
 		formState: { errors },
@@ -95,6 +96,7 @@ export const useTransactionForm = (
 	return {
 		register,
 		handleSubmit,
+		control,
 		setValue,
 		watch,
 		errors,
