@@ -34,8 +34,14 @@ export const HomePage: React.FC = () => {
 						</>
 					) : (
 						<>
-							<CategoryDoughnutChart title='Доходы' categories={incomes} />
-							<CategoryDoughnutChart title='Расходы' categories={expenses} />
+							<CategoryDoughnutChart
+								title='Доходы за месяц'
+								categories={incomes}
+							/>
+							<CategoryDoughnutChart
+								title='Расходы за месяц'
+								categories={expenses}
+							/>
 						</>
 					)}
 				</div>

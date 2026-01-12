@@ -3,10 +3,17 @@
 import { cookies } from 'next/headers';
 import { prisma } from '@/prisma/prisma-client';
 import { verify } from 'jsonwebtoken';
+import { DateTime } from 'luxon';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function getTransactionsByMonth(accountId?: string | null) {
+export async function getTransactionsByMonth({
+	accountId,
+	timeZone,
+}: {
+	accountId?: string | null;
+	timeZone: string;
+}) {
 	const cookieStore = await cookies();
 	const token = cookieStore.get('authToken')?.value;
 
@@ -17,12 +24,14 @@ export async function getTransactionsByMonth(accountId?: string | null) {
 	const decoded = verify(token, JWT_SECRET) as { userId: string };
 	const userId = decoded.userId;
 
-	const now = new Date();
-	const y = now.getFullYear();
-	const m = now.getMonth() + 1;
+	const now = DateTime.now().setZone(timeZone);
 
-	const startDate = new Date(y, m - 1, 1);
-	const endDate = new Date(y, m, 0, 23, 59, 59);
+	if (!now.isValid) {
+		throw new Error('Invalid timezone');
+	}
+
+	const startDateUtc = now.startOf('month').toUTC().toJSDate();
+	const endDateUtc = now.endOf('month').toUTC().toJSDate();
 
 	// Берём пользователя с валютой
 	const user = await prisma.user.findUnique({
@@ -34,7 +43,7 @@ export async function getTransactionsByMonth(accountId?: string | null) {
 	const transactions = await prisma.transaction.findMany({
 		where: {
 			userId,
-			date: { gte: startDate, lte: endDate },
+			date: { gte: startDateUtc, lte: endDateUtc },
 			type: { in: ['INCOME', 'EXPENSE'] },
 			...(accountId && accountId !== 'all' ? { accountId } : {}),
 		},

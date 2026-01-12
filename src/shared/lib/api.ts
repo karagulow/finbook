@@ -1,23 +1,63 @@
 import axios from 'axios';
 
-const api = axios.create({ withCredentials: true });
+const api = axios.create({
+	withCredentials: true,
+});
+
+let isRefreshing = false;
+let failedQueue: {
+	resolve: (value?: unknown) => void;
+	reject: (reason?: any) => void;
+}[] = [];
+
+const processQueue = (error: any) => {
+	failedQueue.forEach(promise => {
+		if (error) {
+			promise.reject(error);
+		} else {
+			promise.resolve();
+		}
+	});
+	failedQueue = [];
+};
 
 api.interceptors.response.use(
-	res => res,
+	response => response,
 	async error => {
-		if (error.response?.status === 401 && !error.config._retry) {
-			error.config._retry = true;
-			const refresh = await fetch('/api/auth/refresh', {
-				method: 'POST',
-				credentials: 'include',
-			});
-			if (refresh.ok) {
-				return api(error.config);
-			} else {
-				window.location.href = '/login';
-			}
+		const originalRequest = error.config;
+
+		if (error.response?.status !== 401) {
+			return Promise.reject(error);
 		}
-		throw error;
+
+		if (originalRequest._retry) {
+			return Promise.reject(error);
+		}
+
+		if (isRefreshing) {
+			return new Promise((resolve, reject) => {
+				failedQueue.push({
+					resolve: () => resolve(api(originalRequest)),
+					reject,
+				});
+			});
+		}
+
+		originalRequest._retry = true;
+		isRefreshing = true;
+
+		try {
+			await api.post('/api/auth/refresh');
+
+			processQueue(null);
+			return api(originalRequest);
+		} catch (err) {
+			processQueue(err);
+			window.location.href = '/login';
+			return Promise.reject(err);
+		} finally {
+			isRefreshing = false;
+		}
 	}
 );
 

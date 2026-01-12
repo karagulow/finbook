@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { PrismaClient, CategoryType } from '@prisma/client';
 import { baseCategories } from '@/constants/base-categories';
 import { UAParser } from 'ua-parser-js';
+import crypto from 'crypto';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;

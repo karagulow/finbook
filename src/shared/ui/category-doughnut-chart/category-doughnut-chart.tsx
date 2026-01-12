@@ -54,6 +54,7 @@ const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
 	};
 
 	const options = {
+		cutout: '65%',
 		plugins: {
 			legend: { display: false },
 			tooltip: {
@@ -82,6 +83,19 @@ const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
 
 			<div className='max-w-[400px] w-full aspect-square relative'>
 				<Doughnut data={data} options={options} />
+
+				<div className='absolute inset-0 flex flex-col items-center justify-center pointer-events-none'>
+					<span className='text-[13px] text-[var(--foreground-secondary)]'>
+						Всего
+					</span>
+					<span className='font-bold text-[18px] text-[var(--foreground-primary)]'>
+						{total.toLocaleString('ru-RU', {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						})}{' '}
+						₽
+					</span>
+				</div>
 			</div>
 
 			<ul className='flex flex-col gap-2 w-full'>
