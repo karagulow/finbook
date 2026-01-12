@@ -23,6 +23,7 @@ export const useTransferForm = (
 
 	const {
 		register,
+		control,
 		handleSubmit,
 		setValue,
 		watch,
@@ -101,6 +102,7 @@ export const useTransferForm = (
 
 	return {
 		register,
+		control,
 		handleSubmit,
 		onSubmit,
 		watch,

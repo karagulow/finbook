@@ -24,3 +24,4 @@ export { Divider } from './divider';
 export { SplashScreen } from './splash-screen';
 export { Statusbar } from './statusbar';
 export { EmojiPicker } from './emoji-picker';
+export { CurrencyInput } from './currency-input';

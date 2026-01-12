@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { Button, Input, Select } from '@/src/shared/ui';
+
+import { Button, CurrencyInput, Input, Select } from '@/src/shared/ui';
 import { EditAccountModalContentProps } from '../model/types';
 import { useEditAccountForm } from '../model/use-edit-account-form';
 
@@ -52,16 +53,19 @@ export const EditAccountModalContent: React.FC<
 					)}
 				/>
 
-				<Input
-					label='Остаток'
-					placeholder='0'
-					type='number'
-					inputMode='decimal'
-					{...register('amount', {
-						required: 'Введите сумму',
-						valueAsNumber: true,
-					})}
-					error={errors.amount?.message}
+				<Controller
+					name='amount'
+					control={control}
+					rules={{ required: 'Введите сумму' }}
+					render={({ field, fieldState }) => (
+						<CurrencyInput
+							label='Остаток'
+							placeholder='0,00'
+							value={field.value}
+							onValueChange={field.onChange}
+							error={fieldState.error?.message}
+						/>
+					)}
 				/>
 			</div>
 
