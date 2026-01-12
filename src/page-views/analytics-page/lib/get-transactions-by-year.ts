@@ -3,10 +3,17 @@
 import { cookies } from 'next/headers';
 import { prisma } from '@/prisma/prisma-client';
 import { verify } from 'jsonwebtoken';
+import { DateTime } from 'luxon';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function getTransactionsByYear(accountId?: string | null) {
+export async function getTransactionsByYear({
+	accountId,
+	timeZone,
+}: {
+	accountId?: string | null;
+	timeZone: string;
+}) {
 	const cookieStore = await cookies();
 	const token = cookieStore.get('authToken')?.value;
 
@@ -17,11 +24,14 @@ export async function getTransactionsByYear(accountId?: string | null) {
 	const decoded = verify(token, JWT_SECRET) as { userId: string };
 	const userId = decoded.userId;
 
-	const now = new Date();
-	const y = now.getFullYear();
+	const now = DateTime.now().setZone(timeZone);
 
-	const startDate = new Date(y, 0, 1);
-	const endDate = new Date(y, 11, 31, 23, 59, 59);
+	if (!now.isValid) {
+		throw new Error('Invalid timezone');
+	}
+
+	const startDate = now.startOf('year').toUTC().toJSDate();
+	const endDate = now.endOf('year').toUTC().toJSDate();
 
 	const user = await prisma.user.findUnique({
 		where: { id: userId },

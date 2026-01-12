@@ -8,13 +8,18 @@ import type { AnalyticsTransaction } from '../model/types';
 export const useYearlyTransactions = () => {
 	const { selectedAccountId } = useSelectedAccount();
 
+	const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 	const queryFn: QueryFunction<AnalyticsTransaction[]> = async () => {
-		const txs = await getTransactionsByYear(selectedAccountId);
+		const txs = await getTransactionsByYear({
+			accountId: selectedAccountId,
+			timeZone,
+		});
 		return txs as AnalyticsTransaction[];
 	};
 
 	const { data, isLoading, isFetching } = useQuery<AnalyticsTransaction[]>({
-		queryKey: ['transactions', selectedAccountId],
+		queryKey: ['transactions', selectedAccountId, timeZone],
 		queryFn,
 		refetchOnWindowFocus: false,
 	});
