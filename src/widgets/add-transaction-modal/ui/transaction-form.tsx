@@ -33,6 +33,7 @@ const TransactionFormComponent: React.FC<Props> = ({ type, onClose }) => {
 					label='Сумма'
 					type='number'
 					step='any'
+					inputMode='decimal'
 					{...register('amount')}
 					error={errors.amount?.message}
 				/>

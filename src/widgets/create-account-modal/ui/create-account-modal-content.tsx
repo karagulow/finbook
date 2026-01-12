@@ -56,6 +56,7 @@ export const CreateAccountModalContent: React.FC<
 					label='Остаток'
 					placeholder='0'
 					type='number'
+					inputMode='decimal'
 					{...register('amount', {
 						required: 'Введите сумму',
 						valueAsNumber: true,

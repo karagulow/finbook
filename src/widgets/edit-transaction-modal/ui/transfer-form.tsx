@@ -37,6 +37,7 @@ export const TransferForm: React.FC<Props> = ({ onClose, transaction }) => {
 					label='Сумма'
 					type='number'
 					step='any'
+					inputMode='decimal'
 					{...register('amountFrom')}
 					error={errors.amountFrom?.message}
 				/>
