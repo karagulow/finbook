@@ -1,16 +1,19 @@
-import axios from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 const api = axios.create({
 	withCredentials: true,
 });
 
 let isRefreshing = false;
-let failedQueue: {
-	resolve: (value?: unknown) => void;
-	reject: (reason?: any) => void;
-}[] = [];
 
-const processQueue = (error: any) => {
+type FailedQueueItem = {
+	resolve: (value?: AxiosResponse) => void;
+	reject: (reason?: unknown) => void;
+};
+
+let failedQueue: FailedQueueItem[] = [];
+
+const processQueue = (error: unknown | null) => {
 	failedQueue.forEach(promise => {
 		if (error) {
 			promise.reject(error);
@@ -22,8 +25,10 @@ const processQueue = (error: any) => {
 };
 
 api.interceptors.response.use(
-	response => response,
-	async error => {
+	(response: AxiosResponse) => response,
+	async (
+		error: AxiosError & { config: AxiosRequestConfig & { _retry?: boolean } }
+	) => {
 		const originalRequest = error.config;
 
 		if (error.response?.status !== 401) {
@@ -35,7 +40,7 @@ api.interceptors.response.use(
 		}
 
 		if (isRefreshing) {
-			return new Promise((resolve, reject) => {
+			return new Promise<AxiosResponse>((resolve, reject) => {
 				failedQueue.push({
 					resolve: () => resolve(api(originalRequest)),
 					reject,
@@ -51,7 +56,7 @@ api.interceptors.response.use(
 
 			processQueue(null);
 			return api(originalRequest);
-		} catch (err) {
+		} catch (err: unknown) {
 			processQueue(err);
 			window.location.href = '/login';
 			return Promise.reject(err);
