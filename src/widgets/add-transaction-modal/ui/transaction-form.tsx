@@ -38,14 +38,6 @@ const TransactionFormComponent: React.FC<Props> = ({ type, onClose }) => {
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<div className='flex flex-col gap-5 flex-1 overflow-y-auto'>
-				<CurrencyInput
-					label='Сумма'
-					placeholder={`${type === 'INCOME' ? '+' : '-'}0,00`}
-					prefix={type === 'INCOME' ? '+' : '-'}
-					{...register('amount')}
-					error={errors.amount?.message}
-				/>
-
 				<Controller
 					name='amount'
 					control={control}
