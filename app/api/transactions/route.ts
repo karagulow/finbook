@@ -15,8 +15,16 @@ export async function GET(req: Request) {
 			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ error: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const { searchParams } = new URL(req.url);
 		const limit = parseInt(searchParams.get('limit') || '25', 10);
@@ -101,8 +109,16 @@ export async function POST(req: Request) {
 			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ error: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const body = await req.json();
 		const {

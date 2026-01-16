@@ -15,8 +15,16 @@ export async function POST(req: Request) {
 			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ error: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const body = await req.json();
 		const { accountIdFrom, accountIdTo, amountFrom, rate, description, date } =

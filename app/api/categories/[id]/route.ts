@@ -20,8 +20,16 @@ export async function DELETE(req: Request, context: RouteContext) {
 			return NextResponse.json({ message: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ message: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 		const categoryId = id;
 
 		const category = await prisma.category.findUnique({
@@ -69,8 +77,16 @@ export async function PUT(req: Request, context: RouteContext) {
 			return NextResponse.json({ message: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ message: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 		const categoryId = id;
 
 		const body = await req.json();

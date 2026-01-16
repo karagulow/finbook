@@ -10,9 +10,20 @@ export async function PATCH(req: Request) {
 		const cookieStore = await cookies();
 		const token = cookieStore.get('authToken')?.value;
 
-		if (!token) throw new Error('Не авторизован');
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		if (!token) {
+			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
+		}
+
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ error: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const { orderedIds } = await req.json();
 

@@ -109,20 +109,28 @@ export async function POST(req: Request) {
 			},
 		});
 
-		return NextResponse.json(
+		const response = NextResponse.json(
 			{ message: 'Вы успешно зарегистрировались!', token },
-			{
-				status: 201,
-				headers: {
-					'Set-Cookie': [
-						`authToken=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=900`,
-						`refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${
-							30 * 24 * 60 * 60
-						}`,
-					].join(', '),
-				},
-			}
+			{ status: 201 }
 		);
+
+		response.cookies.set('authToken', token, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 900,
+		});
+
+		response.cookies.set('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 30 * 24 * 60 * 60,
+		});
+
+		return response;
 	} catch (error) {
 		console.error('Registration error:', error);
 		return NextResponse.json(

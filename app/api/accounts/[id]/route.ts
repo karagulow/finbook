@@ -21,8 +21,16 @@ export async function PUT(req: Request, context: RouteContext) {
 			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ error: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const body = await req.json();
 		const { name, amount, currencyId } = body;
@@ -70,8 +78,16 @@ export async function DELETE(req: Request, context: RouteContext) {
 			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ error: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const account = await prisma.account.findUnique({
 			where: { id },

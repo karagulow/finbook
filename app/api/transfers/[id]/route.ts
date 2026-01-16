@@ -21,8 +21,16 @@ export async function PUT(req: Request, context: RouteContext) {
 			return NextResponse.json({ error: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		const userId = decoded.userId;
+		let userId: string;
+		try {
+			const decoded = verify(token, JWT_SECRET) as { userId: string };
+			userId = decoded.userId;
+		} catch {
+			return NextResponse.json(
+				{ error: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const body = await req.json();
 		const { accountIdFrom, accountIdTo, amountFrom, rate, description, date } =
@@ -42,7 +50,6 @@ export async function PUT(req: Request, context: RouteContext) {
 			);
 		}
 
-		// ищем текущую транзакцию
 		const existing = await prisma.transaction.findUnique({
 			where: { id },
 		});
@@ -65,7 +72,6 @@ export async function PUT(req: Request, context: RouteContext) {
 			);
 		}
 
-		// откатываем старые изменения баланса
 		if (existing.accountIdFrom && existing.amountFrom) {
 			await prisma.account.update({
 				where: { id: existing.accountIdFrom },
@@ -79,7 +85,6 @@ export async function PUT(req: Request, context: RouteContext) {
 			});
 		}
 
-		// валидируем новые аккаунты
 		const accountFrom = await prisma.account.findUnique({
 			where: { id: accountIdFrom },
 			include: { currency: true },
@@ -106,7 +111,6 @@ export async function PUT(req: Request, context: RouteContext) {
 
 		const amountTo = amountFrom * finalRate;
 
-		// обновляем транзакцию
 		const updated = await prisma.transaction.update({
 			where: { id },
 			data: {
@@ -119,7 +123,6 @@ export async function PUT(req: Request, context: RouteContext) {
 			},
 		});
 
-		// применяем новые изменения к балансам
 		await prisma.account.update({
 			where: { id: accountIdFrom },
 			data: { balance: { decrement: amountFrom } },

@@ -12,7 +12,15 @@ export async function GET(req: NextRequest) {
 			return NextResponse.json({ message: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
+		let decoded: { userId: string };
+		try {
+			decoded = verify(token, JWT_SECRET) as { userId: string };
+		} catch {
+			return NextResponse.json(
+				{ message: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const user = await prisma.user.findUnique({
 			where: { id: decoded.userId },

@@ -18,18 +18,28 @@ export async function POST(req: Request) {
 			});
 		}
 
-		return NextResponse.json(
+		const response = NextResponse.json(
 			{ message: 'Вы успешно вышли из системы.' },
-			{
-				status: 200,
-				headers: {
-					'Set-Cookie': [
-						`authToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0`,
-						`refreshToken=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0`,
-					].join(', '),
-				},
-			}
+			{ status: 200 }
 		);
+
+		response.cookies.set('authToken', '', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 0,
+		});
+
+		response.cookies.set('refreshToken', '', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 0,
+		});
+
+		return response;
 	} catch (error) {
 		console.error(error);
 		return NextResponse.json(

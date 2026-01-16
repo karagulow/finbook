@@ -13,7 +13,15 @@ export async function GET(req: NextRequest) {
 			return NextResponse.json({ message: 'Не авторизован' }, { status: 401 });
 		}
 
-		const decoded = verify(token, JWT_SECRET) as { userId: string };
+		let decoded: { userId: string };
+		try {
+			decoded = verify(token, JWT_SECRET) as { userId: string };
+		} catch {
+			return NextResponse.json(
+				{ message: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		const fullUser = await prisma.user.findUnique({
 			where: { id: decoded.userId },
@@ -58,7 +66,15 @@ export async function DELETE() {
 	}
 
 	try {
-		const { userId } = verify(token, JWT_SECRET) as { userId: string };
+		let userId: string;
+		try {
+			userId = (verify(token, JWT_SECRET) as { userId: string }).userId;
+		} catch {
+			return NextResponse.json(
+				{ error: 'Токен недействителен или истёк' },
+				{ status: 401 }
+			);
+		}
 
 		await prisma.user.delete({
 			where: { id: userId },

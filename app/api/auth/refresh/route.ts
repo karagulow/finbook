@@ -48,29 +48,83 @@ export async function POST(req: Request) {
 		const decoded = jwt.verify(oldRefreshToken, JWT_REFRESH_SECRET);
 
 		if (!isRefreshTokenPayload(decoded)) {
-			return NextResponse.json(
+			const errorResponse = NextResponse.json(
 				{ message: 'Некорректный payload refresh токена' },
 				{ status: 401 }
 			);
+
+			errorResponse.cookies.set('authToken', '', {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict',
+				path: '/',
+				maxAge: 0,
+			});
+
+			errorResponse.cookies.set('refreshToken', '', {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict',
+				path: '/',
+				maxAge: 0,
+			});
+
+			return errorResponse;
 		}
 
 		payload = decoded;
-	} catch {
-		return NextResponse.json(
-			{ message: 'Невалидный refresh токен' },
+	} catch (error) {
+		const errorResponse = NextResponse.json(
+			{ message: 'Refresh токен истёк или невалиден' + error },
 			{ status: 401 }
 		);
+
+		errorResponse.cookies.set('authToken', '', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 0,
+		});
+
+		errorResponse.cookies.set('refreshToken', '', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 0,
+		});
+
+		return errorResponse;
 	}
 
 	const existing = await prisma.refreshToken.findFirst({
 		where: { token: oldRefreshToken, userId: payload.userId },
 	});
 
-	if (!existing || existing.expiresAt < new Date()) {
-		return NextResponse.json(
-			{ message: 'Refresh токен истёк' },
+	if (!existing || existing.expiresAt < new Date() || existing.revoked) {
+		const errorResponse = NextResponse.json(
+			{ message: 'Refresh токен недействителен или истёк' },
 			{ status: 401 }
 		);
+
+		errorResponse.cookies.set('authToken', '', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 0,
+		});
+
+		errorResponse.cookies.set('refreshToken', '', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 0,
+		});
+
+		return errorResponse;
 	}
 
 	const accessToken = jwt.sign(
@@ -94,33 +148,66 @@ export async function POST(req: Request) {
 		uaResult.os.version ?? ''
 	}`.trim();
 
-	await prisma.$transaction(async tx => {
-		await tx.refreshToken.delete({
-			where: { token: oldRefreshToken },
+	try {
+		await prisma.$transaction(async tx => {
+			await tx.refreshToken.deleteMany({
+				where: { token: oldRefreshToken },
+			});
+
+			await tx.refreshToken.create({
+				data: {
+					id: jti,
+					token: refreshToken,
+					userId: payload.userId,
+					expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+					deviceInfo,
+				},
+			});
+		});
+	} catch (error) {
+		console.error('Ошибка при обновлении токенов:', error);
+
+		const errorResponse = NextResponse.json(
+			{ message: 'Ошибка при обновлении токенов' },
+			{ status: 500 }
+		);
+
+		errorResponse.cookies.set('authToken', '', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 0,
 		});
 
-		await tx.refreshToken.create({
-			data: {
-				id: jti,
-				token: refreshToken,
-				userId: payload.userId,
-				expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-				deviceInfo,
-			},
+		errorResponse.cookies.set('refreshToken', '', {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 0,
 		});
+
+		return errorResponse;
+	}
+
+	const response = NextResponse.json({ message: 'Токены обновлены' });
+
+	response.cookies.set('authToken', accessToken, {
+		httpOnly: true,
+		secure: true,
+		sameSite: 'strict',
+		path: '/',
+		maxAge: 900,
 	});
 
-	return NextResponse.json(
-		{ message: 'Токены обновлены' },
-		{
-			headers: {
-				'Set-Cookie': [
-					`authToken=${accessToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=900`,
-					`refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${
-						30 * 24 * 60 * 60
-					}`,
-				].join(', '),
-			},
-		}
-	);
+	response.cookies.set('refreshToken', refreshToken, {
+		httpOnly: true,
+		secure: true,
+		sameSite: 'strict',
+		path: '/',
+		maxAge: 30 * 24 * 60 * 60,
+	});
+
+	return response;
 }
