@@ -59,20 +59,28 @@ export async function POST(req: Request) {
 			},
 		});
 
-		return NextResponse.json(
+		const response = NextResponse.json(
 			{ message: 'Вы успешно вошли в систему!' },
-			{
-				status: 200,
-				headers: {
-					'Set-Cookie': [
-						`authToken=${accessToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=900`,
-						`refreshToken=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${
-							30 * 24 * 60 * 60
-						}`,
-					].join(', '),
-				},
-			}
+			{ status: 200 }
 		);
+
+		response.cookies.set('authToken', accessToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 900,
+		});
+
+		response.cookies.set('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'strict',
+			path: '/',
+			maxAge: 30 * 24 * 60 * 60,
+		});
+
+		return response;
 	} catch (error) {
 		console.error('Ошибка входа:', error);
 		return NextResponse.json(

@@ -21,8 +21,13 @@ export async function getTransactionsByMonth({
 		throw new Error('Не авторизован');
 	}
 
-	const decoded = verify(token, JWT_SECRET) as { userId: string };
-	const userId = decoded.userId;
+	let userId: string;
+	try {
+		const decoded = verify(token, JWT_SECRET) as { userId: string };
+		userId = decoded.userId;
+	} catch {
+		throw new Error('Токен недействителен или истёк');
+	}
 
 	const now = DateTime.now().setZone(timeZone);
 
@@ -33,7 +38,6 @@ export async function getTransactionsByMonth({
 	const startDate = now.startOf('month').toUTC().toJSDate();
 	const endDate = now.endOf('month').toUTC().toJSDate();
 
-	// Берём пользователя с валютой
 	const user = await prisma.user.findUnique({
 		where: { id: userId },
 		include: { currency: true },
@@ -53,7 +57,6 @@ export async function getTransactionsByMonth({
 		},
 	});
 
-	// Конвертируем суммы в валюту пользователя
 	const converted = [];
 	for (const tx of transactions) {
 		if (!tx.amount) continue;
@@ -61,7 +64,6 @@ export async function getTransactionsByMonth({
 		let amountInUserCurrency = tx.amount;
 
 		if (tx.account?.currencyId && tx.account.currencyId !== user.currencyId) {
-			// ищем курс "из валюты счета в валюту пользователя"
 			let rateRecord = await prisma.exchangeRate.findFirst({
 				where: { fromId: tx.account.currencyId, toId: user.currencyId },
 				orderBy: { date: 'desc' },
@@ -70,7 +72,6 @@ export async function getTransactionsByMonth({
 			if (rateRecord) {
 				amountInUserCurrency = tx.amount * rateRecord.rate;
 			} else {
-				// ищем обратный курс
 				rateRecord = await prisma.exchangeRate.findFirst({
 					where: { fromId: user.currencyId, toId: tx.account.currencyId },
 					orderBy: { date: 'desc' },

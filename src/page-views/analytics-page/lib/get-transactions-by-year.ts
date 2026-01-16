@@ -21,8 +21,13 @@ export async function getTransactionsByYear({
 		throw new Error('Не авторизован');
 	}
 
-	const decoded = verify(token, JWT_SECRET) as { userId: string };
-	const userId = decoded.userId;
+	let userId: string;
+	try {
+		const decoded = verify(token, JWT_SECRET) as { userId: string };
+		userId = decoded.userId;
+	} catch {
+		throw new Error('Токен недействителен или истёк');
+	}
 
 	const now = DateTime.now().setZone(timeZone);
 
