@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import autoAnimate from '@formkit/auto-animate';
 import {
 	DndContext,
@@ -15,10 +17,13 @@ import {
 	SortableContext,
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+	restrictToVerticalAxis,
+	restrictToParentElement,
+} from '@dnd-kit/modifiers';
+
 import { AccountItem } from './account-item';
 import { Account } from '../model/types';
-import toast from 'react-hot-toast';
 import { toastOptions, api } from '@/src/shared/lib';
 
 interface Props {
@@ -76,6 +81,7 @@ export const AccountList: React.FC<Props> = ({ accounts }) => {
 		<DndContext
 			sensors={sensors}
 			collisionDetection={closestCenter}
+			modifiers={[restrictToVerticalAxis, restrictToParentElement]}
 			onDragEnd={handleDragEnd}
 		>
 			<SortableContext items={items} strategy={verticalListSortingStrategy}>
