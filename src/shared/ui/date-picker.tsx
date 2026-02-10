@@ -43,11 +43,44 @@ export const DatePicker: React.FC<Props> = ({
 				!wrapperRef.current.contains(e.target as Node)
 			) {
 				setOpen(false);
+				setTimeout(() => setAnimate(false), 150);
 			}
 		}
 		document.addEventListener('mousedown', handleClick);
 		return () => document.removeEventListener('mousedown', handleClick);
 	}, []);
+
+	useEffect(() => {
+		function handleFocusIn(e: FocusEvent) {
+			if (!open) return;
+
+			if (
+				wrapperRef.current &&
+				!wrapperRef.current.contains(e.target as Node)
+			) {
+				setOpen(false);
+				setTimeout(() => setAnimate(false), 150);
+			}
+		}
+
+		document.addEventListener('focusin', handleFocusIn);
+		return () => document.removeEventListener('focusin', handleFocusIn);
+	}, [open]);
+
+	useEffect(() => {
+		function handleKey(e: KeyboardEvent) {
+			if (!open) return;
+
+			if (e.key === 'Escape') {
+				setOpen(false);
+				setTimeout(() => setAnimate(false), 150);
+				return;
+			}
+		}
+
+		document.addEventListener('keydown', handleKey);
+		return () => document.removeEventListener('keydown', handleKey);
+	}, [open]);
 
 	const openPicker = () => {
 		if (!open) {
@@ -87,41 +120,46 @@ export const DatePicker: React.FC<Props> = ({
 					<Calendar size={16} className='opacity-70' />
 				</button>
 
-				<div
-					className={cn(
-						'absolute left-0 top-full mt-1 rounded-[6px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg p-2 z-50 transition-all duration-150',
-						open
-							? 'opacity-100 translate-y-0 pointer-events-auto'
-							: 'opacity-0 -translate-y-1 pointer-events-none',
-						animate ? '' : 'hidden',
-					)}
-				>
-					<DayPicker
-						mode='single'
-						selected={value ?? undefined}
-						onSelect={date => {
-							if (date) {
-								onChange?.(date);
-								setOpen(false);
-							}
-						}}
-						navLayout='around'
-						showOutsideDays
-						weekStartsOn={1}
-						locale={ru}
-						className='!bg-[var(--muted)] text-[13px] text-[var(--foreground-primary)]'
-						classNames={{
-							day: 'rounded-[4px] transition hover:bg-[var(--button-secondary)]',
-						}}
-						modifiersClassNames={{
-							outside: 'text-[var(--foreground-secondary)] opacity-60',
-							selected:
-								'bg-[var(--foreground-primary)] font-semibold text-[var(--muted)] rounded-[4px]',
-							today:
-								'text-[var(--foreground-primary)] bg-[var(--button-secondary)] rounded-[4px]',
-						}}
-					/>
-				</div>
+				{animate && (
+					<div
+						className={cn(
+							'absolute left-0 top-full mt-1 rounded-[6px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg p-2 z-50 transition-all duration-150',
+							open
+								? 'opacity-100 translate-y-0 pointer-events-auto'
+								: 'opacity-0 -translate-y-1 pointer-events-none',
+						)}
+					>
+						<DayPicker
+							mode='single'
+							selected={value ?? undefined}
+							onSelect={date => {
+								if (date) {
+									onChange?.(date);
+									setOpen(false);
+									setTimeout(() => setAnimate(false), 150);
+									wrapperRef.current
+										?.querySelector<HTMLButtonElement>('button[type="button"]')
+										?.focus();
+								}
+							}}
+							navLayout='around'
+							showOutsideDays
+							weekStartsOn={1}
+							locale={ru}
+							className='!bg-[var(--muted)] text-[13px] text-[var(--foreground-primary)]'
+							classNames={{
+								day: 'rounded-[4px] transition hover:bg-[var(--button-secondary)]',
+							}}
+							modifiersClassNames={{
+								outside: 'text-[var(--foreground-secondary)] opacity-60',
+								selected:
+									'bg-[var(--foreground-primary)] font-semibold text-[var(--muted)] rounded-[4px]',
+								today:
+									'text-[var(--foreground-primary)] bg-[var(--button-secondary)] rounded-[4px]',
+							}}
+						/>
+					</div>
+				)}
 			</div>
 
 			<div
