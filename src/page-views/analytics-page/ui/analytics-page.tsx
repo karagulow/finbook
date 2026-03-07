@@ -7,6 +7,7 @@ import {
 	CategoryDoughnutChartSkeleton,
 	IncomeExpenseLineChart,
 	IncomeExpenseLineChartSkeleton,
+	Select,
 	StickyHeader,
 } from '@/src/shared/ui';
 import { AccountOverview } from '@/src/widgets/account-overview';
@@ -18,7 +19,7 @@ export const AnalyticsPage: React.FC = () => {
 	const { transactions, loading } = useYearlyTransactions();
 	const lineData = useIncomeExpenseLineData(transactions ?? []);
 	const { incomes, expenses } = useTransactionsByCategoryYearly(
-		transactions ?? []
+		transactions ?? [],
 	);
 
 	return (
@@ -34,10 +35,17 @@ export const AnalyticsPage: React.FC = () => {
 
 				<AccountOverview />
 
-				<p className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
-					⚠️ Аналитика пока в тестовом режиме — мы продолжаем работу над данной
-					страницей. На текущий момент отображаются данные за текущий год.
-				</p>
+				{/* <Select
+					options={[
+						{ value: '2026', label: '2026 год' },
+						{ value: '2025', label: '2025 год' },
+						{ value: '2024', label: '2024 год' },
+					]}
+					value={'2026'}
+					onChange={() => {}}
+					className='w-30'
+					fieldClassName='h-8'
+				/> */}
 
 				{loading ? (
 					<IncomeExpenseLineChartSkeleton />

@@ -9,7 +9,7 @@ import { ConfirmDeleteDialog } from './confirm-delete-dialog';
 import { EditAccountModal } from '../../edit-account-modal';
 
 import { Account } from '../model/types';
-import { toastOptions, api } from '@/src/shared/lib';
+import { toastOptions, api, cn } from '@/src/shared/lib';
 import { GripVertical } from 'lucide-react';
 
 interface Props {
@@ -40,12 +40,19 @@ export const AccountItem: React.FC<Props> = ({ id, account }) => {
 		setIsLoading(false);
 	};
 
-	const { attributes, listeners, setNodeRef, transform, transition } =
-		useSortable({ id });
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id });
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
-		transition,
+		transition: isDragging ? undefined : transition,
+		zIndex: isDragging ? 50 : undefined,
 	};
 
 	return (
@@ -56,12 +63,17 @@ export const AccountItem: React.FC<Props> = ({ id, account }) => {
 				style={style}
 			>
 				<GripVertical
-					className='text-[var(--foreground-secondary)] outline-none cursor-grab active:cursor-grabbing touch-none select-none'
+					className='text-[var(--foreground-secondary)] outline-none cursor-grab hover:text-[var(--foreground-primary)] transition active:cursor-grabbing touch-none select-none'
 					{...attributes}
 					{...listeners}
 				/>
 
-				<div className='flex flex-row justify-between items-center gap-2 w-full bg-[var(--muted)] rounded-[8px] py-2 px-3.5'>
+				<div
+					className={cn(
+						'flex flex-row justify-between items-center gap-2 w-full bg-[var(--muted)] rounded-[8px] py-2 px-3.5',
+						isDragging && 'shadow-xl/20',
+					)}
+				>
 					<div className='flex flex-col gap-0.5'>
 						<span className='font-medium text-[15px] text-[var(--foreground-primary)]'>
 							{account.name}

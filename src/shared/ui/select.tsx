@@ -17,6 +17,8 @@ type Props<T extends string | number = string> = {
 	placeholder?: string;
 	label?: string;
 	error?: string;
+	className?: string;
+	fieldClassName?: string;
 };
 
 export function Select<T extends string | number = string>({
@@ -26,6 +28,8 @@ export function Select<T extends string | number = string>({
 	placeholder = 'Select…',
 	label,
 	error,
+	className,
+	fieldClassName,
 }: Props<T>) {
 	const [open, setOpen] = useState(false);
 	const [animate, setAnimate] = useState(false);
@@ -53,6 +57,7 @@ export function Select<T extends string | number = string>({
 				!wrapperRef.current.contains(e.target as Node)
 			) {
 				setOpen(false);
+				setTimeout(() => setAnimate(false), 150);
 			}
 		}
 		document.addEventListener('mousedown', handleClick);
@@ -65,6 +70,14 @@ export function Select<T extends string | number = string>({
 
 			if (e.key === 'Escape') {
 				setOpen(false);
+				setTimeout(() => setAnimate(false), 150);
+				return;
+			}
+
+			if (e.key === 'Tab') {
+				setOpen(false);
+				setTimeout(() => setAnimate(false), 150);
+				setHighlighted(-1);
 				return;
 			}
 
@@ -104,6 +117,7 @@ export function Select<T extends string | number = string>({
 				if (!opt.disabled) {
 					onChange?.(opt.value);
 					setOpen(false);
+					setTimeout(() => setAnimate(false), 150);
 				}
 			}
 		}
@@ -119,6 +133,8 @@ export function Select<T extends string | number = string>({
 			if (optionRefs.current[selectedIndex]) {
 				optionRefs.current[selectedIndex]?.scrollIntoView({ block: 'nearest' });
 			}
+		} else {
+			setHighlighted(-1);
 		}
 	}, [open, value, options]);
 
@@ -132,8 +148,22 @@ export function Select<T extends string | number = string>({
 		}
 	};
 
+	const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
+		if (open) return;
+
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			openDropdown();
+		}
+
+		if (e.key === 'ArrowDown') {
+			e.preventDefault();
+			openDropdown();
+		}
+	};
+
 	return (
-		<label className='flex flex-col gap-1.5'>
+		<label className={cn('flex flex-col gap-1.5', className)}>
 			{label && (
 				<span className='font-medium text-[13px] text-[var(--foreground-secondary)] cursor-pointer'>
 					{label}
@@ -145,11 +175,14 @@ export function Select<T extends string | number = string>({
 					role='button'
 					tabIndex={0}
 					onClick={openDropdown}
-					className={`h-11.5 w-full flex items-center justify-between rounded-[6px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none transition cursor-pointer ${
+					onKeyDown={handleTriggerKeyDown}
+					className={cn(
+						'h-11.5 w-full flex items-center justify-between rounded-[6px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none focus-visible:border-[var(--border-primary-hover)] transition cursor-pointer',
+						fieldClassName,
 						open
 							? 'border-[var(--border-primary-hover)]'
-							: 'border-[var(--border-primary)] hover:border-[var(--border-primary-hover)]'
-					}`}
+							: 'border-[var(--border-primary)] hover:border-[var(--border-primary-hover)]',
+					)}
 				>
 					<span
 						className={
@@ -162,57 +195,61 @@ export function Select<T extends string | number = string>({
 					<div
 						className={cn(
 							'flex items-center justify-center transition',
-							open && 'rotate-180'
+							open && 'rotate-180',
 						)}
 					>
 						<ChevronDown size={16} className='opacity-70' />
 					</div>
 				</div>
 
-				<ul
-					className={cn(
-						'absolute left-0 top-full mt-1 flex flex-col gap-1 p-1 max-h-60 w-full overflow-auto rounded-[6px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg z-50 transition-all duration-150',
-						open
-							? 'opacity-100 translate-y-0 pointer-events-auto'
-							: 'opacity-0 -translate-y-1 pointer-events-none',
-						animate ? '' : 'hidden'
-					)}
-				>
-					{options.map((opt, idx) => {
-						const active = value === opt.value;
-						const isHighlighted = highlighted === idx;
+				{animate && (
+					<ul
+						className={cn(
+							'absolute left-0 top-full mt-1 flex flex-col gap-1 p-1 max-h-60 w-full overflow-auto rounded-[6px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg z-50 transition-all duration-150',
+							open
+								? 'opacity-100 translate-y-0 pointer-events-auto'
+								: 'opacity-0 -translate-y-1 pointer-events-none',
+						)}
+					>
+						{options.map((opt, idx) => {
+							const active = value === opt.value;
+							const isHighlighted = highlighted === idx;
 
-						return (
-							<li
-								key={String(opt.value)}
-								ref={el => {
-									optionRefs.current[idx] = el;
-								}}
-								onClick={() => {
-									if (opt.disabled) return;
-									onChange?.(opt.value);
-									setTimeout(() => setOpen(false), 0);
-								}}
-								className={`flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] text-[var(--foreground-primary)] rounded-[4px] ${
-									opt.disabled
-										? 'opacity-50 cursor-not-allowed'
-										: isHighlighted
-										? 'bg-[var(--button-tertiary-hover)]'
-										: 'hover:bg-[var(--button-tertiary-hover)]'
-								}`}
-							>
-								{opt.label}
-								{active && <Check size={16} />}
-							</li>
-						);
-					})}
-				</ul>
+							return (
+								<li
+									key={String(opt.value)}
+									ref={el => {
+										optionRefs.current[idx] = el;
+									}}
+									onClick={() => {
+										if (opt.disabled) return;
+										onChange?.(opt.value);
+										setOpen(false);
+										setTimeout(() => setAnimate(false), 150);
+									}}
+									className={cn(
+										'flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] text-[var(--foreground-primary)] rounded-[4px]',
+										opt.disabled
+											? 'opacity-50 cursor-not-allowed'
+											: isHighlighted
+												? 'bg-[var(--button-tertiary-hover)]'
+												: 'hover:bg-[var(--button-tertiary-hover)]',
+									)}
+								>
+									{opt.label}
+									{active && <Check size={16} />}
+								</li>
+							);
+						})}
+					</ul>
+				)}
 			</div>
 
 			<div
-				className={`flex transition-all duration-200 overflow-hidden cursor-pointer ${
-					error ? 'max-h-[100px] opacity-100' : 'max-h-0 opacity-0'
-				}`}
+				className={cn(
+					'flex transition-all duration-200 overflow-hidden cursor-pointer',
+					error ? 'max-h-[100px] opacity-100' : 'max-h-0 opacity-0',
+				)}
 			>
 				{showError && (
 					<span className='font-semibold text-[11px] text-[var(--wrong)]'>

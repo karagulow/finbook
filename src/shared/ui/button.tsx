@@ -14,9 +14,9 @@ interface Props {
 
 const variantStyles: Record<NonNullable<Props['variant']>, string> = {
 	default:
-		'bg-[var(--button-tertiary)] border-[var(--border-primary)] text-[var(--foreground-primary)] hover:bg-[var(--button-tertiary-hover)] hover:border-[var(--border-primary-hover)]',
+		'bg-[var(--button-tertiary)] border-[var(--border-primary)] text-[var(--foreground-primary)] hover:bg-[var(--button-tertiary-hover)] hover:border-[var(--border-primary-hover)] outline-none focus-visible:border-[var(--border-primary-hover)] focus-visible:bg-[var(--button-tertiary-hover)]',
 	wrong:
-		'bg-[var(--background-wrong)] border-[var(--border-wrong)] text-[var(--wrong)] hover:bg-[var(--background-wrong-hover)] hover:border-[var(--border-wrong-hover)]',
+		'bg-[var(--background-wrong)] border-[var(--border-wrong)] text-[var(--wrong)] hover:bg-[var(--background-wrong-hover)] hover:border-[var(--border-wrong-hover)] outline-none focus-visible:border-[var(--border-wrong-hover)] focus-visible:bg-[var(--background-wrong-hover)]',
 };
 
 export const Button: React.FC<Props> = ({
@@ -33,7 +33,7 @@ export const Button: React.FC<Props> = ({
 				'flex flex-row items-center justify-center gap-2 py-2.5 px-5 rounded-[6px] border-[0.5px] text-[13px] font-semibold active:scale-99 transition cursor-pointer',
 				variantStyles[variant],
 				disabled && 'opacity-50 pointer-events-none',
-				className
+				className,
 			)}
 			type={type}
 			disabled={disabled}

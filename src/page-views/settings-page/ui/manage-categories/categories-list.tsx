@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import autoAnimate from '@formkit/auto-animate';
 import {
 	DndContext,
 	closestCenter,
@@ -13,8 +15,10 @@ import {
 	SortableContext,
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import autoAnimate from '@formkit/auto-animate';
+import {
+	restrictToVerticalAxis,
+	restrictToParentElement,
+} from '@dnd-kit/modifiers';
 
 import { CategoryItem } from './category-item';
 import { CategoryItemSkeleton } from './category-item-skeleton';
@@ -74,6 +78,7 @@ export const CategoriesList: React.FC<Props> = ({ loading, categories }) => {
 		<DndContext
 			sensors={sensors}
 			collisionDetection={closestCenter}
+			modifiers={[restrictToVerticalAxis, restrictToParentElement]}
 			onDragEnd={handleDragEnd}
 		>
 			<SortableContext
