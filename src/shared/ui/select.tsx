@@ -17,6 +17,8 @@ type Props<T extends string | number = string> = {
 	placeholder?: string;
 	label?: string;
 	error?: string;
+	className?: string;
+	fieldClassName?: string;
 };
 
 export function Select<T extends string | number = string>({
@@ -26,6 +28,8 @@ export function Select<T extends string | number = string>({
 	placeholder = 'Select…',
 	label,
 	error,
+	className,
+	fieldClassName,
 }: Props<T>) {
 	const [open, setOpen] = useState(false);
 	const [animate, setAnimate] = useState(false);
@@ -159,7 +163,7 @@ export function Select<T extends string | number = string>({
 	};
 
 	return (
-		<label className='flex flex-col gap-1.5'>
+		<label className={cn('flex flex-col gap-1.5', className)}>
 			{label && (
 				<span className='font-medium text-[13px] text-[var(--foreground-secondary)] cursor-pointer'>
 					{label}
@@ -172,11 +176,13 @@ export function Select<T extends string | number = string>({
 					tabIndex={0}
 					onClick={openDropdown}
 					onKeyDown={handleTriggerKeyDown}
-					className={`h-11.5 w-full flex items-center justify-between rounded-[6px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none focus-visible:border-[var(--border-primary-hover)] transition cursor-pointer ${
+					className={cn(
+						'h-11.5 w-full flex items-center justify-between rounded-[6px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none focus-visible:border-[var(--border-primary-hover)] transition cursor-pointer',
+						fieldClassName,
 						open
 							? 'border-[var(--border-primary-hover)]'
-							: 'border-[var(--border-primary)] hover:border-[var(--border-primary-hover)]'
-					}`}
+							: 'border-[var(--border-primary)] hover:border-[var(--border-primary-hover)]',
+					)}
 				>
 					<span
 						className={
@@ -218,16 +224,17 @@ export function Select<T extends string | number = string>({
 									onClick={() => {
 										if (opt.disabled) return;
 										onChange?.(opt.value);
-									setOpen(false);
-									setTimeout(() => setAnimate(false), 150);
+										setOpen(false);
+										setTimeout(() => setAnimate(false), 150);
 									}}
-									className={`flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] text-[var(--foreground-primary)] rounded-[4px] ${
+									className={cn(
+										'flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] text-[var(--foreground-primary)] rounded-[4px]',
 										opt.disabled
 											? 'opacity-50 cursor-not-allowed'
 											: isHighlighted
 												? 'bg-[var(--button-tertiary-hover)]'
-												: 'hover:bg-[var(--button-tertiary-hover)]'
-									}`}
+												: 'hover:bg-[var(--button-tertiary-hover)]',
+									)}
 								>
 									{opt.label}
 									{active && <Check size={16} />}
@@ -239,9 +246,10 @@ export function Select<T extends string | number = string>({
 			</div>
 
 			<div
-				className={`flex transition-all duration-200 overflow-hidden cursor-pointer ${
-					error ? 'max-h-[100px] opacity-100' : 'max-h-0 opacity-0'
-				}`}
+				className={cn(
+					'flex transition-all duration-200 overflow-hidden cursor-pointer',
+					error ? 'max-h-[100px] opacity-100' : 'max-h-0 opacity-0',
+				)}
 			>
 				{showError && (
 					<span className='font-semibold text-[11px] text-[var(--wrong)]'>
