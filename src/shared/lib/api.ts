@@ -7,6 +7,13 @@ const api = axios.create({
 
 let isRefreshing = false;
 
+const AUTH_ENDPOINTS_WITHOUT_REFRESH = [
+	'/api/auth/login',
+	'/api/auth/registration',
+	'/api/auth/refresh',
+	'/api/auth/logout',
+];
+
 type FailedQueueItem = {
 	resolve: (value?: AxiosResponse) => void;
 	reject: (reason?: unknown) => void;
@@ -25,14 +32,24 @@ const processQueue = (error: unknown | null) => {
 	failedQueue = [];
 };
 
+const shouldSkipTokenRefresh = (url?: string) =>
+	Boolean(
+		url &&
+		AUTH_ENDPOINTS_WITHOUT_REFRESH.some(endpoint => url.includes(endpoint)),
+	);
+
 api.interceptors.response.use(
 	(response: AxiosResponse) => response,
 	async (
-		error: AxiosError & { config: AxiosRequestConfig & { _retry?: boolean } }
+		error: AxiosError & { config: AxiosRequestConfig & { _retry?: boolean } },
 	) => {
 		const originalRequest = error.config;
 
 		if (error.response?.status !== 401) {
+			return Promise.reject(error);
+		}
+
+		if (shouldSkipTokenRefresh(originalRequest.url)) {
 			return Promise.reject(error);
 		}
 
@@ -78,7 +95,7 @@ api.interceptors.response.use(
 		} finally {
 			isRefreshing = false;
 		}
-	}
+	},
 );
 
 export { api };
