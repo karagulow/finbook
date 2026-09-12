@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
-import { UAParser } from 'ua-parser-js';
+import { getDeviceInfo } from '@/src/shared/lib/device-info';
 import crypto from 'crypto';
 
 const prisma = new PrismaClient();
@@ -20,12 +20,7 @@ export async function POST(req: Request) {
 	try {
 		const { email, password } = await req.json();
 
-		const userAgent = req.headers.get('user-agent') ?? '';
-		const parser = new UAParser(userAgent);
-		const uaResult = parser.getResult();
-		const deviceInfo = `${uaResult.browser.name} on ${uaResult.os.name} ${
-			uaResult.os.version ?? ''
-		}`.trim();
+		const deviceInfo = await getDeviceInfo(req.headers);
 
 		const user = await prisma.user.findUnique({ where: { email } });
 		if (!user || !(await bcrypt.compare(password, user.password))) {
