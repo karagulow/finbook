@@ -27,7 +27,8 @@ model RefreshToken {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   token      String   @unique
   userId     String   @db.Uuid
-  deviceInfo String? 
+  deviceInfo String?
+  location   String?
   createdAt  DateTime @default(now())
   expiresAt  DateTime
   revoked    Boolean  @default(false)

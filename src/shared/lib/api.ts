@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
+import { getClientLocation } from './client-location';
 
 const api = axios.create({
 	withCredentials: true,
@@ -12,6 +13,12 @@ const AUTH_ENDPOINTS_WITHOUT_REFRESH = [
 	'/api/auth/registration',
 	'/api/auth/refresh',
 	'/api/auth/logout',
+];
+
+const AUTH_ENDPOINTS_WITH_LOCATION = [
+	'/api/auth/login',
+	'/api/auth/registration',
+	'/api/auth/refresh',
 ];
 
 type FailedQueueItem = {
@@ -37,6 +44,28 @@ const shouldSkipTokenRefresh = (url?: string) =>
 		url &&
 		AUTH_ENDPOINTS_WITHOUT_REFRESH.some(endpoint => url.includes(endpoint)),
 	);
+
+api.interceptors.request.use(async config => {
+	if (typeof window === 'undefined') {
+		return config;
+	}
+
+	const url = config.url ?? '';
+	const shouldAttachLocation = AUTH_ENDPOINTS_WITH_LOCATION.some(endpoint =>
+		url.includes(endpoint)
+	);
+
+	if (!shouldAttachLocation) {
+		return config;
+	}
+
+	const location = await getClientLocation();
+	if (location) {
+		config.headers.set('x-client-location', location);
+	}
+
+	return config;
+});
 
 api.interceptors.response.use(
 	(response: AxiosResponse) => response,

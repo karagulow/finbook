@@ -47,6 +47,7 @@ export async function GET() {
 				.map(s => ({
 					id: s.id,
 					deviceInfo: s.deviceInfo,
+					location: s.location,
 					createdAt: s.createdAt,
 					expiresAt: s.expiresAt,
 					revoked: s.revoked,

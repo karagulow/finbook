@@ -6,6 +6,7 @@ import { api } from '@/src/shared/lib';
 export type Session = {
 	id: string;
 	deviceInfo: string;
+	location: string | null;
 	createdAt: string;
 	isCurrent: boolean;
 };
