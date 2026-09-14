@@ -22,7 +22,7 @@ ChartJS.register(
 	LinearScale,
 	Tooltip,
 	Legend,
-	Filler
+	Filler,
 );
 
 type LineChartPoint = {
@@ -41,7 +41,7 @@ const IncomeExpenseLineChartComponent: React.FC<
 > = ({ title, dataPoints }) => {
 	if (!dataPoints || dataPoints.length === 0) {
 		return (
-			<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] rounded-[8px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
+			<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
 				<h2 className='font-bold text-[17px] text-[var(--foreground-primary)] mr-auto'>
 					{title}
 				</h2>
@@ -137,7 +137,7 @@ const IncomeExpenseLineChartComponent: React.FC<
 	};
 
 	return (
-		<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] rounded-[8px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
+		<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
 			<h2 className='font-bold text-[17px] text-[var(--foreground-primary)] mr-auto'>
 				{title}
 			</h2>
@@ -154,5 +154,5 @@ IncomeExpenseLineChartComponent.displayName = 'IncomeExpenseLineChart';
 export const IncomeExpenseLineChart: React.FC<IncomeExpenseLineChartProps> =
 	memo(
 		IncomeExpenseLineChartComponent,
-		(prev, next) => JSON.stringify(prev) === JSON.stringify(next)
+		(prev, next) => JSON.stringify(prev) === JSON.stringify(next),
 	);

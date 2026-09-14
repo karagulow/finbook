@@ -18,10 +18,11 @@ export const NavItem: React.FC<NavItemProps> = ({ icon, label, path }) => {
 		<Link
 			href={path}
 			className={cn(
-				'flex flex-row items-center gap-2.5 rounded-[4px] p-2.5 hover:bg-[var(--muted)] font-medium text-[13px] text-[var(--foreground-secondary)] transition',
+				'flex flex-row items-center gap-2.5 rounded-[8px] py-2 px-2.5 hover:bg-[var(--muted)] border-[0.5px] border-transparent font-medium text-[13px] text-[var(--foreground-secondary)] transition',
 				{
-					'bg-[var(--muted)] text-[var(--foreground-primary)]': isActive,
-				}
+					'bg-[var(--muted)] text-[var(--foreground-primary)] border-[var(--border-primary)]':
+						isActive,
+				},
 			)}
 		>
 			{icon}

@@ -16,7 +16,7 @@ export const LinkItem: React.FC<Props> = ({
 }) => {
 	return (
 		<Link
-			className='flex flex-row items-start justify-between gap-2.5 p-3 rounded-[8px] bg-[var(--card)] active:scale-99 transition'
+			className='flex flex-row items-start justify-between gap-2.5 px-4 py-3 rounded-[16px] bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] active:scale-99 transition'
 			href={path}
 		>
 			<div className='flex flex-col gap-1.5'>

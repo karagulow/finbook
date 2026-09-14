@@ -70,7 +70,7 @@ export const AccountItem: React.FC<Props> = ({ id, account }) => {
 
 				<div
 					className={cn(
-						'flex flex-row justify-between items-center gap-2 w-full bg-[var(--muted)] rounded-[8px] py-2 px-3.5',
+						'flex flex-row justify-between items-center gap-2 w-full bg-[var(--muted)] border-[0.5px] border-[var(--border-primary)] rounded-[10px] py-2 px-3.5',
 						isDragging && 'shadow-xl/20',
 					)}
 				>

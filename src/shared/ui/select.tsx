@@ -177,7 +177,7 @@ export function Select<T extends string | number = string>({
 					onClick={openDropdown}
 					onKeyDown={handleTriggerKeyDown}
 					className={cn(
-						'h-11.5 w-full flex items-center justify-between rounded-[6px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none focus-visible:border-[var(--border-primary-hover)] transition cursor-pointer',
+						'h-11.5 w-full flex items-center justify-between rounded-[8px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none focus-visible:border-[var(--border-primary-hover)] transition cursor-pointer',
 						fieldClassName,
 						open
 							? 'border-[var(--border-primary-hover)]'
@@ -205,7 +205,7 @@ export function Select<T extends string | number = string>({
 				{animate && (
 					<ul
 						className={cn(
-							'absolute left-0 top-full mt-1 flex flex-col gap-1 p-1 max-h-60 w-full overflow-auto rounded-[6px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg z-50 transition-all duration-150',
+							'absolute left-0 top-full mt-1 flex flex-col gap-1 p-1 max-h-60 w-full overflow-auto rounded-[8px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg z-50 transition-all duration-150',
 							open
 								? 'opacity-100 translate-y-0 pointer-events-auto'
 								: 'opacity-0 -translate-y-1 pointer-events-none',
@@ -228,11 +228,11 @@ export function Select<T extends string | number = string>({
 										setTimeout(() => setAnimate(false), 150);
 									}}
 									className={cn(
-										'flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] text-[var(--foreground-primary)] rounded-[4px]',
+										'flex cursor-pointer items-center justify-between px-2 py-2 text-[13px] border-[0.5px] border-transparent text-[var(--foreground-primary)] rounded-[6px]',
 										opt.disabled
 											? 'opacity-50 cursor-not-allowed'
 											: isHighlighted
-												? 'bg-[var(--button-tertiary-hover)]'
+												? 'bg-[var(--button-tertiary-hover)] border-[var(--border-primary-hover)]'
 												: 'hover:bg-[var(--button-tertiary-hover)]',
 									)}
 								>

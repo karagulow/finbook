@@ -28,7 +28,7 @@ const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
 }) => {
 	if (!categories || categories.length === 0) {
 		return (
-			<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] rounded-[8px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
+			<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
 				<h2 className='font-bold text-[17px] text-[var(--foreground-primary)] mr-auto'>
 					{title}
 				</h2>
@@ -76,7 +76,7 @@ const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
 	};
 
 	return (
-		<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] rounded-[8px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
+		<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
 			<h2 className='font-bold text-[17px] text-[var(--foreground-primary)] mr-auto'>
 				{title}
 			</h2>
@@ -139,5 +139,5 @@ export const CategoryDoughnutChart: React.FC<CategoryDoughnutChartProps> = memo(
 			prev.title === next.title &&
 			JSON.stringify(prev.categories) === JSON.stringify(next.categories)
 		);
-	}
+	},
 );

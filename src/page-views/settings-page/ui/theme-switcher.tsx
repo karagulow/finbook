@@ -24,6 +24,7 @@ export default function ThemeSwitcher() {
 				options={themeOptions}
 				value={theme}
 				onChange={val => setTheme(val)}
+				fieldClassName='h-9.5'
 			/>
 		</div>
 	);

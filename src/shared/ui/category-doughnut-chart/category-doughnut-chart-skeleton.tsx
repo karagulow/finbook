@@ -4,7 +4,7 @@ import React from 'react';
 
 export const CategoryDoughnutChartSkeleton: React.FC = () => {
 	return (
-		<div className='flex flex-col gap-5 w-full bg-[var(--card)] rounded-[8px] pt-3 sm:p-7.5 p-4 sm:pt-5 animate-pulse'>
+		<div className='flex flex-col gap-5 w-full bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] pt-3 sm:p-7.5 p-4 sm:pt-5 animate-pulse'>
 			<div className='self-center aspect-square w-4/5 bg-[var(--foreground-secondary)] rounded-full'></div>
 
 			<ul className='flex flex-col gap-3 w-full'>

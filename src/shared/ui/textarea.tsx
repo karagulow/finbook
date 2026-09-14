@@ -30,7 +30,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, Props>(
 
 				<textarea
 					ref={ref}
-					className='min-h-[150px] rounded-[6px] bg-[var(--input-primary)] border-[0.5px] border-[var(--border-primary)] px-3 py-2 font-regular text-[13px] text-[var(--foreground-primary)] placeholder:text-[var(--input-primary-placeholder)] outline-none focus:border-[var(--border-primary-hover)] hover:border-[var(--border-primary-hover)] transition resize-none'
+					className='min-h-[150px] rounded-[8px] bg-[var(--input-primary)] border-[0.5px] border-[var(--border-primary)] px-3 py-2 font-regular text-[13px] text-[var(--foreground-primary)] placeholder:text-[var(--input-primary-placeholder)] outline-none focus:border-[var(--border-primary-hover)] hover:border-[var(--border-primary-hover)] transition resize-none'
 					{...rest}
 				/>
 
@@ -47,7 +47,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, Props>(
 				</div>
 			</label>
 		);
-	}
+	},
 );
 
 Textarea.displayName = 'Textarea';

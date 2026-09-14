@@ -4,9 +4,7 @@ import React from 'react';
 
 export const IncomeExpenseLineChartSkeleton = () => {
 	return (
-		<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] rounded-[8px] pt-3 sm:p-7.5 p-4 sm:pt-5 animate-pulse'>
-			<div className='h-[14px] w-24 bg-[var(--foreground-secondary)] rounded self-start'></div>
-
+		<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] pt-3 sm:p-7.5 p-4 sm:pt-5 animate-pulse'>
 			<div className='w-full max-w-[600px] min-h-[250px] relative flex flex-col justify-end'>
 				<div className='absolute inset-0 grid grid-rows-5 grid-cols-10'>
 					{Array.from({ length: 5 * 10 }).map((_, i) => (

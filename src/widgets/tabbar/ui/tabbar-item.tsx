@@ -21,7 +21,7 @@ export const TabbarItem: React.FC<Props> = ({ icon, label, path }) => {
 				'flex flex-col gap-0.5 items-center justify-center w-full h-full font-medium text-[10px] text-[var(--foreground-secondary)] transition',
 				{
 					'text-[var(--foreground-primary)]': isActive,
-				}
+				},
 			)}
 		>
 			{icon}

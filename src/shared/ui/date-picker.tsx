@@ -105,7 +105,7 @@ export const DatePicker: React.FC<Props> = ({
 					type='button'
 					onClick={openPicker}
 					className={cn(
-						'h-11.5 w-full flex items-center justify-between rounded-[6px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none focus-visible:border-[var(--border-primary-hover)] transition cursor-pointer',
+						'h-11.5 w-full flex items-center justify-between rounded-[8px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none focus-visible:border-[var(--border-primary-hover)] transition cursor-pointer',
 						open
 							? 'border-[var(--border-primary-hover)]'
 							: 'border-[var(--border-primary)] hover:border-[var(--border-primary-hover)]',
