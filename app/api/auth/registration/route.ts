@@ -3,7 +3,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient, CategoryType } from '@prisma/client';
 import { baseCategories } from '@/constants/base-categories';
-import { UAParser } from 'ua-parser-js';
+import { getDeviceInfo } from '@/src/shared/lib/device-info';
+import { getRequestLocation } from '@/src/shared/lib/request-location';
 import crypto from 'crypto';
 
 const prisma = new PrismaClient();
@@ -21,12 +22,10 @@ export async function POST(req: Request) {
 	try {
 		const { email, password, currencyId } = await req.json();
 
-		const userAgent = req.headers.get('user-agent') ?? '';
-		const parser = new UAParser(userAgent);
-		const uaResult = parser.getResult();
-		const deviceInfo = `${uaResult.browser.name} on ${uaResult.os.name} ${
-			uaResult.os.version ?? ''
-		}`.trim();
+		const [deviceInfo, location] = await Promise.all([
+			getDeviceInfo(req.headers),
+			getRequestLocation(req.headers),
+		]);
 
 		if (await prisma.user.findUnique({ where: { email } })) {
 			return NextResponse.json(
@@ -106,6 +105,7 @@ export async function POST(req: Request) {
 				userId: user.id,
 				expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 				deviceInfo,
+				location,
 			},
 		});
 

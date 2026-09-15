@@ -9,7 +9,7 @@ const ICON_STROKE_WIDTH = 1.5;
 
 export const Navigation: React.FC = () => {
 	return (
-		<nav className='flex flex-col w-full gap-1'>
+		<nav className='flex flex-col w-full gap-2'>
 			<NavItem
 				path='/'
 				icon={<LayoutGrid size={ICON_SIZE} strokeWidth={ICON_STROKE_WIDTH} />}

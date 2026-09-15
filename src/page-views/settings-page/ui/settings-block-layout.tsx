@@ -16,7 +16,7 @@ export const SettingsBlockLayout: React.FC<SettingsBlockLayoutProps> = ({
 	children,
 }) => {
 	return (
-		<div className='flex flex-col gap-4 sm:gap-5 w-full p-5 bg-[var(--card)] rounded-[8px] font-medium text-[13px] text-[var(--foreground-secondary)]'>
+		<div className='flex flex-col gap-4 sm:gap-5 w-full p-5 bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] font-medium text-[13px] text-[var(--foreground-secondary)]'>
 			<h2 className='font-bold text-[19px] text-[var(--foreground-primary)]'>
 				{title}
 			</h2>
@@ -33,7 +33,7 @@ export const SettingsBlockItem: React.FC<SettingsBlockItemProps> = ({
 		<div
 			className={cn(
 				'flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-5 sm:gap-2.5',
-				className
+				className,
 			)}
 		>
 			{children}

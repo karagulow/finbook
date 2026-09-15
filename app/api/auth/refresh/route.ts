@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
-import { UAParser } from 'ua-parser-js';
+import { getDeviceInfo } from '@/src/shared/lib/device-info';
+import { getRequestLocation } from '@/src/shared/lib/request-location';
 import crypto from 'crypto';
 
 const prisma = new PrismaClient();
@@ -141,12 +142,10 @@ export async function POST(req: Request) {
 		{ expiresIn: '30d' }
 	);
 
-	const userAgent = req.headers.get('user-agent') ?? '';
-	const parser = new UAParser(userAgent);
-	const uaResult = parser.getResult();
-	const deviceInfo = `${uaResult.browser.name} on ${uaResult.os.name} ${
-		uaResult.os.version ?? ''
-	}`.trim();
+	const [deviceInfo, location] = await Promise.all([
+		getDeviceInfo(req.headers),
+		getRequestLocation(req.headers),
+	]);
 
 	try {
 		await prisma.$transaction(async tx => {
@@ -161,6 +160,7 @@ export async function POST(req: Request) {
 					userId: payload.userId,
 					expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 					deviceInfo,
+					location: location ?? existing.location,
 				},
 			});
 		});

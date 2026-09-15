@@ -13,7 +13,7 @@ export const LogoutButton: React.FC = () => {
 	return (
 		<>
 			<button
-				className='flex flex-row items-center gap-2.5 p-2.5 w-full rounded-[6px] hover:bg-[#ff85830e] font-medium text-[13px] text-[var(--wrong)] transition cursor-pointer'
+				className='flex flex-row items-center gap-2.5 py-2 px-3 w-full rounded-[8px] border-[0.5px] border-transparent hover:border-[#ff858317] hover:bg-[#ff85830e] font-medium text-[13px] text-[var(--wrong)] transition cursor-pointer'
 				onClick={() => setIsConfirmLogoutDialogOpen(true)}
 			>
 				<LogOut size={16} strokeWidth={1.5} />

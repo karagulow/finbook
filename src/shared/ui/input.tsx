@@ -32,8 +32,8 @@ export const Input = React.forwardRef<HTMLInputElement, Props>(
 				<input
 					ref={ref}
 					className={cn(
-						'h-11.5 rounded-[6px] bg-[var(--input-primary)] border-[0.5px] border-[var(--border-primary)] px-3 font-regular text-[13px] text-[var(--foreground-primary)] placeholder:text-[var(--input-primary-placeholder)] outline-none focus:border-[var(--border-primary-hover)] hover:border-[var(--border-primary-hover)] transition',
-						rest.type === 'color' && 'w-full p-2 cursor-pointer'
+						'h-11.5 rounded-[8px] bg-[var(--input-primary)] border-[0.5px] border-[var(--border-primary)] px-3 font-regular text-[13px] text-[var(--foreground-primary)] placeholder:text-[var(--input-primary-placeholder)] outline-none focus:border-[var(--border-primary-hover)] hover:border-[var(--border-primary-hover)] transition',
+						rest.type === 'color' && 'w-full p-2 cursor-pointer',
 					)}
 					{...rest}
 				/>
@@ -51,7 +51,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props>(
 				</div>
 			</label>
 		);
-	}
+	},
 );
 
 Input.displayName = 'Input';

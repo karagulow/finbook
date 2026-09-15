@@ -60,13 +60,13 @@ export const CategoryItem: React.FC<Props> = ({ id, category }) => {
 
 				<div
 					className={cn(
-						'flex flex-col flex-1 min-w-0 gap-2.5 items-start p-2.5 bg-[var(--muted)] rounded-[6px]',
+						'flex flex-col flex-1 min-w-0 gap-2.5 items-start p-2.5 bg-[var(--muted)] border-[0.5px] border-[var(--border-primary)] rounded-[14px]',
 						isDragging && 'shadow-xl/20',
 					)}
 				>
 					<div className='flex flex-row items-center justify-between gap-2.5 w-full'>
 						<div className='flex flex-row items-center gap-2.5'>
-							<div className='flex items-center justify-center size-10 border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] rounded-[6px] flex-shrink-0 text-[20px]'>
+							<div className='flex items-center justify-center size-10 border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] rounded-[10px] flex-shrink-0 text-[20px]'>
 								{category.icon}
 							</div>
 							<div className='flex flex-col gap-0.5'>
@@ -91,7 +91,7 @@ export const CategoryItem: React.FC<Props> = ({ id, category }) => {
 						<div className='flex flex-row gap-1.5 items-center overflow-auto w-full scroll-thin'>
 							{category.subcategories.map(subcat => (
 								<span
-									className='px-2 py-1 bg-[var(--button-secondary)] rounded-[4px] font-semibold text-[11px] text-[var(--foreground-primary)] whitespace-nowrap'
+									className='px-2 py-1 bg-[var(--button-secondary)] rounded-[8px] font-semibold text-[11px] text-[var(--foreground-primary)] whitespace-nowrap'
 									key={subcat.id}
 								>
 									{subcat.name}

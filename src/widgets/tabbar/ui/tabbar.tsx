@@ -8,7 +8,7 @@ const ICON_STROKE_WIDTH = 1.5;
 
 export const Tabbar: React.FC = () => {
 	return (
-		<nav className='fixed left-0 bottom-0 flex lg:hidden flex-row items-center w-full bg-[var(--background-primary)]/70 backdrop-blur-md border-t-[0.5px] border-[var(--border-primary)] z-10 h-[calc(56px+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)]'>
+		<nav className='fixed left-2.5 bottom-2.5 flex lg:hidden flex-row items-center w-[calc(100%-20px)] bg-[var(--background-primary)]/70 backdrop-blur-md border-[0.5px] border-[var(--border-primary)] rounded-full z-10 h-[calc(60px+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)]'>
 			<TabbarItem
 				path='/'
 				icon={<LayoutGrid size={ICON_SIZE} strokeWidth={ICON_STROKE_WIDTH} />}

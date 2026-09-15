@@ -62,15 +62,15 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					<div
 						className={cn(
 							'fixed inset-0 z-20 bg-black/50 backdrop-blur-[2px] transition-opacity duration-300',
-							animate ? 'opacity-100' : 'opacity-0'
+							animate ? 'opacity-100' : 'opacity-0',
 						)}
 						onClick={close}
 					></div>
 
 					<div
 						className={cn(
-							'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-21 w-full max-w-lg rounded-[12px] bg-[var(--card)] p-6 shadow-xl transform transition-all duration-300',
-							animate ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
+							'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-21 w-full max-w-lg rounded-[16px] bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] p-6 shadow-xl transform transition-all duration-300',
+							animate ? 'scale-100 opacity-100' : 'scale-90 opacity-0',
 						)}
 						onClick={e => e.stopPropagation()}
 					>
@@ -79,6 +79,6 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				</>
 			)}
 		</>,
-		document.body
+		document.body,
 	);
 };

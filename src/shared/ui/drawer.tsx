@@ -142,15 +142,16 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 					<div
 						className={cn(
 							'absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity duration-300',
-							animate ? 'opacity-100' : 'opacity-0'
+							animate ? 'opacity-100' : 'opacity-0',
 						)}
 					/>
 
 					<div
 						ref={drawerRef}
 						className={cn(
-							'relative w-full h-[80vh] rounded-t-[12px] bg-[var(--card)] p-5 pb-[calc(env(safe-area-inset-bottom)+20px)] shadow-xl flex flex-col',
-							dragStartY.current === null && 'transition-transform duration-300'
+							'relative w-full h-[80vh] rounded-t-[16px] bg-[var(--card)] p-5 pb-[calc(env(safe-area-inset-bottom)+20px)] shadow-xl flex flex-col',
+							dragStartY.current === null &&
+								'transition-transform duration-300',
 						)}
 						style={{
 							transform: animate
@@ -173,6 +174,6 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 				</div>
 			)}
 		</>,
-		document.body
+		document.body,
 	);
 };

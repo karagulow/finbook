@@ -35,11 +35,11 @@ export const TransactionItem: React.FC<Props> = ({ transaction }) => {
 	return (
 		<>
 			<li
-				className='flex flex-row items-center justify-between p-2.5 rounded-[8px] hover:bg-[var(--muted)] active:bg-[var(--muted)] transition cursor-pointer'
+				className='flex flex-row items-center justify-between p-2.5 rounded-[16px] border-[0.5px] border-transparent hover:border-[var(--border-primary)] hover:bg-[var(--muted)] active:bg-[var(--muted)] transition cursor-pointer'
 				onClick={openTransactionDetailsModal}
 			>
 				<div className='flex flex-row items-center gap-2.5'>
-					<div className='flex items-center justify-center size-10 border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] rounded-[6px] flex-shrink-0 text-[20px]'>
+					<div className='flex items-center justify-center size-10 border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] rounded-[10px] flex-shrink-0 text-[20px]'>
 						{transaction.category?.icon}
 					</div>
 

@@ -43,8 +43,10 @@ const AccountCardComponent: React.FC<Props> = ({
 		>
 			<div
 				onClick={() => setSelectedAccountId(account.id)}
-				className={`flex flex-col items-start justify-between bg-[var(--card)] h-[100px] rounded-[8px] p-4 border-[0.5px] hover:border-[var(--border-primary-hover)] transition cursor-pointer ${
-					isSelected ? 'border-[var(--border-primary)]' : 'border-transparent'
+				className={`flex flex-col items-start justify-between bg-[var(--card)] h-[100px] rounded-[16px] p-4 border-[0.5px] hover:border-[var(--border-primary-hover)] transition cursor-pointer ${
+					isSelected
+						? 'border-[var(--border-primary-hover)]'
+						: 'border-[var(--border-primary)]'
 				}`}
 			>
 				<div className='font-medium text-[15px] text-[var(--foreground-primary)]'>

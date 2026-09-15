@@ -53,7 +53,14 @@ export const DeviceSettings: React.FC<DeviceSettingsProps> = ({ sessions }) => {
 									</span>
 								)}
 							</p>
-							<p>{new Date(session.createdAt).toLocaleDateString('ru-RU')}</p>
+							<p>
+								{[
+									session.location,
+									new Date(session.createdAt).toLocaleDateString('ru-RU'),
+								]
+									.filter(Boolean)
+									.join(' • ')}
+							</p>
 						</div>
 						{!session.isCurrent && (
 							<Button
