@@ -70,16 +70,16 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 
 					<div
 						className={cn(
-							'fixed inset-y-0 right-0 z-11 flex flex-row items-start m-5 transform transition-transform duration-300',
+							'fixed inset-y-0 right-0 z-11 m-5 transform transition-transform duration-300',
 							animate ? 'translate-x-0' : 'translate-x-full',
 						)}
 						onClick={e => e.stopPropagation()}
 					>
 						<button
 							onClick={close}
-							className='p-2 text-[var(--foreground-secondary)] hover:text-[var(--foreground-primary)] transition cursor-pointer'
+							className='absolute right-5 top-5 p-1 text-[var(--foreground-secondary)] hover:text-[var(--foreground-primary)] transition cursor-pointer'
 						>
-							<X strokeWidth={1.5} size={30} />
+							<X strokeWidth={2} size={20} />
 						</button>
 
 						<div className='w-100 h-[calc(100vh-40px)] rounded-[16px] bg-[var(--card)] p-5 shadow-xl'>
