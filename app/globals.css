@@ -132,3 +132,7 @@ body::-webkit-scrollbar-thumb:hover {
 	-webkit-mask: linear-gradient(#000 60%, #0000);
 	mask: linear-gradient(#000 60%, #0000);
 }
+
+.toaster * {
+	margin: 0 !important;
+}
