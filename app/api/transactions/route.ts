@@ -163,7 +163,7 @@ export async function POST(req: Request) {
 			});
 		}
 
-		revalidatePath('/');
+		revalidatePath('/home');
 
 		return NextResponse.json(transaction);
 	} catch (error) {

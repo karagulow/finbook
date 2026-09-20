@@ -21,7 +21,7 @@ export const DebtsPage: React.FC = () => {
 				Скоро всё будет готово.
 			</p>
 
-			<Link href='/'>
+			<Link href='/home'>
 				<Button>Перейти на главную</Button>
 			</Link>
 		</div>

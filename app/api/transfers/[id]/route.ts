@@ -133,7 +133,7 @@ export async function PUT(req: Request, context: RouteContext) {
 			data: { balance: { increment: amountTo } },
 		});
 
-		revalidatePath('/');
+		revalidatePath('/home');
 
 		return NextResponse.json(updated);
 	} catch (error) {

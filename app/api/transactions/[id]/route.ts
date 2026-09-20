@@ -62,7 +62,7 @@ export async function PUT(req: Request, context: RouteContext) {
 			},
 		});
 
-		revalidatePath('/');
+		revalidatePath('/home');
 
 		return NextResponse.json(updated);
 	} catch (error) {
@@ -115,7 +115,7 @@ export async function DELETE(req: Request, context: RouteContext) {
 			where: { id },
 		});
 
-		revalidatePath('/');
+		revalidatePath('/home');
 
 		return NextResponse.json({ success: true });
 	} catch (error) {

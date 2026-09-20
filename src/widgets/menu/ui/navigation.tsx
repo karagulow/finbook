@@ -11,7 +11,7 @@ export const Navigation: React.FC = () => {
 	return (
 		<nav className='flex flex-col w-full gap-2'>
 			<NavItem
-				path='/'
+				path='/home'
 				icon={<LayoutGrid size={ICON_SIZE} strokeWidth={ICON_STROKE_WIDTH} />}
 				label='Главная'
 			/>

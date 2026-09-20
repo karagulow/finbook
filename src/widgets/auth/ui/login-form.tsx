@@ -39,7 +39,7 @@ export const LoginForm: React.FC = () => {
 			const response = await api.post('/api/auth/login', data);
 			setAuth(response.data.token, { email: data.email });
 			toast.success('Успешный вход!', toastOptions);
-			setTimeout(() => router.push('/'), 1000);
+			setTimeout(() => router.push('/home'), 1000);
 		} catch (error: unknown) {
 			let message = 'Ошибка авторизации';
 

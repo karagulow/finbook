@@ -50,7 +50,7 @@ export const RegistrationForm: React.FC = () => {
 			});
 			setAuth(response.data.token, { email: data.email });
 			toast.success('Регистрация успешна!', toastOptions);
-			router.push('/');
+			router.push('/home');
 		} catch (error: unknown) {
 			let message = 'Ошибка регистрации';
 

@@ -72,7 +72,7 @@ export async function POST(req: Request) {
 			},
 		});
 
-		revalidatePath('/');
+		revalidatePath('/home');
 
 		return NextResponse.json(account);
 	} catch (error) {
