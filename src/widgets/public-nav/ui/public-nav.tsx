@@ -43,7 +43,7 @@ export const PublicNav: React.FC = () => {
 		<>
 			<nav className='sticky top-0 z-20 w-full border-b-[0.5px] border-[var(--border-primary)] bg-[var(--background-primary)]/70 backdrop-blur-md'>
 				<Container
-					width={1440}
+					width={1280}
 					className='flex h-16 flex-row items-center justify-between gap-2'
 				>
 					<Link

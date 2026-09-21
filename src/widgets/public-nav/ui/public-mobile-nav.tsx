@@ -18,7 +18,7 @@ export const PublicMobileNav: React.FC<Props> = ({ open, onClose }) => {
 			aria-hidden={!open}
 			inert={!open}
 			className={cn(
-				'fixed inset-x-0 top-16 bottom-0 z-10 overflow-y-auto bg-[var(--background-primary)]/70 backdrop-blur-md md:hidden transition-opacity duration-300 ease-out',
+				'fixed inset-x-0 top-16 bottom-0 z-10 overflow-y-auto bg-[var(--background-primary)]/80 backdrop-blur-md md:hidden transition-opacity duration-300 ease-out',
 				open ? 'opacity-100' : 'pointer-events-none opacity-0',
 			)}
 		>
