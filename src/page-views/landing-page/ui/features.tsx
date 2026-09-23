@@ -11,6 +11,7 @@ import {
 
 import { Container } from '@/src/shared/ui';
 import { FEATURES } from '../model/features';
+import { landingSection } from '../model/sections';
 
 const FEATURE_ICONS: Record<
 	(typeof FEATURES)[number]['id'],
@@ -26,7 +27,10 @@ const FEATURE_ICONS: Record<
 
 export const LandingFeatures: React.FC = () => {
 	return (
-		<section id='features' className='scroll-mt-20 py-16 sm:py-24'>
+		<section
+			id={landingSection.features.id}
+			className='scroll-mt-20 py-16 sm:py-24'
+		>
 			<Container width={960} className='flex flex-col items-center'>
 				<h2 className='max-w-[12em] text-center font-semibold tracking-[-0.04em] text-[36px] leading-[1.08] sm:text-[52px] text-[var(--foreground-primary)]'>
 					Ещё причины открывать Финкнижку каждый день.

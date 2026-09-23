@@ -4,6 +4,7 @@ import { LandingShowcase } from './showcase';
 import { LandingFeatures } from './features';
 import { LandingFaq } from './faq';
 import { LandingCta } from './cta';
+import { LandingHashScroll } from './hash-scroll';
 import { LandingRevealObserver } from './reveal-observer';
 
 export const LandingPage: React.FC = () => {
@@ -15,6 +16,7 @@ export const LandingPage: React.FC = () => {
 			<LandingFaq />
 			<LandingCta />
 			<LandingRevealObserver />
+			<LandingHashScroll />
 		</div>
 	);
 };

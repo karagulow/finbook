@@ -6,6 +6,7 @@ import { ChevronDown } from 'lucide-react';
 import { cn } from '@/src/shared/lib';
 import { Container } from '@/src/shared/ui';
 import { FAQ_ITEMS } from '../model/faq-items';
+import { landingSection } from '../model/sections';
 
 export const LandingFaq: React.FC = () => {
 	const [openIds, setOpenIds] = useState<Set<string>>(() => new Set());
@@ -20,7 +21,7 @@ export const LandingFaq: React.FC = () => {
 	};
 
 	return (
-		<section id='faq' className='scroll-mt-20 py-16 sm:py-24'>
+		<section id={landingSection.faq.id} className='scroll-mt-20 py-16 sm:py-24'>
 			<Container
 				width={1280}
 				className='grid items-start gap-8 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-16 lg:gap-24'

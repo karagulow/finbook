@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 
 import { Container } from '@/src/shared/ui';
+import { landingSection } from '../model/sections';
 import { SHOWCASE_ITEMS } from '../model/showcase';
 
 const PANEL_NOISE =
@@ -9,7 +10,7 @@ const PANEL_NOISE =
 
 export const LandingShowcase: React.FC = () => {
 	return (
-		<section id='how' className='scroll-mt-20 py-16 sm:py-24'>
+		<section id={landingSection.how.id} className='scroll-mt-20 py-16 sm:py-24'>
 			<Container width={1280}>
 				<h2 className='max-w-[14em] font-semibold tracking-[-0.04em] text-[36px] leading-[1.08] sm:text-[52px] text-[var(--foreground-primary)]'>
 					Ясность в ваших финансах.

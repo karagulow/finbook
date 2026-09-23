@@ -5,9 +5,10 @@ import Link from 'next/link';
 
 import { AppIcon, Container } from '@/src/shared/ui';
 import { lockBody, unlockBody } from '@/src/shared/lib';
-import { NAV_LINKS } from '../model/links';
+import { LANDING_SECTIONS } from '@/src/page-views/landing-page/model/sections';
 import { BurgerButton } from './burger-button';
 import { PublicMobileNav } from './public-mobile-nav';
+import { PublicNavLink } from './public-nav-link';
 
 export const PublicNav: React.FC = () => {
 	const [open, setOpen] = useState(false);
@@ -64,14 +65,13 @@ export const PublicNav: React.FC = () => {
 
 					<div className='flex flex-row items-center gap-1 sm:gap-3'>
 						<div className='hidden md:flex flex-row items-center'>
-							{NAV_LINKS.map(link => (
-								<Link
-									key={link.href}
-									href={link.href}
+							{LANDING_SECTIONS.map(section => (
+								<PublicNavLink
+									key={section.id}
+									section={section}
 									className='px-3.5 py-1.5 font-medium text-[13px] text-[var(--foreground-secondary)] hover:text-[var(--foreground-primary)] hover:bg-[var(--muted)] rounded-full transition'
-								>
-									{link.label}
-								</Link>
+									onClick={() => setOpen(false)}
+								/>
 							))}
 						</div>
 

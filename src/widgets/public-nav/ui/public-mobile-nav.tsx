@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { cn } from '@/src/shared/lib';
 import { Container } from '@/src/shared/ui';
-import { NAV_LINKS } from '../model/links';
+import { LANDING_SECTIONS } from '@/src/page-views/landing-page/model/sections';
+import { PublicNavLink } from './public-nav-link';
 
 interface Props {
 	open: boolean;
@@ -24,19 +24,17 @@ export const PublicMobileNav: React.FC<Props> = ({ open, onClose }) => {
 		>
 			<Container width={1440} className='py-6'>
 				<nav className='flex flex-col'>
-					{NAV_LINKS.map((link, index) => (
-						<Link
-							key={link.href}
-							href={link.href}
+					{LANDING_SECTIONS.map((section, index) => (
+						<PublicNavLink
+							key={section.id}
+							section={section}
 							onClick={onClose}
 							style={{ transitionDelay: open ? `${80 + index * 45}ms` : '0ms' }}
 							className={cn(
 								'py-1.5 font-medium text-[28px] leading-tight text-[var(--foreground-primary)] transition duration-300 ease-out',
 								open ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0',
 							)}
-						>
-							{link.label}
-						</Link>
+						/>
 					))}
 				</nav>
 			</Container>
