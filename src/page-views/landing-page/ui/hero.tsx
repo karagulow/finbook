@@ -1,11 +1,14 @@
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
 
 import { AppIcon, Container } from '@/src/shared/ui';
+import { LandingStartLink } from './start-link';
 
-export const LandingHero: React.FC = () => {
+interface Props {
+	authenticated: boolean;
+}
+
+export const LandingHero: React.FC<Props> = ({ authenticated }) => {
 	return (
 		<section className='relative overflow-hidden'>
 			<div
@@ -48,19 +51,10 @@ export const LandingHero: React.FC = () => {
 					style={{ '--landing-order': 3 } as React.CSSProperties}
 					className='landing-enter mt-8 flex flex-row flex-wrap items-center justify-center gap-2'
 				>
-					<Link
-						href='/registration'
+					<LandingStartLink
+						authenticated={authenticated}
 						className='group inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 bg-[var(--button-primary)] text-[13px] font-semibold text-[var(--foreground-inverse)] hover:bg-[var(--button-primary-hover)] active:scale-97 transition duration-200'
-					>
-						Начать бесплатно
-						<span className='relative inline-flex size-3.5'>
-							<ArrowRight
-								size={14}
-								strokeWidth={2}
-								className='absolute inset-0 transition-transform duration-300 ease-out group-hover:translate-x-1'
-							/>
-						</span>
-					</Link>
+					/>
 				</div>
 			</Container>
 

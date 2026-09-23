@@ -10,7 +10,11 @@ import { BurgerButton } from './burger-button';
 import { PublicMobileNav } from './public-mobile-nav';
 import { PublicNavLink } from './public-nav-link';
 
-export const PublicNav: React.FC = () => {
+interface Props {
+	authenticated?: boolean;
+}
+
+export const PublicNav: React.FC<Props> = ({ authenticated = false }) => {
 	const [open, setOpen] = useState(false);
 
 	useEffect(() => {
@@ -81,18 +85,29 @@ export const PublicNav: React.FC = () => {
 						/>
 
 						<div className='flex flex-row items-center gap-1 sm:gap-2'>
-							<Link
-								href='/login'
-								className='px-3 py-1.5 sm:px-3.5 font-medium text-[13px] text-[var(--foreground-secondary)] hover:text-[var(--foreground-primary)] hover:bg-[var(--muted)] rounded-full transition'
-							>
-								Войти
-							</Link>
-							<Link
-								href='/registration'
-								className='flex flex-row items-center justify-center rounded-full px-3 py-1.5 sm:px-3.5 bg-[var(--button-primary)] text-[13px] font-semibold text-[var(--foreground-inverse)] hover:bg-[var(--button-primary-hover)] transition'
-							>
-								Регистрация
-							</Link>
+							{authenticated ? (
+								<Link
+									href='/home'
+									className='flex flex-row items-center justify-center rounded-full px-3 py-1.5 sm:px-3.5 bg-[var(--button-primary)] text-[13px] font-semibold text-[var(--foreground-inverse)] hover:bg-[var(--button-primary-hover)] transition'
+								>
+									Личный кабинет
+								</Link>
+							) : (
+								<>
+									<Link
+										href='/login'
+										className='px-3 py-1.5 sm:px-3.5 font-medium text-[13px] text-[var(--foreground-secondary)] hover:text-[var(--foreground-primary)] hover:bg-[var(--muted)] rounded-full transition'
+									>
+										Войти
+									</Link>
+									<Link
+										href='/registration'
+										className='flex flex-row items-center justify-center rounded-full px-3 py-1.5 sm:px-3.5 bg-[var(--button-primary)] text-[13px] font-semibold text-[var(--foreground-inverse)] hover:bg-[var(--button-primary-hover)] transition'
+									>
+										Регистрация
+									</Link>
+								</>
+							)}
 							<BurgerButton
 								open={open}
 								onClick={() => setOpen(value => !value)}
