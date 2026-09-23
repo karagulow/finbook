@@ -136,3 +136,43 @@ body::-webkit-scrollbar-thumb:hover {
 .toaster * {
 	margin: 0 !important;
 }
+
+@keyframes landing-enter {
+	from {
+		opacity: 0;
+		translate: 0 24px;
+	}
+}
+
+@keyframes landing-mockup {
+	from {
+		opacity: 0;
+		translate: 0 64px;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.landing-enter {
+		animation: landing-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation-delay: calc(var(--landing-order, 0) * 90ms);
+	}
+
+	.landing-mockup {
+		animation: landing-mockup 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+	}
+
+	.landing-reveal[data-reveal] {
+		transition-property: opacity, translate, scale;
+		transition-duration: 0.9s;
+		transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+		transition-delay: calc(var(--landing-order, 0) * 120ms);
+	}
+
+	.landing-reveal[data-reveal='hidden'] {
+		opacity: 0;
+		translate: 0 64px;
+		scale: 0.96;
+		transition-duration: 0s;
+		transition-delay: 0s;
+	}
+}

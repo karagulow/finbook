@@ -21,10 +21,11 @@ export const LandingShowcase: React.FC = () => {
 				</p>
 
 				<div className='mt-10 grid grid-cols-1 gap-4 sm:mt-14 lg:grid-cols-3'>
-					{SHOWCASE_ITEMS.map(item => (
+					{SHOWCASE_ITEMS.map((item, index) => (
 						<article
 							key={item.id}
-							className='flex h-full flex-col overflow-hidden rounded-[2rem] bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] p-2 sm:min-h-[44rem]'
+							style={{ '--landing-order': index % 3 } as React.CSSProperties}
+							className='landing-reveal flex h-full flex-col overflow-hidden rounded-[2rem] bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] p-2 sm:min-h-[44rem]'
 						>
 							<div className='p-6 sm:p-10'>
 								<h3 className='text-2xl font-semibold tracking-[-0.2px] text-pretty text-[var(--foreground-primary)]'>

@@ -4,6 +4,7 @@ import { LandingShowcase } from './showcase';
 import { LandingFeatures } from './features';
 import { LandingFaq } from './faq';
 import { LandingCta } from './cta';
+import { LandingRevealObserver } from './reveal-observer';
 
 export const LandingPage: React.FC = () => {
 	return (
@@ -13,6 +14,7 @@ export const LandingPage: React.FC = () => {
 			<LandingFeatures />
 			<LandingFaq />
 			<LandingCta />
+			<LandingRevealObserver />
 		</div>
 	);
 };

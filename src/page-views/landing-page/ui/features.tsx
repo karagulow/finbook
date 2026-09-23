@@ -37,13 +37,14 @@ export const LandingFeatures: React.FC = () => {
 				</p>
 
 				<div className='mt-10 grid w-full grid-cols-1 gap-3 sm:mt-14 md:grid-cols-2 md:gap-4'>
-					{FEATURES.map(feature => {
+					{FEATURES.map((feature, index) => {
 						const { icon: Icon, className } = FEATURE_ICONS[feature.id];
 
 						return (
 							<article
 								key={feature.id}
-								className='rounded-[22px] bg-[var(--card)] px-5 py-5 sm:px-6 sm:py-6 border-[0.5px] border-[var(--border-primary)]'
+								style={{ '--landing-order': index % 2 } as React.CSSProperties}
+								className='landing-reveal rounded-[22px] bg-[var(--card)] px-5 py-5 sm:px-6 sm:py-6 border-[0.5px] border-[var(--border-primary)]'
 							>
 								<div className='mb-5 flex size-14 items-center justify-center rounded-[14px] bg-[var(--background-primary)] border-[0.5px] border-[var(--border-primary)]'>
 									<Icon
