@@ -176,3 +176,16 @@ body::-webkit-scrollbar-thumb:hover {
 		transition-delay: 0s;
 	}
 }
+
+.animate-blur-in {
+	opacity: 1;
+	filter: blur(0px);
+	transition:
+		opacity 0.3s ease-in-out,
+		filter 0.3s ease-in-out;
+
+	@starting-style {
+		opacity: 0;
+		filter: blur(4px);
+	}
+}
