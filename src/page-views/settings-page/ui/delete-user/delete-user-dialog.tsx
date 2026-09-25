@@ -29,8 +29,7 @@ export const DeleteUserDialog: React.FC<Props> = ({
 			await api.delete('/api/user');
 			toast.success('Аккаунт успешно удалён');
 			onClose();
-
-			setTimeout(() => router.push('/login'), 1000);
+			router.push('/login');
 		} catch (error) {
 			console.error(error);
 			toast.error('Ошибка при удалении аккаунта');
