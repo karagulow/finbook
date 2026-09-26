@@ -1,0 +1,58 @@
+import { Goal } from './types';
+
+export const goals: Goal[] = [
+	{
+		id: '1',
+		name: 'Квартира',
+		icon: '🏠',
+		savedAmount: 4_000_000,
+		targetAmount: 5_000_000,
+		deadline: '2025-12-31',
+		status: 'active',
+	},
+	{
+		id: '2',
+		name: 'Путешествие',
+		icon: '✈️',
+		savedAmount: 0,
+		targetAmount: 300_000,
+		deadline: '2025-12-31',
+		status: 'active',
+	},
+	{
+		id: '3',
+		name: 'Новый айфон',
+		icon: '📱',
+		savedAmount: 60_000,
+		targetAmount: 100_000,
+		deadline: '2025-12-31',
+		status: 'active',
+	},
+	{
+		id: '4',
+		name: 'Путешествие',
+		icon: '✈️',
+		savedAmount: 0,
+		targetAmount: 300_000,
+		deadline: '2025-12-31',
+		status: 'active',
+	},
+	{
+		id: '5',
+		name: 'Новый айфон',
+		icon: '📱',
+		savedAmount: 60_000,
+		targetAmount: 100_000,
+		deadline: '2025-12-31',
+		status: 'active',
+	},
+	{
+		id: '6',
+		name: 'Квартира',
+		icon: '🏠',
+		savedAmount: 4_000_000,
+		targetAmount: 5_000_000,
+		deadline: '2025-12-31',
+		status: 'active',
+	},
+];

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { StickyHeader } from '@/src/shared/ui';
 import { LinkItem } from './link-item';
-import { Cog } from 'lucide-react';
+import { Cog, Goal } from 'lucide-react';
 
 export const MorePage: React.FC = () => {
 	const STROKE_WIDTH = 1;
@@ -17,12 +17,12 @@ export const MorePage: React.FC = () => {
 				</h1>
 
 				<div className='flex flex-col gap-2.5'>
-					{/* <LinkItem
+					<LinkItem
 						title='Цели'
 						description='Планируй, копи, достигай'
 						path='/goals'
 						icon={<Goal strokeWidth={STROKE_WIDTH} />}
-					/> */}
+					/>
 					{/* <LinkItem
 						title='Долги'
 						description='Учитывай, плати, освобождайся'
