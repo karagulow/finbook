@@ -7,12 +7,15 @@ import { GoalProgress } from './goal-progress';
 
 interface Props {
 	goal: Goal;
+	currency: string;
 }
 
-const formatAmount = (value: number) =>
-	`${value.toLocaleString('ru-RU', { maximumFractionDigits: 0 })} ₽`;
+const formatAmount = (value: number, currency: string) =>
+	`${value.toLocaleString('ru-RU', {
+		maximumFractionDigits: 2,
+	})} ${currency}`;
 
-export const GoalCard: React.FC<Props> = ({ goal }) => {
+export const GoalCard: React.FC<Props> = ({ goal, currency }) => {
 	const progress =
 		goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount) * 100 : 0;
 
@@ -26,15 +29,13 @@ export const GoalCard: React.FC<Props> = ({ goal }) => {
 				</span>
 				<span className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
 					Срок:{' '}
-					{format(new Date(`${goal.deadline}T00:00:00`), 'd MMMM yyyy', {
-						locale: ru,
-					})}
+					{format(new Date(goal.deadline), 'd MMMM yyyy', { locale: ru })}
 				</span>
 				<span className='whitespace-nowrap font-medium text-[15px] text-[var(--foreground-primary)]'>
-					{formatAmount(goal.savedAmount)}
+					{formatAmount(goal.savedAmount, currency)}
 					<span className='text-[var(--foreground-secondary)]'>
 						{' '}
-						/ {formatAmount(goal.targetAmount)}
+						/ {formatAmount(goal.targetAmount, currency)}
 					</span>
 				</span>
 			</div>

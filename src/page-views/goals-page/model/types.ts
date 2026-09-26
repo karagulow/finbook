@@ -1,5 +1,3 @@
-export type GoalStatus = 'active' | 'achieved';
-
 export interface Goal {
 	id: string;
 	name: string;
@@ -7,5 +5,10 @@ export interface Goal {
 	savedAmount: number;
 	targetAmount: number;
 	deadline: string;
-	status: GoalStatus;
+}
+
+export interface GoalsResponse {
+	currencyCode: string;
+	currencySymbol: string | null;
+	goals: Goal[];
 }
