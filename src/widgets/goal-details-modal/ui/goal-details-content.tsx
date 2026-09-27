@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -13,8 +14,9 @@ import {
 	GoalOperationModal,
 	GoalOperationType,
 } from '../../goal-operation-modal';
-import { GoalDetails } from '../model/types';
+import { GoalDetails, GoalOperation } from '../model/types';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
+import { ConfirmDeleteOperationDialog } from './confirm-delete-operation-dialog';
 import { GoalDetailsProgress } from './goal-details-progress';
 
 interface Props {
@@ -41,6 +43,12 @@ export const GoalDetailsContent: React.FC<Props> = ({
 	const [operationType, setOperationType] = useState<GoalOperationType | null>(
 		null,
 	);
+	const [operationToEdit, setOperationToEdit] = useState<GoalOperation | null>(
+		null,
+	);
+	const [operationToDelete, setOperationToDelete] =
+		useState<GoalOperation | null>(null);
+	const [isDeletingOperation, setIsDeletingOperation] = useState(false);
 
 	const progress =
 		goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount) * 100 : 0;
@@ -58,6 +66,38 @@ export const GoalDetailsContent: React.FC<Props> = ({
 			toast.error('Не удалось удалить цель', toastOptions);
 		}
 		setIsDeleting(false);
+	};
+
+	const handleDeleteOperation = async () => {
+		if (!operationToDelete) return;
+
+		setIsDeletingOperation(true);
+		try {
+			await api.delete(
+				`/api/goals/${goal.id}/operations/${operationToDelete.id}`,
+			);
+			await queryClient.invalidateQueries({ queryKey: ['goals'] });
+			setOperationToDelete(null);
+			toast.success('Транзакция удалена', toastOptions);
+		} catch (err: unknown) {
+			console.error('Ошибка удаления транзакции цели', err);
+			let message = 'Не удалось удалить транзакцию';
+
+			if (axios.isAxiosError(err)) {
+				message = err.response?.data?.message || err.message || message;
+			}
+
+			toast.error(message, toastOptions);
+		}
+		setIsDeletingOperation(false);
+	};
+
+	const goalTarget = {
+		id: goal.id,
+		name: goal.name,
+		icon: goal.icon,
+		savedAmount: goal.savedAmount,
+		targetAmount: goal.targetAmount,
 	};
 
 	return (
@@ -139,8 +179,12 @@ export const GoalDetailsContent: React.FC<Props> = ({
 											</div>
 
 											<div className='flex shrink-0 items-center gap-3'>
-												<EditButton />
-												<DeleteButton />
+												<EditButton
+													onClick={() => setOperationToEdit(operation)}
+												/>
+												<DeleteButton
+													onClick={() => setOperationToDelete(operation)}
+												/>
 											</div>
 										</li>
 									);
@@ -177,15 +221,27 @@ export const GoalDetailsContent: React.FC<Props> = ({
 					onClose={() => setOperationType(null)}
 					type={operationType}
 					currency={currency}
-					goal={{
-						id: goal.id,
-						name: goal.name,
-						icon: goal.icon,
-						savedAmount: goal.savedAmount,
-						targetAmount: goal.targetAmount,
-					}}
+					goal={goalTarget}
 				/>
 			)}
+
+			{operationToEdit && (
+				<GoalOperationModal
+					isOpen
+					onClose={() => setOperationToEdit(null)}
+					type={operationToEdit.type}
+					currency={currency}
+					goal={goalTarget}
+					operation={operationToEdit}
+				/>
+			)}
+
+			<ConfirmDeleteOperationDialog
+				isOpen={operationToDelete !== null}
+				onClose={() => setOperationToDelete(null)}
+				onConfirm={handleDeleteOperation}
+				loading={isDeletingOperation}
+			/>
 
 			<ConfirmDeleteDialog
 				isOpen={isConfirmDeleteOpen}

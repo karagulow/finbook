@@ -2,18 +2,21 @@
 
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { format, isToday } from 'date-fns';
-import { ru } from 'date-fns/locale';
 
 import { Button, CurrencyInput, DatePicker, Textarea } from '@/src/shared/ui';
 import { GoalDetailsProgress } from '@/src/widgets/goal-details-modal/ui/goal-details-progress';
-import { GoalOperationTarget, GoalOperationType } from '../model/types';
+import {
+	GoalOperationInitial,
+	GoalOperationTarget,
+	GoalOperationType,
+} from '../model/types';
 import { useGoalOperationForm } from '../model/use-goal-operation-form';
 
 interface Props {
 	goal: GoalOperationTarget;
 	type: GoalOperationType;
 	currency: string;
+	operation?: GoalOperationInitial;
 	onClose: () => void;
 }
 
@@ -23,22 +26,33 @@ const formatAmount = (value: number) =>
 		maximumFractionDigits: 2,
 	});
 
+const roundMoney = (value: number) => Math.round(value * 100) / 100;
+
 export const GoalOperationModalContent: React.FC<Props> = ({
 	goal,
 	type,
 	currency,
+	operation,
 	onClose,
 }) => {
 	const isDeposit = type === 'DEPOSIT';
 	const remaining = Math.max(0, goal.targetAmount - goal.savedAmount);
+	const availableToWithdraw =
+		goal.savedAmount + (type === 'WITHDRAW' ? (operation?.amount ?? 0) : 0);
+	const minimumAmount =
+		operation && isDeposit
+			? Math.max(0, roundMoney(operation.amount - goal.savedAmount))
+			: 0;
 	const progress =
 		goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount) * 100 : 0;
 
-	const { control, handleSubmit, errors, isSubmitting, onSubmit } =
+	const { control, handleSubmit, errors, isSubmitting, isEdit, onSubmit } =
 		useGoalOperationForm({
 			goalId: goal.id,
 			type,
-			availableAmount: goal.savedAmount,
+			availableAmount: isDeposit ? goal.savedAmount : availableToWithdraw,
+			minimumAmount,
+			operation,
 			onClose,
 		});
 
@@ -48,7 +62,13 @@ export const GoalOperationModalContent: React.FC<Props> = ({
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<h2 className='font-bold text-[17px] text-[var(--foreground-primary)]'>
-				{isDeposit ? 'Пополнить цель' : 'Снять средства'}
+				{isEdit
+					? isDeposit
+						? 'Изменить пополнение'
+						: 'Изменить снятие'
+					: isDeposit
+						? 'Пополнить цель'
+						: 'Снять средства'}
 			</h2>
 
 			<div className='flex flex-1 flex-col gap-5 overflow-y-auto'>
@@ -78,7 +98,7 @@ export const GoalOperationModalContent: React.FC<Props> = ({
 							<>
 								Сумма, которую можно снять:
 								<br />
-								{formatAmount(goal.savedAmount)} {currency}
+								{formatAmount(availableToWithdraw)} {currency}
 							</>
 						)}
 					</span>
@@ -129,12 +149,16 @@ export const GoalOperationModalContent: React.FC<Props> = ({
 
 			<Button type='submit' disabled={isSubmitting}>
 				{isSubmitting
-					? isDeposit
-						? 'Пополнение...'
-						: 'Снятие...'
-					: isDeposit
-						? 'Пополнить'
-						: 'Снять'}
+					? isEdit
+						? 'Сохранение...'
+						: isDeposit
+							? 'Пополнение...'
+							: 'Снятие...'
+					: isEdit
+						? 'Сохранить'
+						: isDeposit
+							? 'Пополнить'
+							: 'Снять'}
 			</Button>
 		</form>
 	);

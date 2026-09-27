@@ -13,3 +13,10 @@ export interface GoalOperationTarget {
 	savedAmount: number;
 	targetAmount: number;
 }
+
+export interface GoalOperationInitial {
+	id: string;
+	amount: number;
+	date: string;
+	description: string | null;
+}

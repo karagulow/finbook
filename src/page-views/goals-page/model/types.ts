@@ -3,6 +3,7 @@ export interface GoalOperation {
 	amount: number;
 	type: 'DEPOSIT' | 'WITHDRAW';
 	date: string;
+	description: string | null;
 }
 
 export interface Goal {

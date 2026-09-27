@@ -45,6 +45,7 @@ export async function GET() {
 								amount: true,
 								goalType: true,
 								date: true,
+								description: true,
 							},
 						},
 					},
@@ -85,6 +86,7 @@ export async function GET() {
 							amount: transaction.amount,
 							type: transaction.goalType,
 							date: transaction.date.toISOString(),
+							description: transaction.description,
 						},
 					];
 				}),

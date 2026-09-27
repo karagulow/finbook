@@ -2,7 +2,11 @@ import React from 'react';
 
 import { useMediaQuery } from '@/src/shared/hooks';
 import { Drawer, Sheet } from '@/src/shared/ui';
-import { GoalOperationTarget, GoalOperationType } from '../model/types';
+import {
+	GoalOperationInitial,
+	GoalOperationTarget,
+	GoalOperationType,
+} from '../model/types';
 import { GoalOperationModalContent } from './goal-operation-modal-content';
 
 interface Props {
@@ -11,6 +15,7 @@ interface Props {
 	goal: GoalOperationTarget;
 	type: GoalOperationType;
 	currency: string;
+	operation?: GoalOperationInitial;
 }
 
 export const GoalOperationModal: React.FC<Props> = ({
@@ -19,6 +24,7 @@ export const GoalOperationModal: React.FC<Props> = ({
 	goal,
 	type,
 	currency,
+	operation,
 }) => {
 	const isDesktop = useMediaQuery('(min-width: 1024px)');
 
@@ -27,6 +33,7 @@ export const GoalOperationModal: React.FC<Props> = ({
 			goal={goal}
 			type={type}
 			currency={currency}
+			operation={operation}
 			onClose={onClose}
 		/>
 	);
