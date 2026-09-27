@@ -8,6 +8,7 @@ import { GoalProgress } from './goal-progress';
 interface Props {
 	goal: Goal;
 	currency: string;
+	onClick: () => void;
 }
 
 const formatAmount = (value: number, currency: string) =>
@@ -15,12 +16,16 @@ const formatAmount = (value: number, currency: string) =>
 		maximumFractionDigits: 2,
 	})} ${currency}`;
 
-export const GoalCard: React.FC<Props> = ({ goal, currency }) => {
+export const GoalCard: React.FC<Props> = ({ goal, currency, onClick }) => {
 	const progress =
 		goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount) * 100 : 0;
 
 	return (
-		<article className='flex items-center gap-4 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4 transition hover:border-[var(--border-primary-hover)]'>
+		<button
+			type='button'
+			onClick={onClick}
+			className='flex w-full cursor-pointer items-center gap-4 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4 text-left transition hover:border-[var(--border-primary-hover)]'
+		>
 			<GoalProgress icon={goal.icon} progress={progress} />
 
 			<div className='flex min-w-0 flex-col gap-0.5'>
@@ -39,6 +44,6 @@ export const GoalCard: React.FC<Props> = ({ goal, currency }) => {
 					</span>
 				</span>
 			</div>
-		</article>
+		</button>
 	);
 };

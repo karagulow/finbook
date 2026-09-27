@@ -7,12 +7,13 @@ import { GoalCardSkeleton } from './goal-card-skeleton';
 
 interface Props {
 	status: string;
+	onGoalClick: (goal: Goal) => void;
 }
 
 const isAchieved = (goal: Goal) =>
 	goal.targetAmount > 0 && goal.savedAmount >= goal.targetAmount;
 
-export const GoalsList: React.FC<Props> = ({ status }) => {
+export const GoalsList: React.FC<Props> = ({ status, onGoalClick }) => {
 	const { goals, currencyCode, currencySymbol, isLoading, isError } =
 		useGoals();
 	const isActive = status === 'Активные';
@@ -51,7 +52,12 @@ export const GoalsList: React.FC<Props> = ({ status }) => {
 	return (
 		<div className='grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3'>
 			{visibleGoals.map(goal => (
-				<GoalCard key={goal.id} goal={goal} currency={currency} />
+				<GoalCard
+					key={goal.id}
+					goal={goal}
+					currency={currency}
+					onClick={() => onGoalClick(goal)}
+				/>
 			))}
 		</div>
 	);

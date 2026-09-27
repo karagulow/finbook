@@ -36,6 +36,18 @@ export async function GET() {
 				},
 				goals: {
 					orderBy: { deadline: 'asc' },
+					include: {
+						transactions: {
+							where: { type: 'GOAL' },
+							orderBy: { date: 'desc' },
+							select: {
+								id: true,
+								amount: true,
+								goalType: true,
+								date: true,
+							},
+						},
+					},
 				},
 			},
 		});
@@ -57,6 +69,25 @@ export async function GET() {
 				savedAmount: goal.saved_amount,
 				targetAmount: goal.target_amount,
 				deadline: goal.deadline.toISOString(),
+				description: goal.description,
+				operations: goal.transactions.flatMap(transaction => {
+					if (
+						transaction.amount == null ||
+						(transaction.goalType !== 'DEPOSIT' &&
+							transaction.goalType !== 'WITHDRAW')
+					) {
+						return [];
+					}
+
+					return [
+						{
+							id: transaction.id,
+							amount: transaction.amount,
+							type: transaction.goalType,
+							date: transaction.date.toISOString(),
+						},
+					];
+				}),
 			})),
 		});
 	} catch (error) {

@@ -5,7 +5,7 @@ export interface GoalOperation {
 	date: string;
 }
 
-export interface Goal {
+export interface GoalDetails {
 	id: string;
 	name: string;
 	icon: string;
@@ -14,10 +14,4 @@ export interface Goal {
 	deadline: string;
 	description: string | null;
 	operations: GoalOperation[];
-}
-
-export interface GoalsResponse {
-	currencyCode: string;
-	currencySymbol: string | null;
-	goals: Goal[];
 }
