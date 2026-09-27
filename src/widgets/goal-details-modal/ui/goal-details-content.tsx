@@ -9,6 +9,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { api, toastOptions } from '@/src/shared/lib';
 import { Button, DeleteButton, EditButton } from '@/src/shared/ui';
 import { EditGoalModal } from '../../edit-goal-modal';
+import {
+	GoalOperationModal,
+	GoalOperationType,
+} from '../../goal-operation-modal';
 import { GoalDetails } from '../model/types';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
 import { GoalDetailsProgress } from './goal-details-progress';
@@ -34,6 +38,9 @@ export const GoalDetailsContent: React.FC<Props> = ({
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 	const [isEditOpen, setIsEditOpen] = useState(false);
+	const [operationType, setOperationType] = useState<GoalOperationType | null>(
+		null,
+	);
 
 	const progress =
 		goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount) * 100 : 0;
@@ -89,8 +96,12 @@ export const GoalDetailsContent: React.FC<Props> = ({
 					</div>
 
 					<div className='grid grid-cols-2 gap-2.5'>
-						<Button>Пополнить</Button>
-						<Button>Снять</Button>
+						<Button type='button' onClick={() => setOperationType('DEPOSIT')}>
+							Пополнить
+						</Button>
+						<Button type='button' onClick={() => setOperationType('WITHDRAW')}>
+							Снять
+						</Button>
 					</div>
 
 					<div className='flex flex-col gap-2.5'>
@@ -159,6 +170,22 @@ export const GoalDetailsContent: React.FC<Props> = ({
 				goal={goal}
 				currency={currency}
 			/>
+
+			{operationType && (
+				<GoalOperationModal
+					isOpen
+					onClose={() => setOperationType(null)}
+					type={operationType}
+					currency={currency}
+					goal={{
+						id: goal.id,
+						name: goal.name,
+						icon: goal.icon,
+						savedAmount: goal.savedAmount,
+						targetAmount: goal.targetAmount,
+					}}
+				/>
+			)}
 
 			<ConfirmDeleteDialog
 				isOpen={isConfirmDeleteOpen}

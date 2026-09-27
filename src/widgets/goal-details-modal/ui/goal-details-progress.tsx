@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface Props {
-	icon: string;
+	icon?: string;
 	progress: number;
 }
 
@@ -43,9 +43,11 @@ export const GoalDetailsProgress: React.FC<Props> = ({ icon, progress }) => {
 					/>
 				)}
 			</svg>
-			<span className='absolute inset-0 flex items-center justify-center text-[32px] leading-none'>
-				{icon}
-			</span>
+			{icon && (
+				<span className='absolute inset-0 flex items-center justify-center text-[32px] leading-none'>
+					{icon}
+				</span>
+			)}
 		</div>
 	);
 };
