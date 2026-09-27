@@ -2,11 +2,16 @@
 
 import React, { useState } from 'react';
 import { Button, StickyHeader, Tabs } from '@/src/shared/ui';
+import { CreateGoalModal } from '@/src/widgets/create-goal-modal';
+import { useGoals } from '../hooks/use-goals';
 import { GoalsList } from './goals-list';
 
 export const GoalsPage: React.FC = () => {
 	const goalStatuses = ['Активные', 'Достигнутые'];
 	const [activeGoalStatus, setActiveGoalStatus] = useState(goalStatuses[0]);
+	const [isCreateOpen, setIsCreateOpen] = useState(false);
+	const { currencyCode, currencySymbol } = useGoals();
+	const currency = currencySymbol || currencyCode || '₽';
 
 	return (
 		<>
@@ -18,7 +23,12 @@ export const GoalsPage: React.FC = () => {
 						Цели
 					</h1>
 
-					<Button className='w-full sm:w-auto'>Создать цель</Button>
+					<Button
+						className='w-full sm:w-auto'
+						onClick={() => setIsCreateOpen(true)}
+					>
+						Создать цель
+					</Button>
 				</div>
 
 				<div className='flex flex-col gap-5'>
@@ -33,6 +43,12 @@ export const GoalsPage: React.FC = () => {
 					<GoalsList status={activeGoalStatus} />
 				</div>
 			</div>
+
+			<CreateGoalModal
+				isOpen={isCreateOpen}
+				onClose={() => setIsCreateOpen(false)}
+				currency={currency}
+			/>
 		</>
 	);
 };
