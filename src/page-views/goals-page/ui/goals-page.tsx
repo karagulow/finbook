@@ -5,16 +5,16 @@ import { Button, StickyHeader, Tabs } from '@/src/shared/ui';
 import { CreateGoalModal } from '@/src/widgets/create-goal-modal';
 import { GoalDetailsModal } from '@/src/widgets/goal-details-modal';
 import { useGoals } from '../hooks/use-goals';
-import { Goal } from '../model/types';
 import { GoalsList } from './goals-list';
 
 export const GoalsPage: React.FC = () => {
 	const goalStatuses = ['Активные', 'Достигнутые'];
 	const [activeGoalStatus, setActiveGoalStatus] = useState(goalStatuses[0]);
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
-	const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
-	const { currencyCode, currencySymbol } = useGoals();
+	const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
+	const { goals, currencyCode, currencySymbol } = useGoals();
 	const currency = currencySymbol || currencyCode || '₽';
+	const selectedGoal = goals.find(goal => goal.id === selectedGoalId) ?? null;
 
 	return (
 		<>
@@ -45,7 +45,7 @@ export const GoalsPage: React.FC = () => {
 
 					<GoalsList
 						status={activeGoalStatus}
-						onGoalClick={setSelectedGoal}
+						onGoalClick={goal => setSelectedGoalId(goal.id)}
 					/>
 				</div>
 			</div>
@@ -57,8 +57,8 @@ export const GoalsPage: React.FC = () => {
 			/>
 
 			<GoalDetailsModal
-				isOpen={selectedGoal !== null}
-				onClose={() => setSelectedGoal(null)}
+				isOpen={selectedGoalId !== null}
+				onClose={() => setSelectedGoalId(null)}
 				goal={selectedGoal}
 				currency={currency}
 			/>

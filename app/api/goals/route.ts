@@ -35,7 +35,7 @@ export async function GET() {
 					},
 				},
 				goals: {
-					orderBy: { deadline: 'asc' },
+					orderBy: [{ deadline: 'asc' }, { createdAt: 'asc' }],
 					include: {
 						transactions: {
 							where: { type: 'GOAL' },

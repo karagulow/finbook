@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { api, toastOptions } from '@/src/shared/lib';
 import { Button, DeleteButton, EditButton } from '@/src/shared/ui';
+import { EditGoalModal } from '../../edit-goal-modal';
 import { GoalDetails } from '../model/types';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
 import { GoalDetailsProgress } from './goal-details-progress';
@@ -32,6 +33,7 @@ export const GoalDetailsContent: React.FC<Props> = ({
 	const queryClient = useQueryClient();
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+	const [isEditOpen, setIsEditOpen] = useState(false);
 
 	const progress =
 		goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount) * 100 : 0;
@@ -138,7 +140,9 @@ export const GoalDetailsContent: React.FC<Props> = ({
 				</div>
 
 				<div className='mt-5 flex flex-row items-center gap-2.5'>
-					<Button className='w-full'>Изменить</Button>
+					<Button className='w-full' onClick={() => setIsEditOpen(true)}>
+						Изменить
+					</Button>
 					<Button
 						className='w-full'
 						variant='wrong'
@@ -148,6 +152,13 @@ export const GoalDetailsContent: React.FC<Props> = ({
 					</Button>
 				</div>
 			</div>
+
+			<EditGoalModal
+				isOpen={isEditOpen}
+				onClose={() => setIsEditOpen(false)}
+				goal={goal}
+				currency={currency}
+			/>
 
 			<ConfirmDeleteDialog
 				isOpen={isConfirmDeleteOpen}
