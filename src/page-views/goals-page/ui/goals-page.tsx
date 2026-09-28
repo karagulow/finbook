@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Button, StickyHeader, Tabs } from '@/src/shared/ui';
 import { CreateGoalModal } from '@/src/widgets/create-goal-modal';
 import { GoalDetailsModal } from '@/src/widgets/goal-details-modal';
-import { useGoals } from '../hooks/use-goals';
+import { useGoals } from '@/src/entities/goal';
 import { GoalsList } from './goals-list';
 
 export const GoalsPage: React.FC = () => {

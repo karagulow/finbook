@@ -10,6 +10,7 @@ import {
 import { Balance } from '@/src/entities/balance';
 import { AccountOverview } from '@/src/widgets/account-overview';
 import { AddTransaction } from '@/src/features/add-transaction';
+import { GoalsOverview } from './goals-overview';
 
 export const HomePage: React.FC = () => {
 	const { incomes, expenses, isLoading } = useTransactionsByCategory();
@@ -45,6 +46,8 @@ export const HomePage: React.FC = () => {
 						</>
 					)}
 				</div>
+
+				<GoalsOverview />
 			</div>
 		</>
 	);

@@ -13,6 +13,7 @@ export interface Goal {
 	savedAmount: number;
 	targetAmount: number;
 	deadline: string;
+	createdAt: string;
 	description: string | null;
 	operations: GoalOperation[];
 }

@@ -70,6 +70,7 @@ export async function GET() {
 				savedAmount: goal.saved_amount,
 				targetAmount: goal.target_amount,
 				deadline: goal.deadline.toISOString(),
+				createdAt: goal.createdAt.toISOString(),
 				description: goal.description,
 				operations: goal.transactions.flatMap(transaction => {
 					if (

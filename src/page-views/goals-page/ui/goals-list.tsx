@@ -3,8 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import autoAnimate from '@formkit/auto-animate';
 
-import { useGoals } from '../hooks/use-goals';
-import { Goal } from '../model/types';
+import { Goal, useGoals } from '@/src/entities/goal';
 import { GoalCard } from './goal-card';
 import { GoalCardSkeleton } from './goal-card-skeleton';
 

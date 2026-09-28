@@ -15,7 +15,7 @@ export const GoalProgress: React.FC<Props> = ({ icon, progress }) => {
 	const offset = CIRCUMFERENCE - (clamped / 100) * CIRCUMFERENCE;
 
 	return (
-		<div className='relative size-14 shrink-0'>
+		<div className='relative shrink-0' style={{ width: SIZE, height: SIZE }}>
 			<svg
 				className='size-full -rotate-90'
 				viewBox={`0 0 ${SIZE} ${SIZE}`}
@@ -43,7 +43,7 @@ export const GoalProgress: React.FC<Props> = ({ icon, progress }) => {
 					/>
 				)}
 			</svg>
-			<span className='absolute inset-0 flex items-center justify-center text-[20px] leading-none'>
+			<span className='absolute inset-0 flex items-center justify-center text-[26px] leading-none'>
 				{icon}
 			</span>
 		</div>

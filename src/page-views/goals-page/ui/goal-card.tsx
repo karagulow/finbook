@@ -2,8 +2,7 @@ import React from 'react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
-import { Goal } from '../model/types';
-import { GoalProgress } from './goal-progress';
+import { Goal, GoalProgress } from '@/src/entities/goal';
 
 interface Props {
 	goal: Goal;
