@@ -31,7 +31,10 @@ export async function GET(req: Request) {
 		const cursor = searchParams.get('cursor');
 
 		const transactions = await prisma.transaction.findMany({
-			where: { userId },
+			where: {
+				userId,
+				type: { in: ['INCOME', 'EXPENSE', 'TRANSFER'] },
+			},
 			orderBy: { date: 'desc' },
 			take: limit + 1,
 			...(cursor
