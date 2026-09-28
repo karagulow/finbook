@@ -5,17 +5,19 @@ interface TabsProps {
 	activeItem: string;
 	setActiveItem: (item: string) => void;
 	tabName: string;
+	className?: string;
 }
 
 export const Tabs: React.FC<TabsProps> = ({
 	items,
 	activeItem,
 	setActiveItem,
+	className,
 }) => {
 	const activeIndex = items.indexOf(activeItem);
 
 	return (
-		<div className='relative w-full min-h-fit overflow-x-auto'>
+		<div className={cn('relative w-full min-h-fit overflow-x-auto', className)}>
 			<div className='relative flex bg-[var(--muted)] border-[0.5px] border-[var(--border-primary)] rounded-full p-0.5 w-full mx-auto'>
 				<div
 					className='absolute top-0 left-0 h-[calc(100%-4px)] m-0.5 bg-[var(--button-secondary)] rounded-full transition-all duration-300'
