@@ -1,4 +1,7 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useRef } from 'react';
+import autoAnimate from '@formkit/auto-animate';
 
 import { useGoals } from '../hooks/use-goals';
 import { Goal } from '../model/types';
@@ -18,47 +21,52 @@ export const GoalsList: React.FC<Props> = ({ status, onGoalClick }) => {
 		useGoals();
 	const isActive = status === 'Активные';
 	const currency = currencySymbol || currencyCode;
-
-	if (isLoading) {
-		return (
-			<div className='grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3'>
-				{Array.from({ length: 9 }, (_, index) => (
-					<GoalCardSkeleton key={index} />
-				))}
-			</div>
-		);
-	}
-
-	if (isError) {
-		return (
-			<p className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
-				Не удалось загрузить цели
-			</p>
-		);
-	}
+	const listRef = useRef<HTMLDivElement>(null);
 
 	const visibleGoals = goals.filter(goal =>
 		isActive ? !isAchieved(goal) : isAchieved(goal),
 	);
+	const showGrid = !isLoading && !isError && visibleGoals.length > 0;
 
-	if (visibleGoals.length === 0) {
-		return (
-			<p className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
-				{isActive ? 'Нет активных целей' : 'Нет достигнутых целей'}
-			</p>
-		);
-	}
+	useEffect(() => {
+		if (listRef.current) {
+			autoAnimate(listRef.current, { duration: 250, easing: 'ease-in-out' });
+		}
+	}, []);
 
 	return (
-		<div className='grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3'>
-			{visibleGoals.map(goal => (
-				<GoalCard
-					key={goal.id}
-					goal={goal}
-					currency={currency}
-					onClick={() => onGoalClick(goal)}
-				/>
-			))}
+		<div
+			ref={listRef}
+			className={
+				showGrid
+					? 'grid content-start items-start grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3'
+					: undefined
+			}
+		>
+			{isLoading ? (
+				<div className='grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3'>
+					{Array.from({ length: 9 }, (_, index) => (
+						<GoalCardSkeleton key={index} />
+					))}
+				</div>
+			) : isError ? (
+				<p className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
+					Не удалось загрузить цели
+				</p>
+			) : visibleGoals.length === 0 ? (
+				<p className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
+					{isActive ? 'Нет активных целей' : 'Нет достигнутых целей'}
+				</p>
+			) : (
+				visibleGoals.map(goal => (
+					<GoalCard
+						key={goal.id}
+						goal={goal}
+						currency={currency}
+						onClick={() => onGoalClick(goal)}
+					/>
+				))
+			)}
 		</div>
 	);
 };
