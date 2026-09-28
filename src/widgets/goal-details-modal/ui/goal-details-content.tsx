@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import autoAnimate from '@formkit/auto-animate';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import axios from 'axios';
@@ -49,6 +50,16 @@ export const GoalDetailsContent: React.FC<Props> = ({
 	const [operationToDelete, setOperationToDelete] =
 		useState<GoalOperation | null>(null);
 	const [isDeletingOperation, setIsDeletingOperation] = useState(false);
+	const operationsRef = useRef<HTMLUListElement>(null);
+
+	useEffect(() => {
+		if (operationsRef.current) {
+			autoAnimate(operationsRef.current, {
+				duration: 200,
+				easing: 'ease-in-out',
+			});
+		}
+	}, []);
 
 	const progress =
 		goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount) * 100 : 0;
@@ -149,13 +160,13 @@ export const GoalDetailsContent: React.FC<Props> = ({
 							История
 						</h3>
 
-						{goal.operations.length === 0 ? (
-							<p className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
-								Операций пока нет
-							</p>
-						) : (
-							<ul className='flex flex-col gap-2'>
-								{goal.operations.map(operation => {
+						<ul ref={operationsRef} className='flex flex-col gap-2'>
+							{goal.operations.length === 0 ? (
+								<li className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
+									Операций пока нет
+								</li>
+							) : (
+								goal.operations.map(operation => {
 									const sign = operation.type === 'DEPOSIT' ? '+' : '−';
 
 									return (
@@ -188,9 +199,9 @@ export const GoalDetailsContent: React.FC<Props> = ({
 											</div>
 										</li>
 									);
-								})}
-							</ul>
-						)}
+								})
+							)}
+						</ul>
 					</div>
 				</div>
 
