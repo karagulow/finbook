@@ -9,12 +9,13 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { DebtType } from '@/src/entities/debt';
 import { api, toastOptions } from '@/src/shared/lib';
-import { DebtOperationFormValues } from './types';
+import { DebtOperationFormValues, DebtOperationInitial } from './types';
 
 interface Params {
 	debtId: string;
 	debtType: DebtType;
 	remaining: number;
+	operation?: DebtOperationInitial;
 	onClose: () => void;
 }
 
@@ -35,10 +36,12 @@ export const useDebtOperationForm = ({
 	debtId,
 	debtType,
 	remaining,
+	operation,
 	onClose,
 }: Params) => {
 	const queryClient = useQueryClient();
 	const isReceive = debtType === 'OWED_TO_ME';
+	const isEdit = Boolean(operation);
 
 	const {
 		control,
@@ -48,19 +51,28 @@ export const useDebtOperationForm = ({
 	} = useForm<DebtOperationFormValues>({
 		resolver: yupResolver(createSchema(remaining)),
 		defaultValues: {
-			amount: '',
-			date: new Date(),
-			description: '',
+			amount: operation ? String(operation.amount) : '',
+			date: operation ? new Date(operation.date) : new Date(),
+			description: operation?.description ?? '',
 		},
 	});
 
 	const onSubmit = async (data: DebtOperationFormValues) => {
+		const payload = {
+			amount: Number(data.amount),
+			date: data.date.toISOString(),
+			description: data.description.trim() || null,
+		};
+
 		try {
-			await api.post(`/api/debts/${debtId}/operations`, {
-				amount: Number(data.amount),
-				date: data.date.toISOString(),
-				description: data.description.trim() || null,
-			});
+			if (operation) {
+				await api.put(
+					`/api/debts/${debtId}/operations/${operation.id}`,
+					payload,
+				);
+			} else {
+				await api.post(`/api/debts/${debtId}/operations`, payload);
+			}
 
 			await Promise.all([
 				queryClient.invalidateQueries({ queryKey: ['debts'] }),
@@ -69,7 +81,11 @@ export const useDebtOperationForm = ({
 			]);
 
 			toast.success(
-				isReceive ? 'Возврат получен' : 'Сумма возвращена',
+				operation
+					? 'Операция изменена'
+					: isReceive
+						? 'Возврат получен'
+						: 'Сумма возвращена',
 				toastOptions,
 			);
 			reset({
@@ -79,9 +95,11 @@ export const useDebtOperationForm = ({
 			});
 			onClose();
 		} catch (err: unknown) {
-			let message = isReceive
-				? 'Не удалось получить возврат'
-				: 'Не удалось вернуть сумму';
+			let message = operation
+				? 'Не удалось изменить операцию'
+				: isReceive
+					? 'Не удалось получить возврат'
+					: 'Не удалось вернуть сумму';
 
 			if (axios.isAxiosError(err)) {
 				message = err.response?.data?.message || err.message || message;
@@ -99,6 +117,7 @@ export const useDebtOperationForm = ({
 		errors,
 		isSubmitting,
 		isReceive,
+		isEdit,
 		onSubmit,
 	};
 };

@@ -4,12 +4,13 @@ import React from 'react';
 import { Controller } from 'react-hook-form';
 
 import { Button, CurrencyInput, DatePicker, Textarea } from '@/src/shared/ui';
-import { DebtOperationTarget } from '../model/types';
+import { DebtOperationInitial, DebtOperationTarget } from '../model/types';
 import { useDebtOperationForm } from '../model/use-debt-operation-form';
 
 interface Props {
 	debt: DebtOperationTarget;
 	currency: string;
+	operation?: DebtOperationInitial;
 	onClose: () => void;
 }
 
@@ -24,11 +25,13 @@ const roundMoney = (value: number) => Math.round(value * 100) / 100;
 export const DebtOperationModalContent: React.FC<Props> = ({
 	debt,
 	currency,
+	operation,
 	onClose,
 }) => {
 	const remaining = roundMoney(
 		Math.max(0, debt.targetAmount - debt.savedAmount),
 	);
+	const maxAmount = roundMoney(remaining + (operation?.amount ?? 0));
 	const progress =
 		debt.targetAmount > 0 ? (debt.savedAmount / debt.targetAmount) * 100 : 0;
 	const clamped = Math.min(100, Math.max(0, progress));
@@ -39,11 +42,13 @@ export const DebtOperationModalContent: React.FC<Props> = ({
 		errors,
 		isSubmitting,
 		isReceive,
+		isEdit,
 		onSubmit,
 	} = useDebtOperationForm({
 		debtId: debt.id,
 		debtType: debt.type,
-		remaining,
+		remaining: maxAmount,
+		operation,
 		onClose,
 	});
 
@@ -53,7 +58,13 @@ export const DebtOperationModalContent: React.FC<Props> = ({
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<h2 className='font-bold text-[17px] text-[var(--foreground-primary)]'>
-				{isReceive ? 'Получить возврат' : 'Вернуть долг'}
+				{isEdit
+					? isReceive
+						? 'Изменить получение'
+						: 'Изменить возврат'
+					: isReceive
+						? 'Получить возврат'
+						: 'Вернуть долг'}
 			</h2>
 
 			<div className='flex flex-1 flex-col gap-5 overflow-y-auto'>
@@ -127,14 +138,21 @@ export const DebtOperationModalContent: React.FC<Props> = ({
 				/>
 			</div>
 
-			<Button type='submit' disabled={isSubmitting || remaining <= 0}>
+			<Button
+				type='submit'
+				disabled={isSubmitting || (!isEdit && remaining <= 0)}
+			>
 				{isSubmitting
-					? isReceive
-						? 'Получение...'
-						: 'Возврат...'
-					: isReceive
-						? 'Получить'
-						: 'Вернуть'}
+					? isEdit
+						? 'Сохранение...'
+						: isReceive
+							? 'Получение...'
+							: 'Возврат...'
+					: isEdit
+						? 'Сохранить'
+						: isReceive
+							? 'Получить'
+							: 'Вернуть'}
 			</Button>
 		</form>
 	);

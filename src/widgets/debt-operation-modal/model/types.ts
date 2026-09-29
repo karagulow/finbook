@@ -13,3 +13,10 @@ export interface DebtOperationTarget {
 	savedAmount: number;
 	targetAmount: number;
 }
+
+export interface DebtOperationInitial {
+	id: string;
+	amount: number;
+	date: string;
+	description: string | null;
+}

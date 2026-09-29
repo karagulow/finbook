@@ -48,6 +48,9 @@ export const DebtDetailsContent: React.FC<Props> = ({
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 	const [isEditOpen, setIsEditOpen] = useState(false);
 	const [isOperationOpen, setIsOperationOpen] = useState(false);
+	const [operationToEdit, setOperationToEdit] = useState<DebtOperation | null>(
+		null,
+	);
 	const [operationToDelete, setOperationToDelete] =
 		useState<DebtOperation | null>(null);
 	const [isDeletingOperation, setIsDeletingOperation] = useState(false);
@@ -195,7 +198,9 @@ export const DebtDetailsContent: React.FC<Props> = ({
 										</div>
 
 										<div className='flex shrink-0 items-center gap-3'>
-											<EditButton />
+											<EditButton
+												onClick={() => setOperationToEdit(operation)}
+											/>
 											<DeleteButton
 												onClick={() => setOperationToDelete(operation)}
 											/>
@@ -238,6 +243,22 @@ export const DebtDetailsContent: React.FC<Props> = ({
 					targetAmount: debt.targetAmount,
 				}}
 			/>
+
+			{operationToEdit && (
+				<DebtOperationModal
+					isOpen
+					onClose={() => setOperationToEdit(null)}
+					currency={currency}
+					operation={operationToEdit}
+					debt={{
+						id: debt.id,
+						name: debt.name,
+						type: debt.type,
+						savedAmount: debt.savedAmount,
+						targetAmount: debt.targetAmount,
+					}}
+				/>
+			)}
 
 			<EditDebtModal
 				isOpen={isEditOpen}

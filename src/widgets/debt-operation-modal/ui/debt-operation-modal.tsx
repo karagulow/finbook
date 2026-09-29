@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useMediaQuery } from '@/src/shared/hooks';
 import { Drawer, Sheet } from '@/src/shared/ui';
-import { DebtOperationTarget } from '../model/types';
+import { DebtOperationInitial, DebtOperationTarget } from '../model/types';
 import { DebtOperationModalContent } from './debt-operation-modal-content';
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
 	onClose: () => void;
 	debt: DebtOperationTarget;
 	currency: string;
+	operation?: DebtOperationInitial;
 }
 
 export const DebtOperationModal: React.FC<Props> = ({
@@ -17,6 +18,7 @@ export const DebtOperationModal: React.FC<Props> = ({
 	onClose,
 	debt,
 	currency,
+	operation,
 }) => {
 	const isDesktop = useMediaQuery('(min-width: 1024px)');
 
@@ -24,6 +26,7 @@ export const DebtOperationModal: React.FC<Props> = ({
 		<DebtOperationModalContent
 			debt={debt}
 			currency={currency}
+			operation={operation}
 			onClose={onClose}
 		/>
 	);
