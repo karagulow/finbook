@@ -9,6 +9,7 @@ import {
 	CurrencyInput,
 	DatePicker,
 	Input,
+	Select,
 	Tabs,
 	Textarea,
 } from '@/src/shared/ui';
@@ -32,8 +33,23 @@ export const AddDebtModalContent: React.FC<AddDebtModalContentProps> = ({
 	currency,
 	initialType,
 }) => {
-	const { control, handleSubmit, errors, isSubmitting, onSubmit } =
-		useAddDebtForm(onClose, initialType);
+	const {
+		control,
+		handleSubmit,
+		errors,
+		isSubmitting,
+		accounts,
+		accountsLoaded,
+		watch,
+		onSubmit,
+	} = useAddDebtForm(onClose, initialType);
+	const debtType = watch('type');
+	const selectedAccount = accounts.find(
+		account => account.id === watch('accountId'),
+	);
+	const amountCurrency = selectedAccount
+		? selectedAccount.currencySymbol || selectedAccount.currencyCode
+		: currency;
 
 	return (
 		<form
@@ -77,12 +93,40 @@ export const AddDebtModalContent: React.FC<AddDebtModalContentProps> = ({
 
 				<Controller
 					control={control}
+					name='accountId'
+					render={({ field }) => (
+						<Select
+							label={
+								debtType === 'OWED_TO_ME' ? 'Счёт списания' : 'Счёт пополнения'
+							}
+							placeholder='Выберите счёт'
+							options={accounts.map(account => ({
+								value: account.id,
+								label: `${account.name} · ${
+									account.currencySymbol || account.currencyCode
+								}`,
+							}))}
+							value={field.value}
+							onChange={field.onChange}
+							error={errors.accountId?.message}
+						/>
+					)}
+				/>
+
+				{accountsLoaded && accounts.length === 0 && (
+					<p className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
+						Сначала добавьте счёт
+					</p>
+				)}
+
+				<Controller
+					control={control}
 					name='targetAmount'
 					render={({ field }) => (
 						<CurrencyInput
 							label='Сумма долга'
-							placeholder={`0 ${currency}`}
-							suffix={currency ? ` ${currency}` : undefined}
+							placeholder={`0 ${amountCurrency}`}
+							suffix={amountCurrency ? ` ${amountCurrency}` : undefined}
 							value={field.value}
 							onValueChange={field.onChange}
 							error={errors.targetAmount?.message}

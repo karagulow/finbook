@@ -16,6 +16,10 @@ export interface Debt {
 	paid: boolean;
 	type: DebtType;
 	description: string | null;
+	accountId: string | null;
+	accountName: string | null;
+	currencyCode: string;
+	currencySymbol: string | null;
 	createdAt: string;
 	operations: DebtOperation[];
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verify } from 'jsonwebtoken';
 import { prisma } from '@/prisma/prisma-client';
+import { cashDelta, roundMoney } from './lib/cash-delta';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -37,8 +38,20 @@ export async function GET() {
 				debts: {
 					orderBy: [{ deadline: 'asc' }, { createdAt: 'asc' }],
 					include: {
+						account: {
+							select: {
+								id: true,
+								name: true,
+								currency: {
+									select: { code: true, symbol: true },
+								},
+							},
+						},
 						transactions: {
-							where: { type: 'DEBT' },
+							where: {
+								type: 'DEBT',
+								OR: [{ debtAction: 'REPAY' }, { debtAction: null }],
+							},
 							orderBy: { date: 'desc' },
 							select: {
 								id: true,
@@ -71,6 +84,11 @@ export async function GET() {
 				paid: debt.paid,
 				type: debt.type,
 				description: debt.description,
+				accountId: debt.account?.id ?? null,
+				accountName: debt.account?.name ?? null,
+				currencyCode: debt.account?.currency.code ?? user.currency.code,
+				currencySymbol:
+					debt.account?.currency.symbol ?? user.currency.symbol,
 				createdAt: debt.createdAt.toISOString(),
 				operations: debt.transactions.flatMap(transaction => {
 					if (transaction.amount == null) return [];
@@ -113,10 +131,10 @@ export async function POST(req: NextRequest) {
 		}
 
 		const body = await req.json();
-		const { name, targetAmount, deadline, description, type } = body;
+		const { name, targetAmount, deadline, description, type, accountId } = body;
 
 		const trimmedName = typeof name === 'string' ? name.trim() : '';
-		const amount = Number(targetAmount);
+		const amount = roundMoney(Number(targetAmount));
 		const deadlineDate = new Date(deadline);
 		const trimmedDescription =
 			typeof description === 'string' ? description.trim() : '';
@@ -149,17 +167,56 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		const debt = await prisma.debt.create({
-			data: {
-				name: trimmedName,
-				target_amount: amount,
-				saved_amount: 0,
-				deadline: deadlineDate,
-				paid: false,
-				type,
-				description: trimmedDescription || null,
-				userId,
+		if (typeof accountId !== 'string' || !accountId) {
+			return NextResponse.json({ message: 'Выберите счёт' }, { status: 400 });
+		}
+
+		const account = await prisma.account.findFirst({
+			where: { id: accountId, userId },
+			select: {
+				id: true,
+				name: true,
+				currency: { select: { code: true, symbol: true } },
 			},
+		});
+
+		if (!account) {
+			return NextResponse.json({ message: 'Счёт не найден' }, { status: 404 });
+		}
+
+		const debt = await prisma.$transaction(async tx => {
+			const created = await tx.debt.create({
+				data: {
+					name: trimmedName,
+					target_amount: amount,
+					saved_amount: 0,
+					deadline: deadlineDate,
+					paid: false,
+					type,
+					description: trimmedDescription || null,
+					accountId: account.id,
+					userId,
+				},
+			});
+
+			await tx.transaction.create({
+				data: {
+					type: 'DEBT',
+					debtAction: 'ISSUE',
+					amount,
+					date: new Date(),
+					accountId: account.id,
+					debtId: created.id,
+					userId,
+				},
+			});
+
+			await tx.account.update({
+				where: { id: account.id },
+				data: { balance: { increment: cashDelta(type, 'ISSUE', amount) } },
+			});
+
+			return created;
 		});
 
 		return NextResponse.json(

@@ -50,6 +50,7 @@ model Account {
   transactionsFrom Transaction[] @relation("TransactionFrom")
   transactionsTo   Transaction[] @relation("TransactionTo")
   transactions     Transaction[] @relation("TransactionAccount")
+  debts            Debt[]
 }
 
 model Category {
@@ -93,6 +94,7 @@ model Transaction {
   goalId        String?              @db.Uuid
   goalType      GoalTransactionType?
   debtId        String?              @db.Uuid
+  debtAction    DebtTransactionType?
   userId        String               @db.Uuid
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
@@ -130,9 +132,11 @@ model Debt {
   paid          Boolean
   type          DebtType
   description   String?
+  accountId     String?       @db.Uuid
   userId        String        @db.Uuid
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  account       Account?      @relation(fields: [accountId], references: [id], onDelete: Restrict)
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions  Transaction[]
 }
@@ -180,6 +184,11 @@ enum TransactionType {
 enum GoalTransactionType {
   DEPOSIT
   WITHDRAW
+}
+
+enum DebtTransactionType {
+  ISSUE
+  REPAY
 }
 
 enum CategoryType {

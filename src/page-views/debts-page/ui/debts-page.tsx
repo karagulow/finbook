@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button, StickyHeader, Tabs } from '@/src/shared/ui';
-import { DebtType, useDebts } from '@/src/entities/debt';
+import { DebtType, debtCurrencyLabel, useDebts } from '@/src/entities/debt';
 import { AddDebtModal } from '@/src/widgets/add-debt-modal';
 import { DebtDetailsModal } from '@/src/widgets/debt-details-modal';
 import { DebtsList } from './debts-list';
@@ -22,6 +22,9 @@ export const DebtsPage: React.FC = () => {
 	const { debts, currencyCode, currencySymbol } = useDebts();
 	const currency = currencySymbol || currencyCode || '₽';
 	const selectedDebt = debts.find(debt => debt.id === selectedDebtId) ?? null;
+	const selectedCurrency = selectedDebt
+		? debtCurrencyLabel(selectedDebt, currency)
+		: currency;
 
 	return (
 		<>
@@ -70,7 +73,7 @@ export const DebtsPage: React.FC = () => {
 				isOpen={selectedDebtId !== null}
 				onClose={() => setSelectedDebtId(null)}
 				debt={selectedDebt}
-				currency={currency}
+				currency={selectedCurrency}
 			/>
 		</>
 	);

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import autoAnimate from '@formkit/auto-animate';
 
-import { Debt, DebtType, useDebts } from '@/src/entities/debt';
+import { Debt, DebtType, debtCurrencyLabel, useDebts } from '@/src/entities/debt';
 import { Button, Divider } from '@/src/shared/ui';
 import { AddDebtModal } from '@/src/widgets/add-debt-modal';
 import { DebtDetailsModal } from '@/src/widgets/debt-details-modal';
@@ -40,6 +40,9 @@ export const DebtsOverview: React.FC = () => {
 	const previewDebts = openDebts.slice(0, PREVIEW_LIMIT);
 	const hiddenCount = Math.max(0, openDebts.length - previewDebts.length);
 	const selectedDebt = debts.find(debt => debt.id === selectedDebtId) ?? null;
+	const selectedCurrency = selectedDebt
+		? debtCurrencyLabel(selectedDebt, currency)
+		: currency;
 	const showList = !isLoading && !isError && openDebts.length > 0;
 
 	useEffect(() => {
@@ -100,7 +103,11 @@ export const DebtsOverview: React.FC = () => {
 					<div className='grid grid-cols-2 gap-3 sm:px-2.5'>
 						{summaryLabels.map(item => {
 							const total = openDebts
-								.filter(debt => debt.type === item.type)
+								.filter(
+									debt =>
+										debt.type === item.type &&
+										debt.currencyCode === currencyCode,
+								)
 								.reduce((sum, debt) => sum + remainingOf(debt), 0);
 
 							return (
@@ -124,7 +131,7 @@ export const DebtsOverview: React.FC = () => {
 								{index > 0 && <Divider className='my-4 sm:hidden' />}
 								<DebtOverviewItem
 									debt={debt}
-									currency={currency}
+									currency={debtCurrencyLabel(debt, currency)}
 									emphasized={previewDebts.length === 1}
 									onClick={() => setSelectedDebtId(debt.id)}
 								/>
@@ -154,7 +161,7 @@ export const DebtsOverview: React.FC = () => {
 				isOpen={selectedDebtId !== null}
 				onClose={() => setSelectedDebtId(null)}
 				debt={selectedDebt}
-				currency={currency}
+				currency={selectedCurrency}
 			/>
 		</section>
 	);

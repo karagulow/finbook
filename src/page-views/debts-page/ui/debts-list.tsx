@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import autoAnimate from '@formkit/auto-animate';
 
-import { Debt, DebtType, useDebts } from '@/src/entities/debt';
+import { Debt, DebtType, debtCurrencyLabel, useDebts } from '@/src/entities/debt';
 import { DebtCard } from './debt-card';
 import { DebtCardSkeleton } from './debt-card-skeleton';
 
@@ -60,7 +60,7 @@ export const DebtsList: React.FC<Props> = ({ type, onDebtClick }) => {
 					<DebtCard
 						key={debt.id}
 						debt={debt}
-						currency={currency}
+						currency={debtCurrencyLabel(debt, currency)}
 						onClick={() => onDebtClick(debt)}
 					/>
 				))

@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Debt, DebtType } from '@/src/entities/debt';
 import { api, toastOptions } from '@/src/shared/lib';
 import { Button, DeleteButton, EditButton } from '@/src/shared/ui';
+import { DebtOperationModal } from '../../debt-operation-modal';
 import { EditDebtModal } from '../../edit-debt-modal';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
 
@@ -44,8 +45,10 @@ export const DebtDetailsContent: React.FC<Props> = ({
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 	const [isEditOpen, setIsEditOpen] = useState(false);
+	const [isOperationOpen, setIsOperationOpen] = useState(false);
 	const operationsRef = useRef<HTMLUListElement>(null);
 	const operations = debt.operations ?? [];
+	const remaining = Math.max(0, debt.targetAmount - debt.savedAmount);
 	const progress =
 		debt.targetAmount > 0 ? (debt.savedAmount / debt.targetAmount) * 100 : 0;
 	const clamped = Math.min(100, Math.max(0, progress));
@@ -63,7 +66,11 @@ export const DebtDetailsContent: React.FC<Props> = ({
 		setIsDeleting(true);
 		try {
 			await api.delete(`/api/debts/${debt.id}`);
-			await queryClient.invalidateQueries({ queryKey: ['debts'] });
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: ['debts'] }),
+				queryClient.invalidateQueries({ queryKey: ['accounts'] }),
+				queryClient.invalidateQueries({ queryKey: ['balance'] }),
+			]);
 			setIsConfirmDeleteOpen(false);
 			toast.success('Долг удалён', toastOptions);
 			onClose();
@@ -111,9 +118,21 @@ export const DebtDetailsContent: React.FC<Props> = ({
 							Срок:{' '}
 							{format(new Date(debt.deadline), 'd MMMM yyyy', { locale: ru })}
 						</span>
+
+						{debt.accountName && (
+							<span className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
+								Счёт: {debt.accountName}
+							</span>
+						)}
 					</div>
 
-					<Button type='button'>{actionLabel[debt.type]}</Button>
+					<Button
+						type='button'
+						disabled={remaining <= 0 || !debt.accountId}
+						onClick={() => setIsOperationOpen(true)}
+					>
+						{actionLabel[debt.type]}
+					</Button>
 
 					<div className='flex flex-col gap-2.5'>
 						<h3 className='font-medium text-[15px] text-[var(--foreground-primary)]'>
@@ -171,6 +190,19 @@ export const DebtDetailsContent: React.FC<Props> = ({
 					</Button>
 				</div>
 			</div>
+
+			<DebtOperationModal
+				isOpen={isOperationOpen}
+				onClose={() => setIsOperationOpen(false)}
+				currency={currency}
+				debt={{
+					id: debt.id,
+					name: debt.name,
+					type: debt.type,
+					savedAmount: debt.savedAmount,
+					targetAmount: debt.targetAmount,
+				}}
+			/>
 
 			<EditDebtModal
 				isOpen={isEditOpen}
