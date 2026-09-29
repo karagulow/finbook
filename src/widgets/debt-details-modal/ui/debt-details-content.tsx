@@ -4,15 +4,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import autoAnimate from '@formkit/auto-animate';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { Debt, DebtType } from '@/src/entities/debt';
+import { Debt, DebtOperation, DebtType } from '@/src/entities/debt';
 import { api, toastOptions } from '@/src/shared/lib';
 import { Button, DeleteButton, EditButton } from '@/src/shared/ui';
 import { DebtOperationModal } from '../../debt-operation-modal';
 import { EditDebtModal } from '../../edit-debt-modal';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
+import { ConfirmDeleteOperationDialog } from './confirm-delete-operation-dialog';
 
 interface Props {
 	debt: Debt;
@@ -46,6 +48,9 @@ export const DebtDetailsContent: React.FC<Props> = ({
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 	const [isEditOpen, setIsEditOpen] = useState(false);
 	const [isOperationOpen, setIsOperationOpen] = useState(false);
+	const [operationToDelete, setOperationToDelete] =
+		useState<DebtOperation | null>(null);
+	const [isDeletingOperation, setIsDeletingOperation] = useState(false);
 	const operationsRef = useRef<HTMLUListElement>(null);
 	const operations = debt.operations ?? [];
 	const remaining = Math.max(0, debt.targetAmount - debt.savedAmount);
@@ -79,6 +84,34 @@ export const DebtDetailsContent: React.FC<Props> = ({
 			toast.error('Не удалось удалить долг', toastOptions);
 		}
 		setIsDeleting(false);
+	};
+
+	const handleDeleteOperation = async () => {
+		if (!operationToDelete) return;
+
+		setIsDeletingOperation(true);
+		try {
+			await api.delete(
+				`/api/debts/${debt.id}/operations/${operationToDelete.id}`,
+			);
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: ['debts'] }),
+				queryClient.invalidateQueries({ queryKey: ['accounts'] }),
+				queryClient.invalidateQueries({ queryKey: ['balance'] }),
+			]);
+			setOperationToDelete(null);
+			toast.success('Транзакция удалена', toastOptions);
+		} catch (err: unknown) {
+			console.error('Ошибка удаления транзакции долга', err);
+			let message = 'Не удалось удалить транзакцию';
+
+			if (axios.isAxiosError(err)) {
+				message = err.response?.data?.message || err.message || message;
+			}
+
+			toast.error(message, toastOptions);
+		}
+		setIsDeletingOperation(false);
 	};
 
 	return (
@@ -163,7 +196,9 @@ export const DebtDetailsContent: React.FC<Props> = ({
 
 										<div className='flex shrink-0 items-center gap-3'>
 											<EditButton />
-											<DeleteButton />
+											<DeleteButton
+												onClick={() => setOperationToDelete(operation)}
+											/>
 										</div>
 									</li>
 								))
@@ -209,6 +244,13 @@ export const DebtDetailsContent: React.FC<Props> = ({
 				onClose={() => setIsEditOpen(false)}
 				debt={debt}
 				currency={currency}
+			/>
+
+			<ConfirmDeleteOperationDialog
+				isOpen={operationToDelete !== null}
+				onClose={() => setOperationToDelete(null)}
+				onConfirm={handleDeleteOperation}
+				loading={isDeletingOperation}
 			/>
 
 			<ConfirmDeleteDialog
