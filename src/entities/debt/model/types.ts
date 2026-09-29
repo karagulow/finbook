@@ -1,5 +1,12 @@
 export type DebtType = 'OWED_BY_ME' | 'OWED_TO_ME';
 
+export interface DebtOperation {
+	id: string;
+	amount: number;
+	date: string;
+	description: string | null;
+}
+
 export interface Debt {
 	id: string;
 	name: string;
@@ -10,6 +17,7 @@ export interface Debt {
 	type: DebtType;
 	description: string | null;
 	createdAt: string;
+	operations: DebtOperation[];
 }
 
 export interface DebtsResponse {

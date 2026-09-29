@@ -3,12 +3,13 @@
 import React, { useEffect, useRef } from 'react';
 import autoAnimate from '@formkit/auto-animate';
 
-import { DebtType, useDebts } from '@/src/entities/debt';
+import { Debt, DebtType, useDebts } from '@/src/entities/debt';
 import { DebtCard } from './debt-card';
 import { DebtCardSkeleton } from './debt-card-skeleton';
 
 interface Props {
 	type: DebtType;
+	onDebtClick: (debt: Debt) => void;
 }
 
 const emptyMessage: Record<DebtType, string> = {
@@ -16,7 +17,7 @@ const emptyMessage: Record<DebtType, string> = {
 	OWED_TO_ME: 'Вам никто не должен',
 };
 
-export const DebtsList: React.FC<Props> = ({ type }) => {
+export const DebtsList: React.FC<Props> = ({ type, onDebtClick }) => {
 	const { debts, currencyCode, currencySymbol, isLoading, isError } =
 		useDebts();
 	const currency = currencySymbol || currencyCode || '₽';
@@ -56,7 +57,12 @@ export const DebtsList: React.FC<Props> = ({ type }) => {
 				</p>
 			) : (
 				visibleDebts.map(debt => (
-					<DebtCard key={debt.id} debt={debt} currency={currency} />
+					<DebtCard
+						key={debt.id}
+						debt={debt}
+						currency={currency}
+						onClick={() => onDebtClick(debt)}
+					/>
 				))
 			)}
 		</div>

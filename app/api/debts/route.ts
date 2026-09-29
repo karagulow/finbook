@@ -36,6 +36,18 @@ export async function GET() {
 				},
 				debts: {
 					orderBy: [{ deadline: 'asc' }, { createdAt: 'asc' }],
+					include: {
+						transactions: {
+							where: { type: 'DEBT' },
+							orderBy: { date: 'desc' },
+							select: {
+								id: true,
+								amount: true,
+								date: true,
+								description: true,
+							},
+						},
+					},
 				},
 			},
 		});
@@ -60,6 +72,18 @@ export async function GET() {
 				type: debt.type,
 				description: debt.description,
 				createdAt: debt.createdAt.toISOString(),
+				operations: debt.transactions.flatMap(transaction => {
+					if (transaction.amount == null) return [];
+
+					return [
+						{
+							id: transaction.id,
+							amount: transaction.amount,
+							date: transaction.date.toISOString(),
+							description: transaction.description,
+						},
+					];
+				}),
 			})),
 		});
 	} catch (error) {

@@ -7,6 +7,7 @@ import { Debt } from '@/src/entities/debt';
 interface Props {
 	debt: Debt;
 	currency: string;
+	onClick: () => void;
 }
 
 const formatAmount = (value: number) =>
@@ -14,13 +15,17 @@ const formatAmount = (value: number) =>
 		maximumFractionDigits: 2,
 	});
 
-export const DebtCard: React.FC<Props> = ({ debt, currency }) => {
+export const DebtCard: React.FC<Props> = ({ debt, currency, onClick }) => {
 	const progress =
 		debt.targetAmount > 0 ? (debt.savedAmount / debt.targetAmount) * 100 : 0;
 	const clamped = Math.min(100, Math.max(0, progress));
 
 	return (
-		<article className='flex w-full flex-col gap-2 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4'>
+		<button
+			type='button'
+			onClick={onClick}
+			className='flex w-full cursor-pointer flex-col gap-2 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4 text-left transition hover:border-[var(--border-primary-hover)]'
+		>
 			<div className='flex min-w-0 flex-col gap-0.5'>
 				<span className='truncate font-medium text-[15px] text-[var(--foreground-primary)]'>
 					{debt.name}
@@ -45,6 +50,6 @@ export const DebtCard: React.FC<Props> = ({ debt, currency }) => {
 					/>
 				</div>
 			</div>
-		</article>
+		</button>
 	);
 };
