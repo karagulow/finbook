@@ -35,6 +35,7 @@ export const Tabs: React.FC<TabsProps> = ({
 					return (
 						<button
 							key={index}
+							type='button'
 							className='relative w-full py-1 font-semibold text-[13px] cursor-pointer group whitespace-nowrap'
 							onClick={() => setActiveItem(item)}
 						>

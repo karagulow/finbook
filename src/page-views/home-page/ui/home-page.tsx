@@ -10,6 +10,7 @@ import {
 import { Balance } from '@/src/entities/balance';
 import { AccountOverview } from '@/src/widgets/account-overview';
 import { AddTransaction } from '@/src/features/add-transaction';
+import { DebtsOverview } from './debts-overview';
 import { GoalsOverview } from './goals-overview';
 
 export const HomePage: React.FC = () => {
@@ -48,6 +49,7 @@ export const HomePage: React.FC = () => {
 				</div>
 
 				<GoalsOverview />
+				<DebtsOverview />
 			</div>
 		</>
 	);

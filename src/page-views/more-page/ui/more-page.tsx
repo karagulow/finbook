@@ -2,7 +2,7 @@ import React from 'react';
 
 import { StickyHeader } from '@/src/shared/ui';
 import { LinkItem } from './link-item';
-import { Cog, Goal } from 'lucide-react';
+import { Cog, Goal, HandCoins } from 'lucide-react';
 
 export const MorePage: React.FC = () => {
 	const STROKE_WIDTH = 1;
@@ -23,12 +23,12 @@ export const MorePage: React.FC = () => {
 						path='/goals'
 						icon={<Goal strokeWidth={STROKE_WIDTH} />}
 					/>
-					{/* <LinkItem
+					<LinkItem
 						title='Долги'
 						description='Учитывай, плати, освобождайся'
 						path='/debts'
 						icon={<HandCoins strokeWidth={STROKE_WIDTH} />}
-					/> */}
+					/>
 					<LinkItem
 						title='Настройки'
 						description='Меняй, настраивай, управляй'

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSortable } from '@dnd-kit/sortable';
@@ -35,7 +36,10 @@ export const AccountItem: React.FC<Props> = ({ id, account }) => {
 			toast.success('Счёт успешно удалён!', toastOptions);
 		} catch (err) {
 			console.error('Ошибка удаления счета', err);
-			toast.error('Ошибка удаления счета', toastOptions);
+			const message = axios.isAxiosError(err)
+				? err.response?.data?.error || 'Ошибка удаления счета'
+				: 'Ошибка удаления счета';
+			toast.error(message, toastOptions);
 		}
 		setIsLoading(false);
 	};

@@ -46,6 +46,19 @@ export async function PUT(req: Request, context: RouteContext) {
 			);
 		}
 
+		if (currencyId && currencyId !== account.currencyId) {
+			const linkedDebts = await prisma.debt.count({
+				where: { accountId: id },
+			});
+
+			if (linkedDebts > 0) {
+				return NextResponse.json(
+					{ error: 'Нельзя сменить валюту счёта, к которому привязаны долги' },
+					{ status: 400 }
+				);
+			}
+		}
+
 		const updated = await prisma.account.update({
 			where: { id },
 			data: {
@@ -99,6 +112,17 @@ export async function DELETE(req: Request, context: RouteContext) {
 
 		if (account.userId !== userId) {
 			return NextResponse.json({ error: 'Нет доступа' }, { status: 403 });
+		}
+
+		const linkedDebts = await prisma.debt.count({
+			where: { accountId: id },
+		});
+
+		if (linkedDebts > 0) {
+			return NextResponse.json(
+				{ error: 'Нельзя удалить счёт, к которому привязаны долги' },
+				{ status: 400 }
+			);
 		}
 
 		await prisma.account.delete({
