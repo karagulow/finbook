@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Button, StickyHeader, Tabs } from '@/src/shared/ui';
-import { DebtType } from '@/src/entities/debt';
+import { DebtType, useDebts } from '@/src/entities/debt';
+import { AddDebtModal } from '@/src/widgets/add-debt-modal';
 import { DebtsList } from './debts-list';
 
 const debtTabs = ['Я должен', 'Мне должны'] as const;
@@ -15,6 +16,9 @@ const debtTypeByTab: Record<(typeof debtTabs)[number], DebtType> = {
 export const DebtsPage: React.FC = () => {
 	const [activeTab, setActiveTab] =
 		useState<(typeof debtTabs)[number]>('Я должен');
+	const [isAddOpen, setIsAddOpen] = useState(false);
+	const { currencyCode, currencySymbol } = useDebts();
+	const currency = currencySymbol || currencyCode || '₽';
 
 	return (
 		<>
@@ -26,7 +30,12 @@ export const DebtsPage: React.FC = () => {
 						Долги
 					</h1>
 
-					<Button className='w-full sm:w-auto'>Добавить долг</Button>
+					<Button
+						className='w-full sm:w-auto'
+						onClick={() => setIsAddOpen(true)}
+					>
+						Добавить долг
+					</Button>
 				</div>
 
 				<div className='flex flex-col gap-5'>
@@ -43,6 +52,13 @@ export const DebtsPage: React.FC = () => {
 					<DebtsList type={debtTypeByTab[activeTab]} />
 				</div>
 			</div>
+
+			<AddDebtModal
+				isOpen={isAddOpen}
+				onClose={() => setIsAddOpen(false)}
+				currency={currency}
+				initialType={debtTypeByTab[activeTab]}
+			/>
 		</>
 	);
 };
