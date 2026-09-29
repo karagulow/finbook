@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { Debt, DebtOperation, DebtType } from '@/src/entities/debt';
 import { api, toastOptions } from '@/src/shared/lib';
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { Button, DeleteButton, EditButton } from '@/src/shared/ui';
 import { DebtOperationModal } from '../../debt-operation-modal';
 import { EditDebtModal } from '../../edit-debt-modal';
@@ -57,6 +58,7 @@ export const DebtDetailsContent: React.FC<Props> = ({
 	const operationsRef = useRef<HTMLUListElement>(null);
 	const operations = debt.operations ?? [];
 	const remaining = Math.max(0, debt.targetAmount - debt.savedAmount);
+	const animatedSaved = useAnimatedNumber(debt.savedAmount);
 	const progress =
 		debt.targetAmount > 0 ? (debt.savedAmount / debt.targetAmount) * 100 : 0;
 	const clamped = Math.min(100, Math.max(0, progress));
@@ -135,8 +137,8 @@ export const DebtDetailsContent: React.FC<Props> = ({
 							</span>
 						</div>
 
-						<span className='text-center font-semibold text-[20px] text-[var(--foreground-primary)]'>
-							{formatAmount(debt.savedAmount)}
+						<span className='text-center font-semibold text-[20px] text-[var(--foreground-primary)] tabular-nums'>
+							{formatAmount(animatedSaved)}
 							<span className='font-medium text-[var(--foreground-secondary)]'>
 								{' '}
 								/ {formatAmount(debt.targetAmount)} {currency}
@@ -145,7 +147,7 @@ export const DebtDetailsContent: React.FC<Props> = ({
 
 						<div className='h-1 w-full overflow-hidden rounded-full bg-[var(--border-primary-hover)]'>
 							<div
-								className='h-full rounded-full bg-[var(--foreground-primary)]'
+								className='h-full rounded-full bg-[var(--foreground-primary)] transition-[width] duration-500 ease-out'
 								style={{ width: `${clamped}%` }}
 							/>
 						</div>

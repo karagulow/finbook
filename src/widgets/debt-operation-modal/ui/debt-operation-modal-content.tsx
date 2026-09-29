@@ -3,6 +3,7 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
 
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { Button, CurrencyInput, DatePicker, Textarea } from '@/src/shared/ui';
 import { DebtOperationInitial, DebtOperationTarget } from '../model/types';
 import { useDebtOperationForm } from '../model/use-debt-operation-form';
@@ -31,6 +32,8 @@ export const DebtOperationModalContent: React.FC<Props> = ({
 	const remaining = roundMoney(
 		Math.max(0, debt.targetAmount - debt.savedAmount),
 	);
+	const animatedSaved = useAnimatedNumber(debt.savedAmount);
+	const animatedRemaining = useAnimatedNumber(remaining);
 	const maxAmount = roundMoney(remaining + (operation?.amount ?? 0));
 	const progress =
 		debt.targetAmount > 0 ? (debt.savedAmount / debt.targetAmount) * 100 : 0;
@@ -69,8 +72,8 @@ export const DebtOperationModalContent: React.FC<Props> = ({
 
 			<div className='flex flex-1 flex-col gap-5 overflow-y-auto'>
 				<div className='flex flex-col items-center gap-3'>
-					<span className='text-center font-semibold text-[20px] text-[var(--foreground-primary)]'>
-						{formatAmount(debt.savedAmount)}
+					<span className='text-center font-semibold text-[20px] text-[var(--foreground-primary)] tabular-nums'>
+						{formatAmount(animatedSaved)}
 						<span className='font-medium text-[var(--foreground-secondary)]'>
 							{' '}
 							/ {formatAmount(debt.targetAmount)} {currency}
@@ -79,7 +82,7 @@ export const DebtOperationModalContent: React.FC<Props> = ({
 
 					<div className='h-1 w-full overflow-hidden rounded-full bg-[var(--border-primary-hover)]'>
 						<div
-							className='h-full rounded-full bg-[var(--foreground-primary)]'
+							className='h-full rounded-full bg-[var(--foreground-primary)] transition-[width] duration-500 ease-out'
 							style={{ width: `${clamped}%` }}
 						/>
 					</div>
@@ -91,7 +94,9 @@ export const DebtOperationModalContent: React.FC<Props> = ({
 					<span className='max-w-[240px] text-center font-medium text-[13px] leading-5 text-[var(--foreground-secondary)]'>
 						{isReceive ? 'Осталось получить:' : 'Осталось вернуть:'}
 						<br />
-						{formatAmount(remaining)} {currency}
+						<span className='tabular-nums'>
+							{formatAmount(animatedRemaining)} {currency}
+						</span>
 					</span>
 				</div>
 

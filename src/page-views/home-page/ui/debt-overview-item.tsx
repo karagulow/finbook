@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Debt, DebtType } from '@/src/entities/debt';
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { cn } from '@/src/shared/lib';
 import { getDebtDeadlineNote } from '../lib/get-debt-deadline-note';
 
@@ -28,6 +29,7 @@ export const DebtOverviewItem: React.FC<Props> = ({
 	onClick,
 }) => {
 	const remaining = Math.max(0, debt.targetAmount - debt.savedAmount);
+	const animatedRemaining = useAnimatedNumber(remaining);
 	const progress =
 		debt.targetAmount > 0
 			? Math.min(100, Math.max(0, (debt.savedAmount / debt.targetAmount) * 100))
@@ -44,8 +46,8 @@ export const DebtOverviewItem: React.FC<Props> = ({
 				<span className='truncate font-medium text-[15px] text-[var(--foreground-primary)]'>
 					{debt.name}
 				</span>
-				<span className='shrink-0 font-medium text-[15px] text-[var(--foreground-primary)]'>
-					{formatAmount(remaining)} {currency}
+				<span className='shrink-0 font-medium text-[15px] text-[var(--foreground-primary)] tabular-nums'>
+					{formatAmount(animatedRemaining)} {currency}
 				</span>
 			</div>
 
@@ -64,7 +66,7 @@ export const DebtOverviewItem: React.FC<Props> = ({
 
 			<div className='h-1 w-full overflow-hidden rounded-full bg-[var(--border-primary-hover)]'>
 				<div
-					className='h-full rounded-full bg-[var(--foreground-primary)]'
+					className='h-full rounded-full bg-[var(--foreground-primary)] transition-[width] duration-500 ease-out'
 					style={{ width: `${progress}%` }}
 				/>
 			</div>

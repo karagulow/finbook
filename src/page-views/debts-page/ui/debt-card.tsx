@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 import { Debt } from '@/src/entities/debt';
+import { useAnimatedNumber } from '@/src/shared/hooks';
 
 interface Props {
 	debt: Debt;
@@ -19,6 +20,7 @@ export const DebtCard: React.FC<Props> = ({ debt, currency, onClick }) => {
 	const progress =
 		debt.targetAmount > 0 ? (debt.savedAmount / debt.targetAmount) * 100 : 0;
 	const clamped = Math.min(100, Math.max(0, progress));
+	const animatedSaved = useAnimatedNumber(debt.savedAmount);
 
 	return (
 		<button
@@ -36,8 +38,8 @@ export const DebtCard: React.FC<Props> = ({ debt, currency, onClick }) => {
 			</div>
 
 			<div className='flex flex-col items-end gap-1'>
-				<span className='shrink-0 whitespace-nowrap font-medium text-[15px] text-[var(--foreground-primary)]'>
-					{formatAmount(debt.savedAmount)}
+				<span className='shrink-0 whitespace-nowrap font-medium text-[15px] text-[var(--foreground-primary)] tabular-nums'>
+					{formatAmount(animatedSaved)}
 					<span className='text-[var(--foreground-secondary)]'>
 						{' '}
 						/ {formatAmount(debt.targetAmount)} {currency}
@@ -45,7 +47,7 @@ export const DebtCard: React.FC<Props> = ({ debt, currency, onClick }) => {
 				</span>
 				<div className='h-1 w-full overflow-hidden rounded-full bg-[var(--border-primary-hover)]'>
 					<div
-						className='h-full rounded-full bg-[var(--foreground-primary)]'
+						className='h-full rounded-full bg-[var(--foreground-primary)] transition-[width] duration-500 ease-out'
 						style={{ width: `${clamped}%` }}
 					/>
 				</div>
