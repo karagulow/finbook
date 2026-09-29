@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Debt, DebtType } from '@/src/entities/debt';
 import { api, toastOptions } from '@/src/shared/lib';
 import { Button, DeleteButton, EditButton } from '@/src/shared/ui';
+import { EditDebtModal } from '../../edit-debt-modal';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
 
 interface Props {
@@ -42,6 +43,7 @@ export const DebtDetailsContent: React.FC<Props> = ({
 	const queryClient = useQueryClient();
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+	const [isEditOpen, setIsEditOpen] = useState(false);
 	const operationsRef = useRef<HTMLUListElement>(null);
 	const operations = debt.operations ?? [];
 	const progress =
@@ -152,7 +154,11 @@ export const DebtDetailsContent: React.FC<Props> = ({
 				</div>
 
 				<div className='mt-5 flex flex-row items-center gap-2.5'>
-					<Button className='w-full' type='button'>
+					<Button
+						className='w-full'
+						type='button'
+						onClick={() => setIsEditOpen(true)}
+					>
 						Изменить
 					</Button>
 					<Button
@@ -165,6 +171,13 @@ export const DebtDetailsContent: React.FC<Props> = ({
 					</Button>
 				</div>
 			</div>
+
+			<EditDebtModal
+				isOpen={isEditOpen}
+				onClose={() => setIsEditOpen(false)}
+				debt={debt}
+				currency={currency}
+			/>
 
 			<ConfirmDeleteDialog
 				isOpen={isConfirmDeleteOpen}
