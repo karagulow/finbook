@@ -1,0 +1,16 @@
+import React from 'react';
+
+export const DebtCardSkeleton: React.FC = () => {
+	return (
+		<div className='flex animate-pulse flex-col gap-3 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4'>
+			<div className='flex items-center justify-between gap-3'>
+				<div className='flex flex-col gap-1.5'>
+					<div className='h-[15px] w-24 rounded-[8px] bg-[var(--button-secondary)]' />
+					<div className='h-[13px] w-36 rounded-[8px] bg-[var(--button-secondary)]' />
+				</div>
+				<div className='h-[15px] w-28 rounded-[8px] bg-[var(--button-secondary)]' />
+			</div>
+			<div className='h-1 w-full rounded-full bg-[var(--button-secondary)]' />
+		</div>
+	);
+};
