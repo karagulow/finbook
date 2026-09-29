@@ -22,7 +22,9 @@ export const DebtDetailsModal: React.FC<Props> = ({
 
 	if (!debt) return null;
 
-	const content = <DebtDetailsContent debt={debt} currency={currency} />;
+	const content = (
+		<DebtDetailsContent debt={debt} currency={currency} onClose={onClose} />
+	);
 
 	return (
 		<>
