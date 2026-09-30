@@ -8,6 +8,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { api, toastOptions } from '@/src/shared/lib';
 import { Button, DeleteButton, EditButton } from '@/src/shared/ui';
 import { EditGoalModal } from '../../edit-goal-modal';
@@ -61,6 +62,7 @@ export const GoalDetailsContent: React.FC<Props> = ({
 		}
 	}, []);
 
+	const animatedSaved = useAnimatedNumber(goal.savedAmount);
 	const progress =
 		goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount) * 100 : 0;
 
@@ -122,8 +124,8 @@ export const GoalDetailsContent: React.FC<Props> = ({
 					<div className='flex flex-col items-center gap-3'>
 						<GoalDetailsProgress icon={goal.icon} progress={progress} />
 
-						<span className='text-center font-semibold text-[20px] text-[var(--foreground-primary)]'>
-							{formatAmount(goal.savedAmount)}
+						<span className='text-center font-semibold text-[20px] text-[var(--foreground-primary)] tabular-nums'>
+							{formatAmount(animatedSaved)}
 							<span className='font-medium text-[var(--foreground-secondary)]'>
 								{' '}
 								/ {formatAmount(goal.targetAmount)} {currency}

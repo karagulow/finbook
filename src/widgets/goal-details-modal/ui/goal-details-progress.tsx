@@ -1,4 +1,8 @@
+'use client';
+
 import React from 'react';
+
+import { useAnimatedNumber } from '@/src/shared/hooks';
 
 interface Props {
 	icon?: string;
@@ -12,7 +16,8 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 export const GoalDetailsProgress: React.FC<Props> = ({ icon, progress }) => {
 	const clamped = Math.min(100, Math.max(0, progress));
-	const offset = CIRCUMFERENCE - (clamped / 100) * CIRCUMFERENCE;
+	const animated = useAnimatedNumber(clamped);
+	const offset = CIRCUMFERENCE - (animated / 100) * CIRCUMFERENCE;
 
 	return (
 		<div className='relative size-24 shrink-0'>
@@ -29,7 +34,7 @@ export const GoalDetailsProgress: React.FC<Props> = ({ icon, progress }) => {
 					stroke='var(--border-primary-hover)'
 					strokeWidth={STROKE}
 				/>
-				{clamped > 0 && (
+				{animated > 0 && (
 					<circle
 						cx={SIZE / 2}
 						cy={SIZE / 2}

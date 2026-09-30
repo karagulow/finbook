@@ -3,6 +3,7 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
 
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { Button, CurrencyInput, DatePicker, Textarea } from '@/src/shared/ui';
 import { GoalDetailsProgress } from '@/src/widgets/goal-details-modal/ui/goal-details-progress';
 import {
@@ -39,6 +40,9 @@ export const GoalOperationModalContent: React.FC<Props> = ({
 	const remaining = Math.max(0, goal.targetAmount - goal.savedAmount);
 	const availableToWithdraw =
 		goal.savedAmount + (type === 'WITHDRAW' ? (operation?.amount ?? 0) : 0);
+	const animatedSaved = useAnimatedNumber(goal.savedAmount);
+	const animatedRemaining = useAnimatedNumber(remaining);
+	const animatedAvailable = useAnimatedNumber(availableToWithdraw);
 	const minimumAmount =
 		operation && isDeposit
 			? Math.max(0, roundMoney(operation.amount - goal.savedAmount))
@@ -75,8 +79,8 @@ export const GoalOperationModalContent: React.FC<Props> = ({
 				<div className='flex flex-col items-center gap-3'>
 					<GoalDetailsProgress icon={goal.icon} progress={progress} />
 
-					<span className='text-center font-semibold text-[20px] text-[var(--foreground-primary)]'>
-						{formatAmount(goal.savedAmount)}
+					<span className='text-center font-semibold text-[20px] text-[var(--foreground-primary)] tabular-nums'>
+						{formatAmount(animatedSaved)}
 						<span className='font-medium text-[var(--foreground-secondary)]'>
 							{' '}
 							/ {formatAmount(goal.targetAmount)} {currency}
@@ -92,13 +96,17 @@ export const GoalOperationModalContent: React.FC<Props> = ({
 							<>
 								До выполнения цели осталось:
 								<br />
-								{formatAmount(remaining)} {currency}
+								<span className='tabular-nums'>
+									{formatAmount(animatedRemaining)} {currency}
+								</span>
 							</>
 						) : (
 							<>
 								Сумма, которую можно снять:
 								<br />
-								{formatAmount(availableToWithdraw)} {currency}
+								<span className='tabular-nums'>
+									{formatAmount(animatedAvailable)} {currency}
+								</span>
 							</>
 						)}
 					</span>

@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 import { Goal, GoalProgress } from '@/src/entities/goal';
+import { useAnimatedNumber } from '@/src/shared/hooks';
 
 interface Props {
 	goal: Goal;
@@ -18,6 +19,7 @@ const formatAmount = (value: number, currency: string) =>
 export const GoalCard: React.FC<Props> = ({ goal, currency, onClick }) => {
 	const progress =
 		goal.targetAmount > 0 ? (goal.savedAmount / goal.targetAmount) * 100 : 0;
+	const animatedSaved = useAnimatedNumber(goal.savedAmount);
 
 	return (
 		<button
@@ -35,8 +37,8 @@ export const GoalCard: React.FC<Props> = ({ goal, currency, onClick }) => {
 					Срок:{' '}
 					{format(new Date(goal.deadline), 'd MMMM yyyy', { locale: ru })}
 				</span>
-				<span className='whitespace-nowrap font-medium text-[15px] text-[var(--foreground-primary)]'>
-					{formatAmount(goal.savedAmount, currency)}
+				<span className='whitespace-nowrap font-medium text-[15px] text-[var(--foreground-primary)] tabular-nums'>
+					{formatAmount(animatedSaved, currency)}
 					<span className='text-[var(--foreground-secondary)]'>
 						{' '}
 						/ {formatAmount(goal.targetAmount, currency)}

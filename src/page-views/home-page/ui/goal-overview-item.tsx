@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 import { Goal, GoalProgress } from '@/src/entities/goal';
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { cn } from '@/src/shared/lib';
 import { getGoalPace } from '../lib/get-goal-pace';
 
@@ -21,8 +22,9 @@ export const GoalOverviewItem: React.FC<Props> = ({
 }) => {
 	const progress =
 		goal.targetAmount > 0
-			? Math.min(100, Math.round((goal.savedAmount / goal.targetAmount) * 100))
+			? Math.min(100, (goal.savedAmount / goal.targetAmount) * 100)
 			: 0;
+	const animatedProgress = useAnimatedNumber(progress);
 	const pace = getGoalPace(goal, currency);
 	const paceIsUrgent =
 		pace?.kind === 'overdue' ||
@@ -42,8 +44,8 @@ export const GoalOverviewItem: React.FC<Props> = ({
 					<span className='truncate font-medium text-[15px] text-[var(--foreground-primary)]'>
 						{goal.name}
 					</span>
-					<span className='shrink-0 font-medium text-[15px] text-[var(--foreground-primary)]'>
-						{progress}%
+					<span className='shrink-0 font-medium text-[15px] text-[var(--foreground-primary)] tabular-nums'>
+						{Math.round(animatedProgress)}%
 					</span>
 				</div>
 				<span className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
