@@ -44,7 +44,7 @@ export const GoalsList: React.FC<Props> = ({ status, onGoalClick }) => {
 		>
 			{isLoading ? (
 				<div className='grid grid-cols-1 gap-2.5 md:grid-cols-2 xl:grid-cols-3'>
-					{Array.from({ length: 9 }, (_, index) => (
+					{Array.from({ length: 6 }, (_, index) => (
 						<GoalCardSkeleton key={index} />
 					))}
 				</div>
