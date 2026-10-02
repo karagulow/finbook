@@ -8,6 +8,8 @@ import {
 	TooltipItem,
 } from 'chart.js';
 
+import { useAnimatedNumber } from '@/src/shared/hooks';
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 type Category = {
@@ -20,6 +22,39 @@ type Category = {
 type CategoryDoughnutChartProps = {
 	title: string;
 	categories: Category[] | null;
+};
+
+const formatAmount = (value: number) =>
+	value.toLocaleString('ru-RU', {
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2,
+	});
+
+const CategoryAmount: React.FC<{ amount: number; total: number }> = ({
+	amount,
+	total,
+}) => {
+	const animatedAmount = useAnimatedNumber(amount);
+	const percent = total > 0 ? (animatedAmount / total) * 100 : 0;
+
+	return (
+		<p className='tabular-nums'>
+			<span className='text-[var(--foreground-secondary)]'>
+				{percent.toFixed(0)}% /
+			</span>{' '}
+			{formatAmount(animatedAmount)} ₽
+		</p>
+	);
+};
+
+const ChartTotal: React.FC<{ total: number }> = ({ total }) => {
+	const animatedTotal = useAnimatedNumber(total);
+
+	return (
+		<span className='font-bold text-[18px] text-[var(--foreground-primary)] tabular-nums'>
+			{formatAmount(animatedTotal)} ₽
+		</span>
+	);
 };
 
 const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
@@ -88,13 +123,7 @@ const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
 					<span className='text-[13px] text-[var(--foreground-secondary)]'>
 						Всего
 					</span>
-					<span className='font-bold text-[18px] text-[var(--foreground-primary)]'>
-						{total.toLocaleString('ru-RU', {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2,
-						})}{' '}
-						₽
-					</span>
+					<ChartTotal total={total} />
 				</div>
 			</div>
 
@@ -109,16 +138,7 @@ const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
 								></span>
 								<span>{cat.name}</span>
 							</div>
-							<p>
-								<span className='text-[var(--foreground-secondary)]'>
-									{((cat.amount / total) * 100).toFixed(0)}% /
-								</span>{' '}
-								{cat.amount.toLocaleString('ru-RU', {
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2,
-								})}{' '}
-								₽
-							</p>
+							<CategoryAmount amount={cat.amount} total={total} />
 						</div>
 						{index < sortedCategories.length - 1 && (
 							<hr className='border-[var(--border-primary)] h-[1px] w-full' />

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { useSelectedAccount } from '../hooks/use-selected-account';
 
 type Account = {
@@ -25,6 +26,7 @@ const AccountCardComponent: React.FC<Props> = ({
 	account,
 }) => {
 	const { selectedAccountId, setSelectedAccountId } = useSelectedAccount();
+	const animatedBalance = useAnimatedNumber(account.balance);
 
 	const isLastVisible =
 		idx === currentIndex + itemsPerView - 1 || idx === totalItems - 1;
@@ -52,8 +54,8 @@ const AccountCardComponent: React.FC<Props> = ({
 				<div className='font-medium text-[15px] text-[var(--foreground-primary)]'>
 					{account.name}
 				</div>
-				<div className='text-[21px] font-medium text-[var(--foreground-primary)]'>
-					{account.balance.toLocaleString('ru-RU', {
+				<div className='text-[21px] font-medium text-[var(--foreground-primary)] tabular-nums'>
+					{animatedBalance.toLocaleString('ru-RU', {
 						minimumFractionDigits: 2,
 						maximumFractionDigits: 2,
 					})}{' '}
