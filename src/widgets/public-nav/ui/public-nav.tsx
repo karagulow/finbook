@@ -46,7 +46,7 @@ export const PublicNav: React.FC<Props> = ({ authenticated = false }) => {
 
 	return (
 		<>
-			<nav className='sticky top-0 z-20 w-full border-b-[0.5px] border-[var(--border-primary)] bg-[var(--background-primary)]/70 backdrop-blur-md'>
+			<nav className='sticky top-0 z-20 w-full -mt-[env(safe-area-inset-top)] border-b-[0.5px] border-[var(--border-primary)] bg-[var(--background-primary)]/70 pt-[env(safe-area-inset-top)] backdrop-blur-md'>
 				<Container
 					width={1280}
 					className='flex h-16 flex-row items-center justify-between gap-2'
