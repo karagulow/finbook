@@ -2,7 +2,7 @@
 	"name": "Финкнижка",
 	"short_name": "Финкнижка",
 	"description": "PWA-приложение для учёта личных финансов: расходы, доходы, аналитика, цели и долги.",
-	"start_url": "/",
+	"start_url": "/home",
 	"display": "standalone",
 	"orientation": "portrait",
 	"background_color": "#08090a",
