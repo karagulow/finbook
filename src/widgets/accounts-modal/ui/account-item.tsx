@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { DeleteButton, EditButton } from '@/src/shared/ui';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog';
 import { EditAccountModal } from '../../edit-account-modal';
@@ -24,6 +26,7 @@ export const AccountItem: React.FC<Props> = ({ id, account }) => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const queryClient = useQueryClient();
+	const animatedBalance = useAnimatedNumber(account.balance);
 
 	const handleDelete = async () => {
 		setIsLoading(true);
@@ -35,7 +38,10 @@ export const AccountItem: React.FC<Props> = ({ id, account }) => {
 			toast.success('Счёт успешно удалён!', toastOptions);
 		} catch (err) {
 			console.error('Ошибка удаления счета', err);
-			toast.error('Ошибка удаления счета', toastOptions);
+			const message = axios.isAxiosError(err)
+				? err.response?.data?.error || 'Ошибка удаления счета'
+				: 'Ошибка удаления счета';
+			toast.error(message, toastOptions);
 		}
 		setIsLoading(false);
 	};
@@ -78,8 +84,8 @@ export const AccountItem: React.FC<Props> = ({ id, account }) => {
 						<span className='font-medium text-[15px] text-[var(--foreground-primary)]'>
 							{account.name}
 						</span>
-						<span className='font-medium text-[13px] text-[var(--foreground-secondary)]'>
-							{account.balance.toLocaleString('ru-RU', {
+						<span className='font-medium text-[13px] text-[var(--foreground-secondary)] tabular-nums'>
+							{animatedBalance.toLocaleString('ru-RU', {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2,
 							})}{' '}

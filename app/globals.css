@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 
 :root {
+	--skeleton-base: color-mix(in srgb, var(--button-secondary) 72%, var(--border-primary));
+	--skeleton-shine: color-mix(in srgb, white 88%, var(--button-secondary));
 	--button-secondary-hover: #f5f5f5;
 	--button-primary-hover: #000;
 	--button-primary: #1a1a1a;
@@ -28,6 +30,8 @@
 }
 
 .dark {
+	--skeleton-base: var(--button-secondary);
+	--skeleton-shine: color-mix(in srgb, white 18%, var(--button-secondary));
 	--button-secondary-hover: #323237;
 	--button-primary-hover: #fff;
 	--button-primary: #e6e6e6;
@@ -64,7 +68,6 @@ body {
 	overflow-x: hidden;
 	margin-right: calc(-1 * (100vw - 100%));
 	padding-top: env(safe-area-inset-top);
-	padding-bottom: env(safe-area-inset-bottom);
 	padding-left: env(safe-area-inset-left);
 	padding-right: env(safe-area-inset-right);
 }
@@ -131,4 +134,91 @@ body::-webkit-scrollbar-thumb:hover {
 	inset: 0;
 	-webkit-mask: linear-gradient(#000 60%, #0000);
 	mask: linear-gradient(#000 60%, #0000);
+}
+
+.toaster * {
+	margin: 0 !important;
+}
+
+@keyframes landing-enter {
+	from {
+		opacity: 0;
+		translate: 0 24px;
+	}
+}
+
+@keyframes landing-mockup {
+	from {
+		opacity: 0;
+		translate: 0 64px;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.landing-enter {
+		animation: landing-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation-delay: calc(var(--landing-order, 0) * 90ms);
+	}
+
+	.landing-mockup {
+		animation: landing-mockup 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+	}
+
+	.landing-reveal[data-reveal] {
+		transition-property: opacity, translate, scale;
+		transition-duration: 0.9s;
+		transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+		transition-delay: calc(var(--landing-order, 0) * 120ms);
+	}
+
+	.landing-reveal[data-reveal='hidden'] {
+		opacity: 0;
+		translate: 0 64px;
+		scale: 0.96;
+		transition-duration: 0s;
+		transition-delay: 0s;
+	}
+}
+
+.skeleton-shimmer {
+	background-color: var(--skeleton-base);
+	background-image: linear-gradient(
+		90deg,
+		transparent 0%,
+		var(--skeleton-shine) 50%,
+		transparent 100%
+	);
+	background-repeat: no-repeat;
+	background-size: 40vw 100%;
+	background-attachment: fixed;
+	animation: skeleton-shimmer 1.6s linear infinite;
+}
+
+@keyframes skeleton-shimmer {
+	from {
+		background-position: -40vw 0;
+	}
+	to {
+		background-position: 100vw 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.skeleton-shimmer {
+		animation: none;
+		background-image: none;
+	}
+}
+
+.animate-blur-in {
+	opacity: 1;
+	filter: blur(0px);
+	transition:
+		opacity 0.3s ease-in-out,
+		filter 0.3s ease-in-out;
+
+	@starting-style {
+		opacity: 0;
+		filter: blur(4px);
+	}
 }

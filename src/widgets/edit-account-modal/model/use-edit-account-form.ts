@@ -1,5 +1,6 @@
 'use client';
 
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
@@ -55,7 +56,10 @@ export const useEditAccountForm = (
 			onClose();
 		} catch (error) {
 			console.error('Ошибка при обновлении счёта:', error);
-			toast.error('Ошибка при обновлении счёта', toastOptions);
+			const message = axios.isAxiosError(error)
+				? error.response?.data?.error || 'Ошибка при обновлении счёта'
+				: 'Ошибка при обновлении счёта';
+			toast.error(message, toastOptions);
 		} finally {
 			setIsLoading(false);
 		}

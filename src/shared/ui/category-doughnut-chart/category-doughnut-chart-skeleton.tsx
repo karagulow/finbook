@@ -4,17 +4,17 @@ import React from 'react';
 
 export const CategoryDoughnutChartSkeleton: React.FC = () => {
 	return (
-		<div className='flex flex-col gap-5 w-full bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] pt-3 sm:p-7.5 p-4 sm:pt-5 animate-pulse'>
-			<div className='self-center aspect-square w-4/5 bg-[var(--foreground-secondary)] rounded-full'></div>
+		<div className='flex w-full flex-col gap-5 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4 pt-3 sm:p-7.5 sm:pt-5'>
+			<div className='skeleton-shimmer aspect-square w-4/5 self-center rounded-full' />
 
-			<ul className='flex flex-col gap-3 w-full'>
+			<ul className='flex w-full flex-col gap-3'>
 				{Array.from({ length: 5 }).map((_, idx) => (
-					<li key={idx} className='flex justify-between items-center w-full'>
+					<li key={idx} className='flex w-full items-center justify-between'>
 						<div className='flex items-center gap-2.5'>
-							<div className='size-2.5 rounded-full bg-[var(--foreground-secondary)]'></div>
-							<div className='h-[14px] w-24 bg-[var(--foreground-secondary)] rounded'></div>
+							<div className='skeleton-shimmer size-2.5 rounded-full' />
+							<div className='skeleton-shimmer h-[14px] w-24 rounded-[8px]' />
 						</div>
-						<div className='h-[14px] w-16 bg-[var(--foreground-secondary)] rounded'></div>
+						<div className='skeleton-shimmer h-[14px] w-16 rounded-[8px]' />
 					</li>
 				))}
 			</ul>

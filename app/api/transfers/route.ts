@@ -93,7 +93,7 @@ export async function POST(req: Request) {
 			data: { balance: { increment: amountTo } },
 		});
 
-		revalidatePath('/');
+		revalidatePath('/home');
 
 		return NextResponse.json(transfer);
 	} catch (error) {

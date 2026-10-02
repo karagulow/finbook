@@ -9,7 +9,7 @@ export default function NotFound() {
 				<h1 className='text-[30px]'>404</h1>
 				<p className='text-[14px]'>Страница не найдена.</p>
 			</div>
-			<Link href='/'>
+			<Link href='/home'>
 				<Button>Вернуться на главную</Button>
 			</Link>
 		</div>

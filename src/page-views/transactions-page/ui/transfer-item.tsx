@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { TransactionDetailsModal } from '@/src/widgets/transaction-details-modal';
 
 interface Props {
@@ -33,6 +34,8 @@ interface Props {
 export const TransferItem: React.FC<Props> = ({ transfer }) => {
 	const [isTransactionDetailsModalOpen, setIsTransactionDetailsModalOpen] =
 		useState(false);
+	const animatedAmountFrom = useAnimatedNumber(transfer.amountFrom);
+	const animatedAmountTo = useAnimatedNumber(transfer.amountTo);
 
 	const openTransactionDetailsModal = () => {
 		setIsTransactionDetailsModalOpen(true);
@@ -62,8 +65,8 @@ export const TransferItem: React.FC<Props> = ({ transfer }) => {
 					</div>
 				</div>
 
-				<span className='font-medium text-[15px] text-[var(--foreground-primary)] flex-shrink-0'>
-					{transfer.amountFrom.toLocaleString('ru-RU', {
+				<span className='font-medium text-[15px] text-[var(--foreground-primary)] flex-shrink-0 tabular-nums'>
+					{animatedAmountFrom.toLocaleString('ru-RU', {
 						minimumFractionDigits: 2,
 					})}{' '}
 					{transfer.accountFrom.currency.symbol ||
@@ -72,7 +75,7 @@ export const TransferItem: React.FC<Props> = ({ transfer }) => {
 						transfer.accountTo.currency.id && (
 						<>
 							→{' '}
-							{transfer.amountTo.toLocaleString('ru-RU', {
+							{animatedAmountTo.toLocaleString('ru-RU', {
 								minimumFractionDigits: 2,
 							})}{' '}
 							{transfer.accountTo.currency.symbol ||

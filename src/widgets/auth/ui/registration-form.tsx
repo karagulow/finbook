@@ -50,7 +50,7 @@ export const RegistrationForm: React.FC = () => {
 			});
 			setAuth(response.data.token, { email: data.email });
 			toast.success('Регистрация успешна!', toastOptions);
-			router.push('/');
+			router.push('/home');
 		} catch (error: unknown) {
 			let message = 'Ошибка регистрации';
 
@@ -68,7 +68,7 @@ export const RegistrationForm: React.FC = () => {
 
 	return (
 		<form
-			className='flex flex-col items-center gap-[30px] w-full max-w-[332px] px-4'
+			className='animate-blur-in flex flex-col items-center gap-[30px] w-full max-w-[332px] px-4'
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<h1 className='font-semibold text-[18px] text-[var(--foreground-primary)]'>

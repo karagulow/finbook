@@ -14,6 +14,7 @@ interface Props {
 	placeholder?: string;
 	label?: string;
 	error?: string;
+	displayFormat?: string;
 }
 
 export const DatePicker: React.FC<Props> = ({
@@ -22,6 +23,7 @@ export const DatePicker: React.FC<Props> = ({
 	placeholder = 'Выберите дату',
 	label,
 	error,
+	displayFormat = 'dd.MM.yyyy',
 }) => {
 	const [open, setOpen] = useState(false);
 	const [animate, setAnimate] = useState(false);
@@ -114,7 +116,7 @@ export const DatePicker: React.FC<Props> = ({
 					<span
 						className={value ? '' : 'text-[var(--input-primary-placeholder)]'}
 					>
-						{value ? format(value, 'dd.MM.yyyy') : placeholder}
+						{value ? format(value, displayFormat, { locale: ru }) : placeholder}
 					</span>
 
 					<Calendar size={16} className='opacity-70' />

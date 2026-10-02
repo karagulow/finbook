@@ -1,4 +1,6 @@
 export { Button } from './button';
+export { AppIcon } from './app-icon';
+export { Container } from './container';
 export { Input } from './input';
 export {
 	CategoryDoughnutChart,

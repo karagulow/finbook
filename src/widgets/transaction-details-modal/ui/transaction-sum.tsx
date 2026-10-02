@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { Transaction } from '../model/types';
 import { cn } from '@/src/shared/lib';
 
@@ -13,11 +14,14 @@ export const TransactionSum: React.FC<Props> = ({ transaction }) => {
 			: transaction.type === 'EXPENSE'
 			? '-'
 			: '';
+	const animatedAmount = useAnimatedNumber(transaction.amount ?? 0);
+	const animatedAmountFrom = useAnimatedNumber(transaction.amountFrom ?? 0);
+	const animatedAmountTo = useAnimatedNumber(transaction.amountTo ?? 0);
 
 	return transaction.type === 'TRANSFER' ? (
-		<div className='font-medium text-[22px] text-[var(--foreground-primary)]'>
+		<div className='font-medium text-[22px] text-[var(--foreground-primary)] tabular-nums'>
 			<span>
-				{transaction.amountFrom?.toLocaleString('ru-RU', {
+				{animatedAmountFrom.toLocaleString('ru-RU', {
 					minimumFractionDigits: 2,
 				})}{' '}
 				{transaction.accountFrom?.currency.symbol ||
@@ -28,7 +32,7 @@ export const TransactionSum: React.FC<Props> = ({ transaction }) => {
 				<>
 					→{' '}
 					<span>
-						{transaction.amountTo?.toLocaleString('ru-RU', {
+						{animatedAmountTo.toLocaleString('ru-RU', {
 							minimumFractionDigits: 2,
 						})}{' '}
 						{transaction.accountTo?.currency.symbol ||
@@ -39,13 +43,13 @@ export const TransactionSum: React.FC<Props> = ({ transaction }) => {
 		</div>
 	) : (
 		<span
-			className={cn(`font-medium text-[22px]`, {
+			className={cn(`font-medium text-[22px] tabular-nums`, {
 				'text-[var(--success)]': sign === '+',
 				'text-[var(--wrong)]': sign === '-',
 			})}
 		>
 			{sign}{' '}
-			{transaction.amount?.toLocaleString('ru-RU', {
+			{animatedAmount.toLocaleString('ru-RU', {
 				minimumFractionDigits: 2,
 			})}{' '}
 			{transaction.account?.currency.symbol ||
