@@ -3,7 +3,12 @@
 import React, { useEffect, useRef } from 'react';
 import autoAnimate from '@formkit/auto-animate';
 
-import { Debt, DebtType, debtCurrencyLabel, useDebts } from '@/src/entities/debt';
+import {
+	Debt,
+	DebtType,
+	debtCurrencyLabel,
+	useDebts,
+} from '@/src/entities/debt';
 import { DebtCard } from './debt-card';
 import { DebtCardSkeleton } from './debt-card-skeleton';
 
@@ -71,7 +76,7 @@ export const DebtsList: React.FC<Props> = ({ type, onDebtClick }) => {
 	return (
 		<div className='flex flex-col gap-6'>
 			<section className='flex flex-col gap-2.5'>
-				<h2 className='font-medium text-[15px] text-[var(--foreground-secondary)]'>
+				<h2 className='font-medium text-[15px] text-[var(--foreground-primary)]'>
 					Активные
 				</h2>
 				{activeDebts.length === 0 ? (
@@ -94,7 +99,7 @@ export const DebtsList: React.FC<Props> = ({ type, onDebtClick }) => {
 
 			{completedDebts.length > 0 && (
 				<section className='flex flex-col gap-2.5'>
-					<h2 className='font-medium text-[15px] text-[var(--foreground-secondary)]'>
+					<h2 className='font-medium text-[15px] text-[var(--foreground-primary)]'>
 						Завершённые
 					</h2>
 					<div ref={completedRef} className={gridClassName}>
