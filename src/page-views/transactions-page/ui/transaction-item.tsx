@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { useAnimatedNumber } from '@/src/shared/hooks';
 import { TransactionDetailsModal } from '@/src/widgets/transaction-details-modal';
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
 export const TransactionItem: React.FC<Props> = ({ transaction }) => {
 	const isIncome = transaction.type === 'INCOME';
 	const sign = isIncome ? '+' : '-';
+	const animatedAmount = useAnimatedNumber(transaction.amount ?? 0);
 
 	const [isTransactionDetailsModalOpen, setIsTransactionDetailsModalOpen] =
 		useState(false);
@@ -58,9 +60,9 @@ export const TransactionItem: React.FC<Props> = ({ transaction }) => {
 					</div>
 				</div>
 
-				<span className='font-medium text-[15px] text-[var(--foreground-primary)] flex-shrink-0'>
+				<span className='font-medium text-[15px] text-[var(--foreground-primary)] flex-shrink-0 tabular-nums'>
 					{sign}{' '}
-					{transaction.amount?.toLocaleString('ru-RU', {
+					{animatedAmount.toLocaleString('ru-RU', {
 						minimumFractionDigits: 2,
 					})}{' '}
 					{transaction.account?.currency?.symbol ||
