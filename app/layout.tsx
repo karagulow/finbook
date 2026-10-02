@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
 import './globals.css';
 import Providers from '@/app/providers';
+import { pwaEntryRedirectScript } from '@/src/shared/lib/pwa-entry-redirect';
 import { SplashScreen, Statusbar } from '@/src/shared/ui';
 
 const manropeSans = Manrope({
@@ -54,6 +55,9 @@ export default function RootLayout({
 				<meta
 					name='apple-mobile-web-app-status-bar-style'
 					content='black-translucent'
+				/>
+				<script
+					dangerouslySetInnerHTML={{ __html: pwaEntryRedirectScript }}
 				/>
 			</head>
 			<body className={`${manropeSans.variable} antialiased`}>
