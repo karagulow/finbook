@@ -1,12 +1,45 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar } from 'lucide-react';
+import {
+	Calendar,
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	ChevronUp,
+} from 'lucide-react';
 import { format } from 'date-fns';
-import { DayPicker } from 'react-day-picker';
+import { DayPicker, type ChevronProps } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { cn } from '../lib';
 import { ru } from 'date-fns/locale';
+
+const CHEVRON_ICONS = {
+	up: ChevronUp,
+	down: ChevronDown,
+	left: ChevronLeft,
+	right: ChevronRight,
+} as const;
+
+const navButtonClass =
+	'rounded-[6px] !text-[var(--foreground-secondary)] transition duration-150 hover:!bg-[var(--button-secondary)] hover:!text-[var(--foreground-primary)] active:scale-95';
+
+const DateChevron = ({
+	className,
+	orientation = 'left',
+	size = 20,
+}: ChevronProps) => {
+	const Icon = CHEVRON_ICONS[orientation];
+
+	return (
+		<Icon
+			className={className}
+			size={size}
+			strokeWidth={2}
+			style={{ fill: 'none' }}
+		/>
+	);
+};
 
 interface Props {
 	value?: Date | null;
@@ -125,7 +158,7 @@ export const DatePicker: React.FC<Props> = ({
 				{animate && (
 					<div
 						className={cn(
-							'absolute left-0 top-full mt-1 rounded-[6px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg p-2 z-50 transition-all duration-150',
+							'absolute left-0 top-full mt-1 rounded-[8px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg p-2 z-50 transition-all duration-150',
 							open
 								? 'opacity-100 translate-y-0 pointer-events-auto'
 								: 'opacity-0 -translate-y-1 pointer-events-none',
@@ -149,8 +182,11 @@ export const DatePicker: React.FC<Props> = ({
 							weekStartsOn={1}
 							locale={ru}
 							className='!bg-[var(--muted)] text-[13px] text-[var(--foreground-primary)]'
+							components={{ Chevron: DateChevron }}
 							classNames={{
 								day: 'rounded-[4px] transition hover:bg-[var(--button-secondary)]',
+								button_previous: `rdp-button_previous ${navButtonClass}`,
+								button_next: `rdp-button_next ${navButtonClass}`,
 							}}
 							modifiersClassNames={{
 								outside: 'text-[var(--foreground-secondary)] opacity-60',
