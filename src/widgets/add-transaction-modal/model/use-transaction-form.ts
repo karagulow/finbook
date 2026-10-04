@@ -76,6 +76,7 @@ export const useTransactionForm = (
 		try {
 			await api.post('/api/transactions', { ...data, type });
 			queryClient.invalidateQueries({ queryKey: ['transactions'] });
+			queryClient.invalidateQueries({ queryKey: ['analytics-years'] });
 			queryClient.invalidateQueries({ queryKey: ['accounts'] });
 			queryClient.invalidateQueries({ queryKey: ['balance'] });
 			onClose();

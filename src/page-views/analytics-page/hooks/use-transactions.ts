@@ -5,7 +5,7 @@ import { getTransactionsByYear } from '../lib/get-transactions-by-year';
 import { useSelectedAccount } from '@/src/widgets/account-overview/hooks/use-selected-account';
 import type { AnalyticsTransaction } from '../model/types';
 
-export const useYearlyTransactions = () => {
+export const useYearlyTransactions = (year: number) => {
 	const { selectedAccountId } = useSelectedAccount();
 
 	const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -14,12 +14,13 @@ export const useYearlyTransactions = () => {
 		const txs = await getTransactionsByYear({
 			accountId: selectedAccountId,
 			timeZone,
+			year,
 		});
 		return txs as AnalyticsTransaction[];
 	};
 
 	const { data, isLoading, isFetching } = useQuery<AnalyticsTransaction[]>({
-		queryKey: ['transactions', selectedAccountId, timeZone],
+		queryKey: ['transactions', selectedAccountId, timeZone, year],
 		queryFn,
 		refetchOnWindowFocus: false,
 	});

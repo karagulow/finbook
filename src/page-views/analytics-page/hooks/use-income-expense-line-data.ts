@@ -19,9 +19,35 @@ const monthLabels = [
 ];
 
 export const useIncomeExpenseLineData = (
-	transactions: AnalyticsTransaction[] = []
+	transactions: AnalyticsTransaction[] = [],
+	period: 'month' | 'year' = 'year',
+	year = new Date().getFullYear(),
+	month = new Date().getMonth(),
 ) => {
 	return useMemo(() => {
+		if (period === 'month') {
+			const daysInMonth = new Date(year, month + 1, 0).getDate();
+			const daily = Array.from({ length: daysInMonth }, (_, i) => ({
+				label: String(i + 1),
+				income: 0,
+				expense: 0,
+			}));
+
+			for (const tx of transactions) {
+				const date = new Date(tx.date);
+				if (date.getFullYear() !== year || date.getMonth() !== month) continue;
+
+				const day = date.getDate() - 1;
+				if (tx.type === 'INCOME') {
+					daily[day].income += tx.amountInUserCurrency ?? 0;
+				} else if (tx.type === 'EXPENSE') {
+					daily[day].expense += tx.amountInUserCurrency ?? 0;
+				}
+			}
+
+			return daily;
+		}
+
 		const monthly = Array.from({ length: 12 }, (_, i) => ({
 			label: monthLabels[i],
 			income: 0,
@@ -30,14 +56,14 @@ export const useIncomeExpenseLineData = (
 
 		for (const tx of transactions) {
 			const date = new Date(tx.date);
-			const month = date.getMonth();
+			const txMonth = date.getMonth();
 			if (tx.type === 'INCOME') {
-				monthly[month].income += tx.amountInUserCurrency ?? 0;
+				monthly[txMonth].income += tx.amountInUserCurrency ?? 0;
 			} else if (tx.type === 'EXPENSE') {
-				monthly[month].expense += tx.amountInUserCurrency ?? 0;
+				monthly[txMonth].expense += tx.amountInUserCurrency ?? 0;
 			}
 		}
 
 		return monthly;
-	}, [transactions]);
+	}, [transactions, period, year, month]);
 };

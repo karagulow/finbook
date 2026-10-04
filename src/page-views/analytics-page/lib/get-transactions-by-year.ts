@@ -7,13 +7,7 @@ import { DateTime } from 'luxon';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function getTransactionsByYear({
-	accountId,
-	timeZone,
-}: {
-	accountId?: string | null;
-	timeZone: string;
-}) {
+async function getUserId() {
 	const cookieStore = await cookies();
 	const token = cookieStore.get('authToken')?.value;
 
@@ -21,22 +15,77 @@ export async function getTransactionsByYear({
 		throw new Error('Не авторизован');
 	}
 
-	let userId: string;
 	try {
 		const decoded = verify(token, JWT_SECRET) as { userId: string };
-		userId = decoded.userId;
+		return decoded.userId;
 	} catch {
 		throw new Error('Токен недействителен или истёк');
 	}
+}
 
+export async function getAnalyticsYears({
+	accountId,
+	timeZone,
+}: {
+	accountId?: string | null;
+	timeZone: string;
+}) {
+	const userId = await getUserId();
 	const now = DateTime.now().setZone(timeZone);
 
 	if (!now.isValid) {
 		throw new Error('Invalid timezone');
 	}
 
-	const startDate = now.startOf('year').toUTC().toJSDate();
-	const endDate = now.endOf('year').toUTC().toJSDate();
+	const earliest = await prisma.transaction.findFirst({
+		where: {
+			userId,
+			type: { in: ['INCOME', 'EXPENSE'] },
+			amount: { not: 0 },
+			...(accountId && accountId !== 'all' ? { accountId } : {}),
+		},
+		orderBy: { date: 'asc' },
+		select: { date: true },
+	});
+
+	const currentYear = now.year;
+	const firstYear = earliest
+		? DateTime.fromJSDate(earliest.date).setZone(timeZone).year
+		: currentYear;
+	const startYear = Math.min(firstYear, currentYear);
+
+	return Array.from(
+		{ length: currentYear - startYear + 1 },
+		(_, index) => currentYear - index,
+	);
+}
+
+export async function getTransactionsByYear({
+	accountId,
+	timeZone,
+	year,
+}: {
+	accountId?: string | null;
+	timeZone: string;
+	year: number;
+}) {
+	const userId = await getUserId();
+
+	if (!Number.isInteger(year) || year < 1900 || year > 2200) {
+		throw new Error('Некорректный год');
+	}
+
+	const start = DateTime.fromObject(
+		{ year, month: 1, day: 1 },
+		{ zone: timeZone },
+	);
+
+	if (!start.isValid) {
+		throw new Error('Invalid timezone');
+	}
+
+	const startDate = start.startOf('day').toUTC().toJSDate();
+	const endDate = start.endOf('year').toUTC().toJSDate();
 
 	const user = await prisma.user.findUnique({
 		where: { id: userId },

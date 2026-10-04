@@ -19,6 +19,8 @@ type Props<T extends string | number = string> = {
 	error?: string;
 	className?: string;
 	fieldClassName?: string;
+	reserveErrorSpace?: boolean;
+	disabled?: boolean;
 };
 
 export function Select<T extends string | number = string>({
@@ -30,6 +32,8 @@ export function Select<T extends string | number = string>({
 	error,
 	className,
 	fieldClassName,
+	reserveErrorSpace = true,
+	disabled = false,
 }: Props<T>) {
 	const [open, setOpen] = useState(false);
 	const [animate, setAnimate] = useState(false);
@@ -138,7 +142,16 @@ export function Select<T extends string | number = string>({
 		}
 	}, [open, value, options]);
 
+	useEffect(() => {
+		if (!disabled || !open) return;
+		setOpen(false);
+		const timeout = setTimeout(() => setAnimate(false), 150);
+		return () => clearTimeout(timeout);
+	}, [disabled, open]);
+
 	const openDropdown = () => {
+		if (disabled) return;
+
 		if (!open) {
 			setAnimate(true);
 			requestAnimationFrame(() => setOpen(true));
@@ -149,7 +162,7 @@ export function Select<T extends string | number = string>({
 	};
 
 	const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
-		if (open) return;
+		if (disabled || open) return;
 
 		if (e.key === 'Enter' || e.key === ' ') {
 			e.preventDefault();
@@ -173,21 +186,25 @@ export function Select<T extends string | number = string>({
 			<div ref={wrapperRef} className='relative'>
 				<div
 					role='button'
-					tabIndex={0}
+					tabIndex={disabled ? -1 : 0}
+					aria-disabled={disabled}
 					onClick={openDropdown}
 					onKeyDown={handleTriggerKeyDown}
 					className={cn(
 						'h-11.5 w-full flex items-center justify-between rounded-[8px] border-[0.5px] bg-[var(--input-primary)] px-3 text-[13px] font-regular text-[var(--foreground-primary)] outline-none focus-visible:border-[var(--border-primary-hover)] transition cursor-pointer',
 						fieldClassName,
-						open
-							? 'border-[var(--border-primary-hover)]'
-							: 'border-[var(--border-primary)] hover:border-[var(--border-primary-hover)]',
+						disabled
+							? 'border-[var(--border-primary)] opacity-50 cursor-not-allowed'
+							: open
+								? 'border-[var(--border-primary-hover)]'
+								: 'border-[var(--border-primary)] hover:border-[var(--border-primary-hover)]',
 					)}
 				>
 					<span
-						className={
-							selected ? '' : 'text-[var(--input-primary-placeholder)]'
-						}
+						className={cn(
+							'min-w-0 flex-1 truncate text-left',
+							selected ? '' : 'text-[var(--input-primary-placeholder)]',
+						)}
 					>
 						{selected ? selected.label : placeholder}
 					</span>
@@ -245,18 +262,20 @@ export function Select<T extends string | number = string>({
 				)}
 			</div>
 
-			<div
-				className={cn(
-					'flex transition-all duration-200 overflow-hidden cursor-pointer',
-					error ? 'max-h-[100px] opacity-100' : 'max-h-0 opacity-0',
-				)}
-			>
-				{showError && (
-					<span className='font-semibold text-[11px] text-[var(--wrong)]'>
-						{error}
-					</span>
-				)}
-			</div>
+			{(reserveErrorSpace || error) && (
+				<div
+					className={cn(
+						'flex transition-all duration-200 overflow-hidden cursor-pointer',
+						error ? 'max-h-[100px] opacity-100' : 'max-h-0 opacity-0',
+					)}
+				>
+					{showError && (
+						<span className='font-semibold text-[11px] text-[var(--wrong)]'>
+							{error}
+						</span>
+					)}
+				</div>
+			)}
 		</label>
 	);
 }

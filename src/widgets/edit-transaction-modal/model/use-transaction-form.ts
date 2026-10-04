@@ -85,6 +85,7 @@ export const useTransactionForm = (
 				type,
 			});
 			queryClient.invalidateQueries({ queryKey: ['transactions'] });
+			queryClient.invalidateQueries({ queryKey: ['analytics-years'] });
 			toast.success('Транзакция обновлена!', toastOptions);
 			onClose();
 		} catch (error: unknown) {
