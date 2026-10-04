@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { useBalance } from '@/src/entities/balance';
 import {
 	CategoryDoughnutChart,
 	CategoryDoughnutChartSkeleton,
@@ -13,7 +14,10 @@ import { useAnalyticsYears } from '../hooks/use-analytics-years';
 import { useYearlyTransactions } from '../hooks/use-transactions';
 import { useIncomeExpenseLineData } from '../hooks/use-income-expense-line-data';
 import { useTransactionsByCategoryYearly } from '../hooks/use-transactions-by-category';
+import { getAnalyticsSummary } from '../lib/get-analytics-summary';
 import { AnalyticsFilters, type AnalyticsPeriod } from './analytics-filters';
+import { AnalyticsSummary } from './analytics-summary';
+import { AnalyticsSummarySkeleton } from './analytics-summary-skeleton';
 
 export const AnalyticsPage: React.FC = () => {
 	const now = new Date();
@@ -29,7 +33,12 @@ export const AnalyticsPage: React.FC = () => {
 	}, [years, year]);
 
 	const { transactions, loading } = useYearlyTransactions(year);
+	const { transactions: previousYearTransactions, loading: previousLoading } =
+		useYearlyTransactions(year - 1);
+	const { currencySymbol, currencyCode } = useBalance();
+	const currency = currencySymbol || currencyCode || '₽';
 	const linePeriod = period === 'Месяц' ? 'month' : 'year';
+	const needsPreviousYear = linePeriod === 'year' || month === 0;
 	const lineData = useIncomeExpenseLineData(
 		transactions ?? [],
 		linePeriod,
@@ -48,6 +57,20 @@ export const AnalyticsPage: React.FC = () => {
 
 	const { incomes, expenses } =
 		useTransactionsByCategoryYearly(periodTransactions);
+
+	const summary = useMemo(
+		() =>
+			getAnalyticsSummary({
+				transactions: transactions ?? [],
+				previousYearTransactions: previousYearTransactions ?? [],
+				period: linePeriod,
+				year,
+				month,
+			}),
+		[transactions, previousYearTransactions, linePeriod, year, month],
+	);
+
+	const summaryLoading = loading || (needsPreviousYear && previousLoading);
 
 	return (
 		<>
@@ -69,6 +92,12 @@ export const AnalyticsPage: React.FC = () => {
 						years={years}
 					/>
 				</div>
+
+				{summaryLoading ? (
+					<AnalyticsSummarySkeleton />
+				) : (
+					<AnalyticsSummary summary={summary} currency={currency} />
+				)}
 
 				{loading ? (
 					<IncomeExpenseLineChartSkeleton />
