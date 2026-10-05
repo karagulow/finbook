@@ -45,10 +45,13 @@ function ShimmerShape({ id, d }: { id: string; d: string }) {
 
 export const IncomeExpenseLineChartSkeleton = () => {
 	return (
-		<div className='flex w-full flex-col items-center gap-5 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4 pt-3 sm:p-7.5 sm:pt-5'>
-			<div className='skeleton-shimmer mr-auto h-[17px] w-44 rounded-[8px]' />
+		<div className='flex w-full flex-col gap-4 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4 pt-3 sm:p-7.5 sm:pt-5'>
+			<div className='flex w-full items-center justify-between gap-3'>
+				<div className='skeleton-shimmer h-[16px] w-36 rounded-[8px]' />
+				<div className='skeleton-shimmer h-[13px] w-28 rounded-[8px]' />
+			</div>
 
-			<div className='flex h-[300px] w-full flex-col'>
+			<div className='flex h-[280px] w-full flex-col'>
 				<div className='flex min-h-0 flex-1 gap-3'>
 					<div className='flex w-10 shrink-0 flex-col justify-between py-1'>
 						{yLabels.map((width, index) => (
@@ -85,16 +88,15 @@ export const IncomeExpenseLineChartSkeleton = () => {
 					</div>
 				</div>
 
-				<div className='mt-4 flex items-center justify-center gap-6'>
-					<div className='flex items-center gap-2'>
-						<div className='skeleton-shimmer size-3 rounded-[3px]' />
-						<div className='skeleton-shimmer h-[13px] w-14 rounded-[8px]' />
+			</div>
+
+			<div className='flex flex-wrap items-center gap-x-5 gap-y-2'>
+				{['w-14', 'w-16', 'w-20'].map(width => (
+					<div key={width} className='flex items-center gap-2'>
+						<div className='skeleton-shimmer size-2.5 rounded-full' />
+						<div className={`skeleton-shimmer h-[13px] rounded-[8px] ${width}`} />
 					</div>
-					<div className='flex items-center gap-2'>
-						<div className='skeleton-shimmer size-3 rounded-[3px]' />
-						<div className='skeleton-shimmer h-[13px] w-16 rounded-[8px]' />
-					</div>
-				</div>
+				))}
 			</div>
 		</div>
 	);

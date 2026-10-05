@@ -1,6 +1,7 @@
 'use client';
 
-import React, { memo } from 'react';
+import React, { memo, useMemo, useRef } from 'react';
+import { useTheme } from 'next-themes';
 import {
 	Chart as ChartJS,
 	LineElement,
@@ -8,74 +9,105 @@ import {
 	CategoryScale,
 	LinearScale,
 	Tooltip,
-	Legend,
-	Filler,
-	type TooltipItem,
 	type ChartOptions,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { chartColors, formatAmount, niceStep, shortMonth } from './lib';
+import { renderExternalTooltip } from './render-external-tooltip';
+import type { IncomeExpenseLineChartProps } from './types';
 
-ChartJS.register(
-	LineElement,
-	PointElement,
-	CategoryScale,
-	LinearScale,
-	Tooltip,
-	Legend,
-	Filler,
-);
-
-type LineChartPoint = {
-	label: string;
-	income: number;
-	expense: number;
-};
-
-type IncomeExpenseLineChartProps = {
-	title: string;
-	dataPoints: LineChartPoint[] | null;
-};
+ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Tooltip);
 
 const IncomeExpenseLineChartComponent: React.FC<
 	IncomeExpenseLineChartProps
-> = ({ title, dataPoints }) => {
+> = ({ title, dataPoints, difference, currency, year }) => {
+	const { resolvedTheme } = useTheme();
+	const colors = useMemo(
+		() => chartColors(resolvedTheme === 'light'),
+		[resolvedTheme],
+	);
+	const tooltipRef = useRef<HTMLDivElement>(null);
+
+	const cardClassName =
+		'flex w-full flex-col gap-4 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4 pt-3 sm:p-7.5 sm:pt-5';
+
 	if (!dataPoints || dataPoints.length === 0) {
 		return (
-			<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
-				<h2 className='font-bold text-[17px] text-[var(--foreground-primary)] mr-auto'>
+			<div className={cardClassName}>
+				<h2 className='mr-auto text-[16px] font-medium text-[var(--foreground-primary)]'>
 					{title}
 				</h2>
-				<div className='flex items-center justify-center w-full h-[100%] min-h-[200px] text-[var(--foreground-secondary)] text-[13px]'>
+				<div className='flex min-h-[200px] w-full items-center justify-center text-[13px] text-[var(--foreground-secondary)]'>
 					Недостаточно данных
 				</div>
 			</div>
 		);
 	}
 
-	const labels = dataPoints.map(p => p.label);
+	let running = 0;
+	const accumulated = dataPoints.map(point => {
+		running += point.income - point.expense;
+		return running;
+	});
+	const values = dataPoints.flatMap(point => [point.income, point.expense]);
+	const rawMax = Math.max(...values, ...accumulated, 0);
+	const rawMin = Math.min(...values, ...accumulated, 0);
+	const step = niceStep(rawMax - rawMin);
+	const max = Math.max(Math.ceil(rawMax / step) * step, step);
+	const min = rawMin < 0 ? Math.floor(rawMin / step) * step : 0;
+
+	const yearExpense = dataPoints.reduce((sum, point) => sum + point.expense, 0);
+	const tooltipDetails = useRef({
+		dataPoints,
+		accumulated,
+		currency,
+		year,
+		yearExpense,
+	});
+	tooltipDetails.current = {
+		dataPoints,
+		accumulated,
+		currency,
+		year,
+		yearExpense,
+	};
 
 	const data = {
-		labels,
+		labels: dataPoints.map(point => shortMonth(point.label)),
 		datasets: [
 			{
 				label: 'Доходы',
-				data: dataPoints.map(p => p.income),
-				borderColor: '#22c55e',
-				backgroundColor: '#22c55e33',
-				fill: true,
-				tension: 0.3,
-				pointRadius: 4,
-				pointHoverRadius: 5,
+				data: dataPoints.map(point => point.income),
+				borderColor: colors.income,
+				backgroundColor: colors.income,
+				borderWidth: 2,
+				tension: 0.35,
+				pointRadius: 0,
+				pointHoverRadius: 4,
+				pointHoverBackgroundColor: colors.income,
 			},
 			{
 				label: 'Расходы',
-				data: dataPoints.map(p => p.expense),
-				borderColor: '#ff4d4f',
-				backgroundColor: '#ff4d4f33',
-				fill: true,
-				tension: 0.3,
-				pointRadius: 4,
-				pointHoverRadius: 5,
+				data: dataPoints.map(point => point.expense),
+				borderColor: colors.expense,
+				backgroundColor: colors.expense,
+				borderWidth: 2,
+				tension: 0.35,
+				pointRadius: 0,
+				pointHoverRadius: 4,
+				pointHoverBackgroundColor: colors.expense,
+			},
+			{
+				label: 'Накоплено',
+				data: accumulated,
+				borderColor: colors.accumulated,
+				backgroundColor: colors.accumulated,
+				borderWidth: 2,
+				borderDash: [6, 5],
+				tension: 0.35,
+				pointRadius: 0,
+				pointHoverRadius: 4,
+				pointHoverBackgroundColor: colors.accumulated,
 			},
 		],
 	};
@@ -83,67 +115,100 @@ const IncomeExpenseLineChartComponent: React.FC<
 	const options: ChartOptions<'line'> = {
 		responsive: true,
 		maintainAspectRatio: false,
+		interaction: {
+			mode: 'index',
+			intersect: false,
+		},
 		plugins: {
 			legend: {
-				position: 'bottom',
-				labels: {
-					color: '#6f6f6f',
-					boxWidth: 12,
-					boxHeight: 12,
-				},
+				display: false,
 			},
 			tooltip: {
-				callbacks: {
-					label: function (tooltipItem: TooltipItem<'line'>) {
-						const value = tooltipItem.raw as number;
-						return (
-							value.toLocaleString('ru-RU', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2,
-							}) + ' ₽'
-						);
-					},
+				enabled: false,
+				external: context => {
+					if (!tooltipRef.current) return;
+					renderExternalTooltip(
+						tooltipRef.current,
+						context,
+						tooltipDetails.current,
+					);
 				},
 			},
 		},
 		scales: {
 			x: {
 				ticks: {
-					color: '#6f6f6f',
-					autoSkip: true,
+					color: colors.tick,
+					autoSkip: false,
+					maxRotation: 0,
+					font: { size: 11 },
 				},
 				grid: {
-					color: '#6f6f6f',
+					display: false,
+				},
+				border: {
+					display: false,
 				},
 			},
 			y: {
+				min,
+				max,
 				ticks: {
-					color: '#6f6f6f',
-					callback: function (tickValue: string | number) {
-						if (typeof tickValue === 'number') {
-							return `${tickValue.toLocaleString('ru-RU')} ₽`;
-						}
-						const parsed = Number(tickValue);
-						return isNaN(parsed)
-							? tickValue
-							: `${parsed.toLocaleString('ru-RU')} ₽`;
+					color: colors.tick,
+					stepSize: step,
+					font: { size: 11 },
+					callback: (tickValue: string | number) => {
+						const parsed =
+							typeof tickValue === 'number' ? tickValue : Number(tickValue);
+						if (Number.isNaN(parsed)) return tickValue;
+						return `${Math.round(parsed).toLocaleString('ru-RU')} ${currency}`;
 					},
 				},
 				grid: {
-					color: '#6f6f6f',
+					color: colors.grid,
+				},
+				border: {
+					display: false,
 				},
 			},
 		},
 	};
 
-	return (
-		<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
-			<h2 className='font-bold text-[17px] text-[var(--foreground-primary)] mr-auto'>
-				{title}
-			</h2>
+	const legend = [
+		{ label: 'Доходы', color: colors.income },
+		{ label: 'Расходы', color: colors.expense },
+		{ label: 'Накоплено', color: colors.accumulated },
+	];
 
-			<div className='w-full h-[300px]'>
+	return (
+		<div className={cardClassName}>
+			<div className='flex w-full items-center justify-between gap-3'>
+				<h2 className='text-[16px] font-medium text-[var(--foreground-primary)]'>
+					{title}
+				</h2>
+				<p className='shrink-0 text-[13px] tabular-nums text-[var(--foreground-secondary)]'>
+					Разница {formatAmount(difference, currency, true)}
+				</p>
+			</div>
+
+			<div className='relative h-[280px] w-full'>
 				<Line data={data} options={options} />
+				<div
+					ref={tooltipRef}
+					className='pointer-events-none absolute z-10 w-max max-w-[240px] rounded-[10px] bg-[var(--button-tertiary)] px-3 py-2.5 text-[12px] leading-[1.35] text-[var(--foreground-primary)] opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.28)]'
+				/>
+			</div>
+
+			<div className='flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-[var(--foreground-secondary)]'>
+				{legend.map(item => (
+					<span key={item.label} className='flex items-center gap-2'>
+						<span
+							className='size-2.5 rounded-full'
+							style={{ backgroundColor: item.color }}
+						/>
+						{item.label}
+					</span>
+				))}
 			</div>
 		</div>
 	);

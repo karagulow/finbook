@@ -119,6 +119,9 @@ export const AnalyticsPage: React.FC = () => {
 					<IncomeExpenseLineChart
 						title='Доходы и расходы'
 						dataPoints={lineData}
+						difference={summary.difference}
+						currency={currency}
+						year={year}
 					/>
 				)}
 

@@ -70,18 +70,36 @@ export const useIncomeExpenseLineData = (
 			label: monthLabels[i],
 			income: 0,
 			expense: 0,
+			categories: [] as { name: string; amount: number }[],
 		}));
+		const categoriesByMonth = Array.from(
+			{ length: 12 },
+			() => new Map<string, { name: string; amount: number }>(),
+		);
 
 		for (const tx of transactions) {
 			const date = new Date(tx.date);
 			const txMonth = date.getMonth();
+			const amount = tx.amountInUserCurrency ?? 0;
 			if (tx.type === 'INCOME') {
-				monthly[txMonth].income += tx.amountInUserCurrency ?? 0;
+				monthly[txMonth].income += amount;
 			} else if (tx.type === 'EXPENSE') {
-				monthly[txMonth].expense += tx.amountInUserCurrency ?? 0;
+				monthly[txMonth].expense += amount;
+				const name = tx.category?.name || 'Без категории';
+				const key = tx.category?.id || name;
+				const prev = categoriesByMonth[txMonth].get(key) ?? { name, amount: 0 };
+				categoriesByMonth[txMonth].set(key, {
+					name,
+					amount: prev.amount + amount,
+				});
 			}
 		}
 
-		return monthly;
+		return monthly.map((point, txMonth) => ({
+			...point,
+			categories: Array.from(categoriesByMonth[txMonth].values()).sort(
+				(a, b) => b.amount - a.amount,
+			),
+		}));
 	}, [transactions, period, year, month]);
 };
