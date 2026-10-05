@@ -1,4 +1,5 @@
 import type { Chart, TooltipModel } from 'chart.js';
+import { hideChartTooltip, placeChartTooltip } from '../chart-tooltip-motion';
 import { formatAmount } from './lib';
 import type { LineChartTooltipDetails } from './types';
 
@@ -12,14 +13,14 @@ export const renderExternalTooltip = (
 	const { tooltip, chart } = context;
 
 	if (tooltip.opacity === 0 || !tooltip.dataPoints.length) {
-		el.style.opacity = '0';
+		hideChartTooltip(el);
 		return;
 	}
 
 	const index = tooltip.dataPoints[0].dataIndex;
 	const point = details.dataPoints[index];
 	if (!point) {
-		el.style.opacity = '0';
+		hideChartTooltip(el);
 		return;
 	}
 
@@ -111,10 +112,9 @@ export const renderExternalTooltip = (
 
 	const canvas = chart.canvas;
 	const openToLeft = tooltip.caretX > canvas.clientWidth * 0.62;
-	el.style.opacity = '1';
-	el.style.left = `${tooltip.caretX}px`;
-	el.style.top = `${tooltip.caretY}px`;
-	el.style.transform = openToLeft
-		? 'translate(calc(-100% - 14px), 0)'
-		: 'translate(14px, 0)';
+	const x = openToLeft
+		? tooltip.caretX - el.offsetWidth - 14
+		: tooltip.caretX + 14;
+
+	placeChartTooltip(el, x, tooltip.caretY);
 };
