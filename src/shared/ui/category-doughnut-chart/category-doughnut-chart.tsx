@@ -1,34 +1,24 @@
-import React, { memo } from 'react';
+'use client';
+
+import React, { memo, useRef } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import {
 	Chart as ChartJS,
 	ArcElement,
 	Tooltip,
 	Legend,
-	TooltipItem,
+	type ChartOptions,
 } from 'chart.js';
 
 import { useAnimatedNumber } from '@/src/shared/hooks';
+import { formatAmount } from './lib';
+import { renderExternalTooltip } from './render-external-tooltip';
+import type {
+	CategoryDoughnutChartProps,
+	CategoryDoughnutTooltipDetails,
+} from './types';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
-
-type Category = {
-	id: string;
-	name: string;
-	amount: number;
-	color: string;
-};
-
-type CategoryDoughnutChartProps = {
-	title: string;
-	categories: Category[] | null;
-};
-
-const formatAmount = (value: number) =>
-	value.toLocaleString('ru-RU', {
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2,
-	});
 
 const CategoryAmount: React.FC<{ amount: number; total: number }> = ({
 	amount,
@@ -61,6 +51,13 @@ const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
 	title,
 	categories,
 }) => {
+	const tooltipRef = useRef<HTMLDivElement>(null);
+	const tooltipDetails = useRef<CategoryDoughnutTooltipDetails>({
+		title,
+		categories: [],
+		total: 0,
+	});
+
 	if (!categories || categories.length === 0) {
 		return (
 			<div className='flex flex-col items-center gap-5 w-full bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] rounded-[16px] pt-3 sm:p-7.5 p-4 sm:pt-5'>
@@ -76,6 +73,7 @@ const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
 
 	const sortedCategories = [...categories].sort((a, b) => b.amount - a.amount);
 	const total = sortedCategories.reduce((acc, cat) => acc + cat.amount, 0);
+	tooltipDetails.current = { title, categories: sortedCategories, total };
 
 	const data = {
 		labels: sortedCategories.map(cat => cat.name),
@@ -88,21 +86,23 @@ const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
 		],
 	};
 
-	const options = {
+	const options: ChartOptions<'doughnut'> = {
 		cutout: '65%',
+		interaction: {
+			mode: 'nearest',
+			intersect: true,
+		},
 		plugins: {
 			legend: { display: false },
 			tooltip: {
-				callbacks: {
-					label: function (tooltipItem: TooltipItem<'doughnut'>) {
-						const value = tooltipItem.raw as number;
-						return (
-							value.toLocaleString('ru-RU', {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2,
-							}) + ' ₽'
-						);
-					},
+				enabled: false,
+				external: context => {
+					if (!tooltipRef.current) return;
+					renderExternalTooltip(
+						tooltipRef.current,
+						context,
+						tooltipDetails.current,
+					);
 				},
 			},
 		},
@@ -125,6 +125,10 @@ const CategoryDoughnutChartComponent: React.FC<CategoryDoughnutChartProps> = ({
 					</span>
 					<ChartTotal total={total} />
 				</div>
+				<div
+					ref={tooltipRef}
+					className='pointer-events-none absolute z-10 w-max max-w-[240px] rounded-[10px] bg-[var(--button-tertiary)] px-3 py-2.5 text-[12px] leading-[1.35] text-[var(--foreground-primary)] opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.28)]'
+				/>
 			</div>
 
 			<ul className='flex flex-col gap-2 w-full'>
