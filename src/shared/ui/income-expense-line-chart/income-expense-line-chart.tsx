@@ -139,9 +139,12 @@ const IncomeExpenseLineChartComponent: React.FC<
 			x: {
 				ticks: {
 					color: colors.tick,
-					autoSkip: false,
+					autoSkip: true,
+					autoSkipPadding: 16,
 					maxRotation: 0,
-					font: { size: 11 },
+					minRotation: 0,
+					padding: 8,
+					font: { family: 'Manrope, sans-serif', size: 12 },
 				},
 				grid: {
 					display: false,
@@ -156,7 +159,7 @@ const IncomeExpenseLineChartComponent: React.FC<
 				ticks: {
 					color: colors.tick,
 					stepSize: step,
-					font: { size: 11 },
+					font: { family: 'Manrope, sans-serif', size: 12 },
 					callback: (tickValue: string | number) => {
 						const parsed =
 							typeof tickValue === 'number' ? tickValue : Number(tickValue);
