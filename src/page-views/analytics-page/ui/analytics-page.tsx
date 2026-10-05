@@ -6,6 +6,8 @@ import { useBalance } from '@/src/entities/balance';
 import {
 	CategoryDoughnutChart,
 	CategoryDoughnutChartSkeleton,
+	DailyExpenseBarChart,
+	DailyExpenseBarChartSkeleton,
 	IncomeExpenseLineChart,
 	IncomeExpenseLineChartSkeleton,
 	StickyHeader,
@@ -100,7 +102,19 @@ export const AnalyticsPage: React.FC = () => {
 				)}
 
 				{loading ? (
-					<IncomeExpenseLineChartSkeleton />
+					period === 'Месяц' ? (
+						<DailyExpenseBarChartSkeleton />
+					) : (
+						<IncomeExpenseLineChartSkeleton />
+					)
+				) : period === 'Месяц' ? (
+					<DailyExpenseBarChart
+						dataPoints={lineData}
+						difference={summary.difference}
+						currency={currency}
+						year={year}
+						month={month}
+					/>
 				) : (
 					<IncomeExpenseLineChart
 						title='Доходы и расходы'

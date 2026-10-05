@@ -31,21 +31,39 @@ export const useIncomeExpenseLineData = (
 				label: String(i + 1),
 				income: 0,
 				expense: 0,
+				categories: [] as { name: string; amount: number }[],
 			}));
+			const categoriesByDay = Array.from(
+				{ length: daysInMonth },
+				() => new Map<string, { name: string; amount: number }>(),
+			);
 
 			for (const tx of transactions) {
 				const date = new Date(tx.date);
 				if (date.getFullYear() !== year || date.getMonth() !== month) continue;
 
 				const day = date.getDate() - 1;
+				const amount = tx.amountInUserCurrency ?? 0;
 				if (tx.type === 'INCOME') {
-					daily[day].income += tx.amountInUserCurrency ?? 0;
+					daily[day].income += amount;
 				} else if (tx.type === 'EXPENSE') {
-					daily[day].expense += tx.amountInUserCurrency ?? 0;
+					daily[day].expense += amount;
+					const name = tx.category?.name || 'Без категории';
+					const key = tx.category?.id || name;
+					const prev = categoriesByDay[day].get(key) ?? { name, amount: 0 };
+					categoriesByDay[day].set(key, {
+						name,
+						amount: prev.amount + amount,
+					});
 				}
 			}
 
-			return daily;
+			return daily.map((point, day) => ({
+				...point,
+				categories: Array.from(categoriesByDay[day].values()).sort(
+					(a, b) => b.amount - a.amount,
+				),
+			}));
 		}
 
 		const monthly = Array.from({ length: 12 }, (_, i) => ({
