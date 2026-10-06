@@ -40,12 +40,14 @@ export const DebtsList: React.FC<Props> = ({ type, onDebtClick }) => {
 	const visibleDebts = debts.filter(debt => debt.type === type);
 	const activeDebts = visibleDebts.filter(isOpen);
 	const completedDebts = visibleDebts.filter(debt => !isOpen(debt));
+	const hasActiveDebts = activeDebts.length > 0;
+	const hasCompletedDebts = completedDebts.length > 0;
 
 	useEffect(() => {
 		const options = { duration: 250, easing: 'ease-in-out' as const };
 		if (activeRef.current) autoAnimate(activeRef.current, options);
 		if (completedRef.current) autoAnimate(completedRef.current, options);
-	}, [activeDebts.length > 0, completedDebts.length > 0]);
+	}, [hasActiveDebts, hasCompletedDebts]);
 
 	if (isLoading) {
 		return (

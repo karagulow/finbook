@@ -13,7 +13,10 @@ import {
 import { Bar } from 'react-chartjs-2';
 import { chartColors, formatAmount, niceScale } from './lib';
 import { renderExternalTooltip } from './render-external-tooltip';
-import type { DailyExpenseBarChartProps } from './types';
+import type {
+	DailyExpenseBarChartProps,
+	DailyExpenseTooltipDetails,
+} from './types';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip);
 
@@ -30,6 +33,13 @@ const DailyExpenseBarChartComponent: React.FC<DailyExpenseBarChartProps> = ({
 		[resolvedTheme],
 	);
 	const tooltipRef = useRef<HTMLDivElement>(null);
+	const tooltipDetails = useRef<DailyExpenseTooltipDetails>({
+		dataPoints: [],
+		currency,
+		year,
+		month,
+		monthExpense: 0,
+	});
 
 	const cardClassName =
 		'flex w-full flex-col gap-4 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4 pt-3 sm:p-7.5 sm:pt-5';
@@ -50,13 +60,6 @@ const DailyExpenseBarChartComponent: React.FC<DailyExpenseBarChartProps> = ({
 	const maxExpense = Math.max(...dataPoints.map(point => point.expense), 0);
 	const scale = niceScale(maxExpense);
 	const monthExpense = dataPoints.reduce((sum, point) => sum + point.expense, 0);
-	const tooltipDetails = useRef({
-		dataPoints,
-		currency,
-		year,
-		month,
-		monthExpense,
-	});
 	tooltipDetails.current = {
 		dataPoints,
 		currency,

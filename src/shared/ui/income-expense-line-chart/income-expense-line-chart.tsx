@@ -14,7 +14,10 @@ import {
 import { Line } from 'react-chartjs-2';
 import { chartColors, formatAmount, niceStep, shortMonth } from './lib';
 import { renderExternalTooltip } from './render-external-tooltip';
-import type { IncomeExpenseLineChartProps } from './types';
+import type {
+	IncomeExpenseLineChartProps,
+	LineChartTooltipDetails,
+} from './types';
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Tooltip);
 
@@ -27,6 +30,13 @@ const IncomeExpenseLineChartComponent: React.FC<
 		[resolvedTheme],
 	);
 	const tooltipRef = useRef<HTMLDivElement>(null);
+	const tooltipDetails = useRef<LineChartTooltipDetails>({
+		dataPoints: [],
+		accumulated: [],
+		currency,
+		year,
+		yearExpense: 0,
+	});
 
 	const cardClassName =
 		'flex w-full flex-col gap-4 rounded-[16px] border-[0.5px] border-[var(--border-primary)] bg-[var(--card)] p-4 pt-3 sm:p-7.5 sm:pt-5';
@@ -57,13 +67,6 @@ const IncomeExpenseLineChartComponent: React.FC<
 	const min = rawMin < 0 ? Math.floor(rawMin / step) * step : 0;
 
 	const yearExpense = dataPoints.reduce((sum, point) => sum + point.expense, 0);
-	const tooltipDetails = useRef({
-		dataPoints,
-		accumulated,
-		currency,
-		year,
-		yearExpense,
-	});
 	tooltipDetails.current = {
 		dataPoints,
 		accumulated,
