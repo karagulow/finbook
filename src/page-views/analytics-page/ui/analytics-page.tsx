@@ -20,6 +20,8 @@ import { getAnalyticsSummary } from '../lib/get-analytics-summary';
 import { AnalyticsFilters, type AnalyticsPeriod } from './analytics-filters';
 import { AnalyticsSummary } from './analytics-summary';
 import { AnalyticsSummarySkeleton } from './analytics-summary-skeleton';
+import { CategoryMonthTable } from './category-month-table';
+import { CategoryMonthTableSkeleton } from './category-month-table-skeleton';
 
 export const AnalyticsPage: React.FC = () => {
 	const now = new Date();
@@ -138,6 +140,17 @@ export const AnalyticsPage: React.FC = () => {
 						</>
 					)}
 				</div>
+
+				{period === 'Год' &&
+					(loading ? (
+						<CategoryMonthTableSkeleton />
+					) : (
+						<CategoryMonthTable
+							transactions={transactions ?? []}
+							year={year}
+							currency={currency}
+						/>
+					))}
 			</div>
 		</>
 	);
