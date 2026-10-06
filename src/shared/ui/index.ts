@@ -10,6 +10,10 @@ export {
 	IncomeExpenseLineChart,
 	IncomeExpenseLineChartSkeleton,
 } from './income-expense-line-chart';
+export {
+	DailyExpenseBarChart,
+	DailyExpenseBarChartSkeleton,
+} from './daily-expense-bar-chart';
 export { Sheet } from './sheet';
 export { Drawer } from './drawer';
 export { EditButton } from './edit-button';
