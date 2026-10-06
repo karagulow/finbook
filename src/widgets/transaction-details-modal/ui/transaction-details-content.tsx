@@ -41,6 +41,7 @@ export const TransactionDetailsContent: React.FC<Props> = ({
 		try {
 			await api.delete(`/api/transactions/${transaction.id}`);
 			queryClient.invalidateQueries({ queryKey: ['transactions'] });
+			queryClient.invalidateQueries({ queryKey: ['analytics-years'] });
 			setIsConfirmDeleteDialogOpen(false);
 			toast.success('Транзакция успешно удалена!', toastOptions);
 			onCloseModal();
