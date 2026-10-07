@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { clearPinCookies } from '@/src/shared/lib/pin-session';
 
 const prisma = new PrismaClient();
 
@@ -38,6 +39,8 @@ export async function POST(req: Request) {
 			path: '/',
 			maxAge: 0,
 		});
+
+		clearPinCookies(response);
 
 		return response;
 	} catch (error) {

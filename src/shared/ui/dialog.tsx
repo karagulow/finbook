@@ -8,9 +8,15 @@ interface Props {
 	children?: React.ReactNode;
 	isOpen: boolean;
 	onClose: () => void;
+	className?: string;
 }
 
-export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
+export const Dialog: React.FC<Props> = ({
+	children,
+	isOpen,
+	onClose,
+	className,
+}) => {
 	const [mounted, setMounted] = useState(false);
 	const [animate, setAnimate] = useState(false);
 	const keydownListenerRef = useRef<(() => void) | null>(null);
@@ -71,6 +77,7 @@ export const Dialog: React.FC<Props> = ({ children, isOpen, onClose }) => {
 						className={cn(
 							'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-21 w-full max-w-lg rounded-[16px] bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] p-6 shadow-xl transform transition-all duration-300',
 							animate ? 'scale-100 opacity-100' : 'scale-90 opacity-0',
+							className,
 						)}
 						onClick={e => e.stopPropagation()}
 					>

@@ -29,11 +29,15 @@ model RefreshToken {
   userId     String   @db.Uuid
   deviceInfo String?
   location   String?
-  createdAt  DateTime @default(now())
-  expiresAt  DateTime
-  revoked    Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  expiresAt          DateTime
+  revoked            Boolean  @default(false)
+  pinHash            String?
+  pinAttempts        Int      @default(0)
+  pinPromptDismissed Boolean  @default(false)
+  pinUnlockSecret    String?
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Account {

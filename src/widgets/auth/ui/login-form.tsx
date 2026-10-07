@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -11,6 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { LoginFormData } from '../model/types';
 import { loginValidation } from '../model/validations';
 import { toastOptions, api } from '@/src/shared/lib';
+import { PIN_OFFER_STORAGE_KEY } from '@/src/shared/lib/pin-constants';
 import { Button, Input } from '@/src/shared/ui';
 import { useAuthStore } from '@/src/shared/store/authStore';
 
@@ -18,6 +19,17 @@ export const LoginForm: React.FC = () => {
 	const [loading, setLoading] = useState(false);
 	const { setAuth } = useAuthStore();
 	const router = useRouter();
+
+	useEffect(() => {
+		const reason = new URLSearchParams(window.location.search).get('reason');
+
+		if (reason === 'pin-attempts') {
+			toast.error(
+				'Слишком много попыток. Войдите с паролем.',
+				toastOptions,
+			);
+		}
+	}, []);
 
 	const {
 		register,
@@ -38,6 +50,7 @@ export const LoginForm: React.FC = () => {
 		try {
 			const response = await api.post('/api/auth/login', data);
 			setAuth(response.data.token, { email: data.email });
+			sessionStorage.setItem(PIN_OFFER_STORAGE_KEY, '1');
 			toast.success('Успешный вход!', toastOptions);
 			router.push('/home');
 		} catch (error: unknown) {

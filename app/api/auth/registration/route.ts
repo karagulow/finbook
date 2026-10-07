@@ -5,6 +5,7 @@ import { PrismaClient, CategoryType } from '@prisma/client';
 import { baseCategories } from '@/constants/base-categories';
 import { getDeviceInfo } from '@/src/shared/lib/device-info';
 import { getRequestLocation } from '@/src/shared/lib/request-location';
+import { clearPinCookies } from '@/src/shared/lib/pin-session';
 import crypto from 'crypto';
 
 const prisma = new PrismaClient();
@@ -86,9 +87,11 @@ export async function POST(req: Request) {
 			},
 		});
 
-		const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
-			expiresIn: '15m',
-		});
+		const token = jwt.sign(
+			{ userId: user.id, email: user.email, pin: false },
+			JWT_SECRET,
+			{ expiresIn: '15m' },
+		);
 
 		const jti = crypto.randomUUID();
 
@@ -129,6 +132,8 @@ export async function POST(req: Request) {
 			path: '/',
 			maxAge: 30 * 24 * 60 * 60,
 		});
+
+		clearPinCookies(response);
 
 		return response;
 	} catch (error) {

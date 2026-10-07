@@ -3,6 +3,12 @@ import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { getDeviceInfo } from '@/src/shared/lib/device-info';
 import { getRequestLocation } from '@/src/shared/lib/request-location';
+import {
+	PIN_ENABLED_COOKIE,
+	PIN_UNLOCK_COOKIE,
+	authCookieOptions,
+	readRequestCookie,
+} from '@/src/shared/lib/pin-constants';
 import crypto from 'crypto';
 
 const prisma = new PrismaClient();
@@ -128,8 +134,24 @@ export async function POST(req: Request) {
 		return errorResponse;
 	}
 
+	const pinUnlock = readRequestCookie(req.headers.get('cookie'), PIN_UNLOCK_COOKIE);
+
+	if (
+		existing.pinHash &&
+		(!pinUnlock || pinUnlock !== existing.pinUnlockSecret)
+	) {
+		return NextResponse.json(
+			{ message: 'Введите пин-код', code: 'PIN_REQUIRED' },
+			{ status: 403 },
+		);
+	}
+
 	const accessToken = jwt.sign(
-		{ userId: payload.userId, email: payload.email },
+		{
+			userId: payload.userId,
+			email: payload.email,
+			pin: Boolean(existing.pinHash),
+		},
 		JWT_SECRET,
 		{ expiresIn: '15m' }
 	);
@@ -149,6 +171,11 @@ export async function POST(req: Request) {
 
 	try {
 		await prisma.$transaction(async tx => {
+			const fresh = await tx.refreshToken.findUnique({
+				where: { id: existing.id },
+			});
+			const source = fresh ?? existing;
+
 			await tx.refreshToken.deleteMany({
 				where: { token: oldRefreshToken },
 			});
@@ -160,7 +187,11 @@ export async function POST(req: Request) {
 					userId: payload.userId,
 					expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 					deviceInfo,
-					location: location ?? existing.location,
+					location: location ?? source.location,
+					pinHash: source.pinHash,
+					pinAttempts: source.pinAttempts,
+					pinPromptDismissed: source.pinPromptDismissed,
+					pinUnlockSecret: source.pinUnlockSecret,
 				},
 			});
 		});
@@ -208,6 +239,18 @@ export async function POST(req: Request) {
 		path: '/',
 		maxAge: 30 * 24 * 60 * 60,
 	});
+
+	if (existing.pinHash) {
+		response.cookies.set(PIN_ENABLED_COOKIE, '1', {
+			...authCookieOptions,
+			maxAge: 30 * 24 * 60 * 60,
+		});
+	} else {
+		response.cookies.set(PIN_ENABLED_COOKIE, '', {
+			...authCookieOptions,
+			maxAge: 0,
+		});
+	}
 
 	return response;
 }
