@@ -32,7 +32,6 @@ const IncomeExpenseLineChartComponent: React.FC<
 	const tooltipRef = useRef<HTMLDivElement>(null);
 	const tooltipDetails = useRef<LineChartTooltipDetails>({
 		dataPoints: [],
-		accumulated: [],
 		currency,
 		year,
 		yearExpense: 0,
@@ -54,14 +53,12 @@ const IncomeExpenseLineChartComponent: React.FC<
 		);
 	}
 
-	let running = 0;
-	const accumulated = dataPoints.map(point => {
-		running += point.income - point.expense;
-		return running;
-	});
+	const differenceByMonth = dataPoints.map(
+		point => point.income - point.expense,
+	);
 	const values = dataPoints.flatMap(point => [point.income, point.expense]);
-	const rawMax = Math.max(...values, ...accumulated, 0);
-	const rawMin = Math.min(...values, ...accumulated, 0);
+	const rawMax = Math.max(...values, ...differenceByMonth, 0);
+	const rawMin = Math.min(...values, ...differenceByMonth, 0);
 	const step = niceStep(rawMax - rawMin);
 	const max = Math.max(Math.ceil(rawMax / step) * step, step);
 	const min = rawMin < 0 ? Math.floor(rawMin / step) * step : 0;
@@ -69,7 +66,6 @@ const IncomeExpenseLineChartComponent: React.FC<
 	const yearExpense = dataPoints.reduce((sum, point) => sum + point.expense, 0);
 	tooltipDetails.current = {
 		dataPoints,
-		accumulated,
 		currency,
 		year,
 		yearExpense,
@@ -101,16 +97,16 @@ const IncomeExpenseLineChartComponent: React.FC<
 				pointHoverBackgroundColor: colors.expense,
 			},
 			{
-				label: 'Накоплено',
-				data: accumulated,
-				borderColor: colors.accumulated,
-				backgroundColor: colors.accumulated,
+				label: 'Разница',
+				data: differenceByMonth,
+				borderColor: colors.difference,
+				backgroundColor: colors.difference,
 				borderWidth: 2,
 				borderDash: [6, 5],
 				tension: 0.35,
 				pointRadius: 0,
 				pointHoverRadius: 4,
-				pointHoverBackgroundColor: colors.accumulated,
+				pointHoverBackgroundColor: colors.difference,
 			},
 		],
 	};
@@ -171,7 +167,8 @@ const IncomeExpenseLineChartComponent: React.FC<
 					},
 				},
 				grid: {
-					color: colors.grid,
+					color: context =>
+						min < 0 && context.tick.value === 0 ? colors.zero : colors.grid,
 				},
 				border: {
 					display: false,
@@ -183,7 +180,7 @@ const IncomeExpenseLineChartComponent: React.FC<
 	const legend = [
 		{ label: 'Доходы', color: colors.income },
 		{ label: 'Расходы', color: colors.expense },
-		{ label: 'Накоплено', color: colors.accumulated },
+		{ label: 'Разница', color: colors.difference },
 	];
 
 	return (
