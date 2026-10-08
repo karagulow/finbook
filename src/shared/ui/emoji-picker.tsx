@@ -11,6 +11,7 @@ import React, {
 import { cn } from '@/src/shared/lib';
 
 import emojiData from '@/constants/emoji-data.json';
+import emojiKeywordsRu from '@/constants/emoji-keywords-ru.json';
 
 interface EmojiItem {
 	no: number;
@@ -32,9 +33,26 @@ const GAP = 4;
 const OVERSCAN_ROWS = 1;
 
 const allEmojis = (Object.values(emojiData) as EmojiItem[][]).flat();
+const russianKeywords = emojiKeywordsRu as Record<string, string[]>;
+
+const foldSearch = (value: string) =>
+	value.toLowerCase().replaceAll('ё', 'е');
+
+const splitSearchWords = (value: string) =>
+	foldSearch(value)
+		.split(/[^\p{L}\p{N}]+/u)
+		.filter(Boolean);
+
 const searchIndex = allEmojis.map(item => ({
 	item,
-	text: `${item.description} ${item.keywords.join(' ')}`.toLowerCase(),
+	text: foldSearch(`${item.description} ${item.keywords.join(' ')}`),
+	ruWords: [
+		...new Set(
+			(russianKeywords[item.emoji] ?? []).flatMap(keyword =>
+				splitSearchWords(keyword)
+			)
+		),
+	],
 }));
 
 export const EmojiPicker: React.FC<Props> = ({
@@ -54,10 +72,20 @@ export const EmojiPicker: React.FC<Props> = ({
 	const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const filtered = useMemo(() => {
-		const query = search.trim().toLowerCase();
-		if (!query) return allEmojis;
+		const queryWords = splitSearchWords(search);
+		if (queryWords.length === 0) return allEmojis;
 		return searchIndex
-			.filter(entry => entry.text.includes(query))
+			.filter(entry =>
+				queryWords.every(
+					word =>
+						entry.text.includes(word) ||
+						entry.ruWords.some(
+							ruWord =>
+								ruWord === word ||
+								(word.length >= 4 && ruWord.startsWith(word))
+						)
+				)
+			)
 			.map(entry => entry.item);
 	}, [search]);
 
