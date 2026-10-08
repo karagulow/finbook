@@ -1,9 +1,11 @@
 import React from 'react';
 
+import { Divider } from '@/src/shared/ui';
 import {
 	SettingsBlockItem,
 	SettingsBlockLayout,
 } from './settings-block-layout';
+import { PinCode } from './pin-code/pin-code';
 import ThemeSwitcher from './theme-switcher';
 
 export const AppSettings: React.FC = () => {
@@ -18,6 +20,10 @@ export const AppSettings: React.FC = () => {
 				</div>
 				<ThemeSwitcher />
 			</SettingsBlockItem>
+
+			<Divider />
+
+			<PinCode />
 		</SettingsBlockLayout>
 	);
 };

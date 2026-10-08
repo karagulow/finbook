@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { clearPinCookies } from '@/src/shared/lib/pin-session';
 
 const prisma = new PrismaClient();
 
@@ -12,10 +13,15 @@ export async function POST(req: Request) {
 			?.split('=')[1];
 
 		if (refreshToken) {
-			await prisma.refreshToken.updateMany({
-				where: { token: refreshToken },
-				data: { revoked: true },
-			});
+			await prisma.$transaction([
+				prisma.biometricCredential.deleteMany({
+					where: { session: { token: refreshToken } },
+				}),
+				prisma.refreshToken.updateMany({
+					where: { token: refreshToken },
+					data: { revoked: true },
+				}),
+			]);
 		}
 
 		const response = NextResponse.json(
@@ -38,6 +44,8 @@ export async function POST(req: Request) {
 			path: '/',
 			maxAge: 0,
 		});
+
+		clearPinCookies(response);
 
 		return response;
 	} catch (error) {

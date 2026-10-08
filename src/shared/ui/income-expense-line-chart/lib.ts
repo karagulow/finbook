@@ -39,6 +39,17 @@ export const niceStep = (range: number) => {
 	return niceFactor * magnitude;
 };
 
+const lighten = (hex: string, ratio: number) => {
+	const value = Number.parseInt(hex.slice(1), 16);
+	const channel = (shift: number) => {
+		const color = (value >> shift) & 255;
+		return Math.round(color + (255 - color) * ratio);
+	};
+	const mixed = (channel(16) << 16) | (channel(8) << 8) | channel(0);
+
+	return `#${mixed.toString(16).padStart(6, '0')}`;
+};
+
 export const chartColors = (isLight: boolean) => {
 	const fallback = isLight
 		? {
@@ -46,27 +57,31 @@ export const chartColors = (isLight: boolean) => {
 				grid: '#dddddd',
 				income: '#22c55e',
 				expense: '#ff4d4f',
-				accumulated: '#3b82f6',
+				difference: '#3b82f6',
 			}
 		: {
 				tick: '#969799',
 				grid: '#2c2e33',
 				income: '#71c57f',
 				expense: '#ff8583',
-				accumulated: '#4a7ee0',
+				difference: '#4a7ee0',
 			};
 
-	if (typeof document === 'undefined') return fallback;
+	if (typeof document === 'undefined') {
+		return { ...fallback, zero: lighten(fallback.grid, 0.28) };
+	}
 
 	const styles = getComputedStyle(document.documentElement);
 	const read = (name: string, fallbackValue: string) =>
 		styles.getPropertyValue(name).trim() || fallbackValue;
+	const grid = read('--border-primary', fallback.grid);
 
 	return {
 		tick: read('--foreground-secondary', fallback.tick),
-		grid: read('--border-primary', fallback.grid),
+		grid,
+		zero: lighten(grid, 0.28),
 		income: read('--success', fallback.income),
 		expense: read('--wrong', fallback.expense),
-		accumulated: read('--accent', fallback.accumulated),
+		difference: read('--accent', fallback.difference),
 	};
 };

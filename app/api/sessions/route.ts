@@ -91,14 +91,21 @@ export async function POST() {
 			currentId = payload.jti;
 		}
 
-		await prisma.refreshToken.updateMany({
-			where: {
-				userId,
-				revoked: false,
-				NOT: { id: currentId ?? '' },
-			},
-			data: { revoked: true },
-		});
+		const otherSessions = {
+			userId,
+			revoked: false,
+			NOT: { id: currentId ?? '' },
+		};
+
+		await prisma.$transaction([
+			prisma.biometricCredential.deleteMany({
+				where: { session: otherSessions },
+			}),
+			prisma.refreshToken.updateMany({
+				where: otherSessions,
+				data: { revoked: true },
+			}),
+		]);
 
 		return NextResponse.json({
 			message: 'Все остальные сессии завершены',

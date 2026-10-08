@@ -11,6 +11,7 @@ import axios from 'axios';
 import { Currency, RegistrationFormData } from '../model/types';
 import { registrationValidation } from '../model/validations';
 import { api, toastOptions } from '@/src/shared/lib';
+import { PIN_OFFER_STORAGE_KEY } from '@/src/shared/lib/pin-constants';
 import { Button, Input, Select } from '@/src/shared/ui';
 import { useAuthStore } from '@/src/shared/store/authStore';
 
@@ -49,6 +50,7 @@ export const RegistrationForm: React.FC = () => {
 				currencyId: data.currencyId,
 			});
 			setAuth(response.data.token, { email: data.email });
+			sessionStorage.setItem(PIN_OFFER_STORAGE_KEY, '1');
 			toast.success('Регистрация успешна!', toastOptions);
 			router.push('/home');
 		} catch (error: unknown) {

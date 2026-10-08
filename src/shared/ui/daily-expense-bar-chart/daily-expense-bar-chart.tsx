@@ -161,7 +161,7 @@ const DailyExpenseBarChartComponent: React.FC<DailyExpenseBarChartProps> = ({
 				<Bar data={data} options={options} />
 				<div
 					ref={tooltipRef}
-					className='pointer-events-none absolute z-10 w-max max-w-[240px] rounded-[10px] bg-[var(--button-tertiary)] px-3 py-2.5 text-[12px] leading-[1.35] text-[var(--foreground-primary)] opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.28)]'
+					className='pointer-events-none absolute z-[1] w-max max-w-[240px] rounded-[10px] bg-[var(--button-tertiary)] px-3 py-2.5 text-[12px] leading-[1.35] text-[var(--foreground-primary)] opacity-0 shadow-[0_8px_24px_rgba(0,0,0,0.28)]'
 				/>
 			</div>
 

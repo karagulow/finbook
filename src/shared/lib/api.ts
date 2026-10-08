@@ -13,6 +13,9 @@ const AUTH_ENDPOINTS_WITHOUT_REFRESH = [
 	'/api/auth/registration',
 	'/api/auth/refresh',
 	'/api/auth/logout',
+	'/api/auth/unlock',
+	'/api/auth/pin',
+	'/api/auth/biometric',
 ];
 
 const AUTH_ENDPOINTS_WITH_LOCATION = [
@@ -104,6 +107,18 @@ api.interceptors.response.use(
 			processQueue(null);
 			return api(originalRequest);
 		} catch (err: unknown) {
+			if (
+				axios.isAxiosError(err) &&
+				err.response?.data?.code === 'PIN_REQUIRED' &&
+				typeof window !== 'undefined' &&
+				!window.location.pathname.startsWith('/lock')
+			) {
+				processQueue(err);
+				const next = encodeURIComponent(window.location.pathname);
+				window.location.href = `/lock?next=${next}`;
+				return Promise.reject(err);
+			}
+
 			processQueue(err);
 
 			if (typeof window !== 'undefined') {

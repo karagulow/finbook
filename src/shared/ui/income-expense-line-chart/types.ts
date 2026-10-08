@@ -20,7 +20,6 @@ export type IncomeExpenseLineChartProps = {
 
 export type LineChartTooltipDetails = {
 	dataPoints: LineChartPoint[];
-	accumulated: number[];
 	currency: string;
 	year: number;
 	yearExpense: number;

@@ -24,7 +24,6 @@ export const renderExternalTooltip = (
 		return;
 	}
 
-	const accumulated = details.accumulated[index] ?? 0;
 	const monthDifference = point.income - point.expense;
 
 	el.replaceChildren();
@@ -43,12 +42,6 @@ export const renderExternalTooltip = (
 
 	if (point.income <= 0 && point.expense <= 0) {
 		appendLine('mt-1.5 text-[var(--foreground-secondary)]', 'Операций не было');
-		if (accumulated !== 0) {
-			appendLine(
-				'mt-0.5 text-[var(--accent)]',
-				`Накоплено: ${formatAmount(accumulated, details.currency, true)}`,
-			);
-		}
 	} else {
 		appendLine(
 			'mt-1.5 text-[var(--success)]',
@@ -63,12 +56,8 @@ export const renderExternalTooltip = (
 				: `Расходы: ${formatAmount(point.expense, details.currency)}`,
 		);
 		appendLine(
-			`mt-0.5 ${monthDifference < 0 ? 'text-[var(--wrong)]' : 'text-[var(--success)]'}`,
+			`mt-0.5 ${monthDifference < 0 ? 'text-[var(--wrong)]' : 'text-[var(--accent)]'}`,
 			`Разница: ${formatAmount(monthDifference, details.currency, true)}`,
-		);
-		appendLine(
-			'mt-0.5 text-[var(--accent)]',
-			`Накоплено: ${formatAmount(accumulated, details.currency, true)}`,
 		);
 
 		if (point.expense > 0) {

@@ -59,10 +59,13 @@ export async function POST(req: NextRequest, context: RouteContext) {
 		return NextResponse.json({ message: 'Сессия не найдена' }, { status: 404 });
 	}
 
-	await prisma.refreshToken.update({
-		where: { id: sessionId },
-		data: { revoked: true },
-	});
+	await prisma.$transaction([
+		prisma.biometricCredential.deleteMany({ where: { sessionId } }),
+		prisma.refreshToken.update({
+			where: { id: sessionId },
+			data: { revoked: true },
+		}),
+	]);
 
 	return NextResponse.json({ message: 'Сессия удалена' });
 }

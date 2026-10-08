@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { getDeviceInfo } from '@/src/shared/lib/device-info';
 import { getRequestLocation } from '@/src/shared/lib/request-location';
+import { clearPinCookies } from '@/src/shared/lib/pin-session';
 import crypto from 'crypto';
 
 const prisma = new PrismaClient();
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
 		}
 
 		const accessToken = jwt.sign(
-			{ userId: user.id, email: user.email },
+			{ userId: user.id, email: user.email, pin: false },
 			JWT_SECRET,
 			{ expiresIn: '15m' }
 		);
@@ -79,6 +80,8 @@ export async function POST(req: Request) {
 			path: '/',
 			maxAge: 30 * 24 * 60 * 60,
 		});
+
+		clearPinCookies(response);
 
 		return response;
 	} catch (error) {
