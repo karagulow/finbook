@@ -3,6 +3,7 @@ export const PIN_OFFER_STORAGE_KEY = 'finbook-pin-offer';
 export const PIN_MAX_ATTEMPTS = 5;
 export const PIN_ENABLED_COOKIE = 'pinEnabled';
 export const PIN_UNLOCK_COOKIE = 'pinUnlock';
+export const PIN_WINDOW_COOKIE = 'pinWindow';
 
 export const authCookieOptions = {
 	httpOnly: true,

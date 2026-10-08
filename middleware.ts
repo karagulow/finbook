@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import {
 	PIN_ENABLED_COOKIE,
 	PIN_UNLOCK_COOKIE,
+	PIN_WINDOW_COOKIE,
 	authCookieOptions,
 } from '@/src/shared/lib/pin-constants';
 
@@ -37,9 +38,10 @@ export async function middleware(request: NextRequest) {
 	const refreshToken = request.cookies.get('refreshToken')?.value;
 	const authToken = request.cookies.get('authToken')?.value;
 	const pinUnlock = request.cookies.get(PIN_UNLOCK_COOKIE)?.value;
+	const pinWindow = request.cookies.get(PIN_WINDOW_COOKIE)?.value === '1';
 	const pinEnabled = request.cookies.get(PIN_ENABLED_COOKIE)?.value === '1';
 	const needsPin = pinEnabled || accessTokenRequiresPin(authToken);
-	const unlocked = Boolean(pinUnlock);
+	const unlocked = Boolean(pinUnlock) && pinWindow;
 
 	const isGuestPath = GUEST_PATHS.some(p => pathname.startsWith(p));
 	const isProtectedPath = PROTECTED_PATHS.some(p => pathname.startsWith(p));
