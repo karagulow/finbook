@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/prisma/prisma-client';
+import {
+	clearedBiometricChallenge,
+	deleteSessionBiometric,
+} from '@/src/shared/lib/biometric';
 import { isPin } from '@/src/shared/lib/pin-constants';
 import {
 	checkDevicePin,
@@ -22,10 +26,15 @@ export async function GET(req: Request) {
 	}
 
 	const { session } = result;
+	const biometric = await prisma.biometricCredential.findUnique({
+		where: { sessionId: session.id },
+		select: { id: true },
+	});
 
 	return NextResponse.json({
 		enabled: Boolean(session.pinHash),
 		prompt: !session.pinHash && !session.pinPromptDismissed,
+		biometric: Boolean(biometric),
 	});
 }
 
@@ -116,10 +125,17 @@ export async function PATCH(req: Request) {
 			: invalidPinResponse(check.attemptsLeft);
 	}
 
-	await prisma.refreshToken.update({
-		where: { id: session.id },
-		data: { pinHash: await hashPin(body.pin), pinAttempts: 0 },
-	});
+	await prisma.$transaction([
+		deleteSessionBiometric(session.id),
+		prisma.refreshToken.update({
+			where: { id: session.id },
+			data: {
+				pinHash: await hashPin(body.pin),
+				pinAttempts: 0,
+				...clearedBiometricChallenge,
+			},
+		}),
+	]);
 
 	return NextResponse.json({ message: 'Пин-код изменён' });
 }
@@ -162,15 +178,19 @@ export async function DELETE(req: Request) {
 			: invalidPinResponse(check.attemptsLeft);
 	}
 
-	await prisma.refreshToken.update({
-		where: { id: session.id },
-		data: {
-			pinHash: null,
-			pinAttempts: 0,
-			pinUnlockSecret: null,
-			pinPromptDismissed: true,
-		},
-	});
+	await prisma.$transaction([
+		deleteSessionBiometric(session.id),
+		prisma.refreshToken.update({
+			where: { id: session.id },
+			data: {
+				pinHash: null,
+				pinAttempts: 0,
+				pinUnlockSecret: null,
+				pinPromptDismissed: true,
+				...clearedBiometricChallenge,
+			},
+		}),
+	]);
 
 	const response = NextResponse.json({ message: 'Пин-код отключён' });
 	setAccessCookie(response, signAccessToken(session.userId, email, false));

@@ -35,9 +35,24 @@ model RefreshToken {
   pinHash            String?
   pinAttempts        Int      @default(0)
   pinPromptDismissed Boolean  @default(false)
-  pinUnlockSecret    String?
+  pinUnlockSecret        String?
+  biometricChallenge     String?
+  biometricChallengeExp  DateTime?
+  biometricChallengeKind String?
 
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  biometricCredential BiometricCredential?
+}
+
+model BiometricCredential {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  credentialId String       @unique
+  publicKey    Bytes
+  counter      Int          @default(0)
+  transports   String?
+  sessionId    String       @unique @db.Uuid
+  createdAt    DateTime     @default(now())
+  session      RefreshToken @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
 model Account {

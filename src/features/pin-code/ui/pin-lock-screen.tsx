@@ -1,12 +1,18 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import {
+	startAuthentication,
+	WebAuthnAbortService,
+	type PublicKeyCredentialRequestOptionsJSON,
+} from '@simplewebauthn/browser';
 
 import { api } from '@/src/shared/lib';
 import { safeNextPath } from '@/src/shared/lib/pin-constants';
 import { useAuthStore } from '@/src/shared/store/authStore';
 import { Button } from '@/src/shared/ui';
+import { canUsePlatformBiometric, isBiometricCancel } from '../lib/biometric';
 import { getPinErrorMessage } from '../lib/pin-error';
 import { PinPad } from './pin-pad';
 
@@ -14,16 +20,54 @@ export const PinLockScreen: React.FC = () => {
 	const searchParams = useSearchParams();
 	const logout = useAuthStore(state => state.logout);
 	const [ready, setReady] = useState(false);
+	const [biometric, setBiometric] = useState(false);
 	const [pin, setPin] = useState('');
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
+	const biometricAttempt = useRef(0);
+
+	const unlockWithBiometric = useCallback(async () => {
+		const attempt = ++biometricAttempt.current;
+
+		setLoading(true);
+		setError('');
+
+		try {
+			const options = await api.post<PublicKeyCredentialRequestOptionsJSON>(
+				'/api/auth/biometric/authenticate/options',
+			);
+			const authentication = await startAuthentication({
+				optionsJSON: options.data,
+			});
+
+			if (attempt !== biometricAttempt.current) {
+				return;
+			}
+
+			await api.post('/api/auth/biometric/authenticate', authentication);
+			window.location.assign(safeNextPath(searchParams?.get('next') ?? null));
+		} catch (error: unknown) {
+			if (attempt !== biometricAttempt.current) {
+				return;
+			}
+
+			if (!isBiometricCancel(error)) {
+				const message = getPinErrorMessage(error);
+				if (message) {
+					setError(message);
+				}
+			}
+
+			setLoading(false);
+		}
+	}, [searchParams]);
 
 	useEffect(() => {
 		let cancelled = false;
 
 		api
-			.get<{ enabled: boolean }>('/api/auth/pin')
-			.then(response => {
+			.get<{ enabled: boolean; biometric: boolean }>('/api/auth/pin')
+			.then(async response => {
 				if (cancelled) {
 					return;
 				}
@@ -33,7 +77,19 @@ export const PinLockScreen: React.FC = () => {
 					return;
 				}
 
+				const available =
+					response.data.biometric && (await canUsePlatformBiometric());
+
+				if (cancelled) {
+					return;
+				}
+
+				setBiometric(available);
 				setReady(true);
+
+				if (available) {
+					void unlockWithBiometric();
+				}
 			})
 			.catch(() => {
 				if (!cancelled) {
@@ -43,8 +99,10 @@ export const PinLockScreen: React.FC = () => {
 
 		return () => {
 			cancelled = true;
+			biometricAttempt.current += 1;
+			WebAuthnAbortService.cancelCeremony();
 		};
-	}, []);
+	}, [unlockWithBiometric]);
 
 	const unlock = async (value: string) => {
 		if (loading) {
@@ -109,6 +167,16 @@ export const PinLockScreen: React.FC = () => {
 					disabled={loading}
 					error={error}
 				/>
+
+				{biometric && (
+					<Button
+						className='w-full h-10'
+						disabled={loading}
+						onClick={() => void unlockWithBiometric()}
+					>
+						Разблокировать по биометрии
+					</Button>
+				)}
 
 				<Button
 					className='w-full h-10'

@@ -176,10 +176,7 @@ export async function POST(req: Request) {
 			});
 			const source = fresh ?? existing;
 
-			await tx.refreshToken.deleteMany({
-				where: { token: oldRefreshToken },
-			});
-
+			// Ключ биометрии переносится до удаления старой сессии: удаление стирает его каскадом.
 			await tx.refreshToken.create({
 				data: {
 					id: jti,
@@ -193,6 +190,15 @@ export async function POST(req: Request) {
 					pinPromptDismissed: source.pinPromptDismissed,
 					pinUnlockSecret: source.pinUnlockSecret,
 				},
+			});
+
+			await tx.biometricCredential.updateMany({
+				where: { sessionId: source.id },
+				data: { sessionId: jti },
+			});
+
+			await tx.refreshToken.deleteMany({
+				where: { id: source.id },
 			});
 		});
 	} catch (error) {

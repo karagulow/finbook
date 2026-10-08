@@ -200,10 +200,13 @@ export async function checkDevicePin(
 	const nextAttempts = attempts + 1;
 
 	if (nextAttempts >= PIN_MAX_ATTEMPTS) {
-		await prisma.refreshToken.update({
-			where: { id: sessionId },
-			data: { revoked: true, pinAttempts: nextAttempts },
-		});
+		await prisma.$transaction([
+			prisma.biometricCredential.deleteMany({ where: { sessionId } }),
+			prisma.refreshToken.update({
+				where: { id: sessionId },
+				data: { revoked: true, pinAttempts: nextAttempts },
+			}),
+		]);
 
 		return { ok: false as const, exhausted: true as const };
 	}
