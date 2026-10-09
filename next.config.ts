@@ -7,6 +7,7 @@ const withPWA = require('next-pwa')({
 
 const nextConfig = {
 	reactStrictMode: true,
+	serverExternalPackages: ['exceljs'],
 	async headers() {
 		return [
 			{

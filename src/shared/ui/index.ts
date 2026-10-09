@@ -1,4 +1,5 @@
 export { Button } from './button';
+export { Checkbox } from './checkbox';
 export { AppIcon } from './app-icon';
 export { Container } from './container';
 export { Input } from './input';

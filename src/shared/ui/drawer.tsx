@@ -170,7 +170,7 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 							<div className='h-1.5 w-20 rounded-full bg-[var(--muted)]' />
 						</div>
 
-						<div className='flex-1 overflow-y-auto'>{children}</div>
+						<div className='min-h-0 flex-1 overflow-y-auto'>{children}</div>
 
 						<div className='fixed left-[-20px] bottom-[-40px] w-[calc(100%+20px)] h-10 bg-[var(--card)]'></div>
 					</div>

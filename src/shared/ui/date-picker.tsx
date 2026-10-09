@@ -48,6 +48,7 @@ interface Props {
 	label?: string;
 	error?: string;
 	displayFormat?: string;
+	popupAlign?: 'start' | 'end';
 }
 
 export const DatePicker: React.FC<Props> = ({
@@ -57,6 +58,7 @@ export const DatePicker: React.FC<Props> = ({
 	label,
 	error,
 	displayFormat = 'dd.MM.yyyy',
+	popupAlign = 'start',
 }) => {
 	const [open, setOpen] = useState(false);
 	const [animate, setAnimate] = useState(false);
@@ -158,7 +160,8 @@ export const DatePicker: React.FC<Props> = ({
 				{animate && (
 					<div
 						className={cn(
-							'absolute left-0 top-full mt-1 rounded-[8px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg p-2 z-50 transition-all duration-150',
+							'absolute top-full mt-1 rounded-[8px] border-[0.5px] border-[var(--border-primary)] bg-[var(--muted)] shadow-lg p-2 z-50 transition-all duration-150',
+							popupAlign === 'end' ? 'right-0' : 'left-0',
 							open
 								? 'opacity-100 translate-y-0 pointer-events-auto'
 								: 'opacity-0 -translate-y-1 pointer-events-none',

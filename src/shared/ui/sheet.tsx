@@ -88,7 +88,7 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 
 						<div
 							ref={panelRef}
-							className='w-100 h-[calc(100vh-40px)] rounded-[16px] bg-[var(--card)] p-5 shadow-xl'
+							className='flex h-[calc(100vh-40px)] w-100 flex-col overflow-hidden rounded-[16px] bg-[var(--card)] p-5 shadow-xl'
 						>
 							{children}
 						</div>
