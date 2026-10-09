@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useAutofocus } from '../hooks';
 import { cn, lockBody, unlockBody } from '../lib';
 
 interface Props {
@@ -19,7 +20,10 @@ export const Dialog: React.FC<Props> = ({
 }) => {
 	const [mounted, setMounted] = useState(false);
 	const [animate, setAnimate] = useState(false);
+	const panelRef = useRef<HTMLDivElement>(null);
 	const keydownListenerRef = useRef<(() => void) | null>(null);
+
+	useAutofocus(mounted && isOpen, panelRef);
 
 	useEffect(() => {
 		setMounted(true);
@@ -74,6 +78,7 @@ export const Dialog: React.FC<Props> = ({
 					></div>
 
 					<div
+						ref={panelRef}
 						className={cn(
 							'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-21 w-full max-w-lg rounded-[16px] bg-[var(--card)] border-[0.5px] border-[var(--border-primary)] p-6 shadow-xl transform transition-all duration-300',
 							animate ? 'scale-100 opacity-100' : 'scale-90 opacity-0',

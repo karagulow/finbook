@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useAutofocus } from '../hooks';
 import { cn, lockBody, unlockBody } from '../lib';
 
 interface Props {
@@ -22,6 +23,8 @@ export const Drawer: React.FC<Props> = ({ children, isOpen, onClose }) => {
 
 	const keydownListenerRef = useRef<(() => void) | null>(null);
 	const drawerRef = useRef<HTMLDivElement>(null);
+
+	useAutofocus(mounted && isOpen, drawerRef);
 
 	const MAX_UPWARD_OFFSET = 20;
 	const CLOSE_THRESHOLD = 120;
