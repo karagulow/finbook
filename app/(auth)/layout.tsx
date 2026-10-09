@@ -1,3 +1,15 @@
+import type { Metadata } from 'next';
+import {
+	openGraphMetadata,
+	siteConfig,
+	twitterMetadata,
+} from '@/src/shared/config/site';
+
+export const metadata: Metadata = {
+	openGraph: openGraphMetadata(siteConfig.description),
+	twitter: twitterMetadata(siteConfig.description),
+};
+
 export default function AuthLayout({
 	children,
 }: {

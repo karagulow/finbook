@@ -3,6 +3,12 @@ import { Manrope } from 'next/font/google';
 import './globals.css';
 import Providers from '@/app/providers';
 import {
+	getSiteUrl,
+	openGraphMetadata,
+	siteConfig,
+	twitterMetadata,
+} from '@/src/shared/config/site';
+import {
 	pwaEntryRedirectScript,
 	pwaPinLockScript,
 } from '@/src/shared/lib/pwa-entry-redirect';
@@ -13,13 +19,18 @@ const manropeSans = Manrope({
 	subsets: ['latin', 'cyrillic'],
 });
 
+const siteUrl = getSiteUrl();
+
 export const metadata: Metadata = {
+	metadataBase: new URL(siteUrl),
 	title: {
-		default: 'Финкнижка',
-		template: '%s | Финкнижка',
+		default: siteConfig.name,
+		template: `%s | ${siteConfig.name}`,
 	},
-	description:
-		'PWA-приложение для учёта личных финансов: расходы, доходы, аналитика, цели и долги.',
+	description: siteConfig.description,
+	applicationName: siteConfig.name,
+	openGraph: openGraphMetadata(siteConfig.description, siteUrl),
+	twitter: twitterMetadata(siteConfig.description),
 	keywords: [
 		'финансы',
 		'расходы',
