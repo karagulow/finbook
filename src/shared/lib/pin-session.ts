@@ -7,6 +7,7 @@ import {
 	PIN_ENABLED_COOKIE,
 	PIN_MAX_ATTEMPTS,
 	PIN_UNLOCK_COOKIE,
+	PIN_WINDOW_COOKIE,
 	authCookieOptions,
 	readRequestCookie,
 } from './pin-constants';
@@ -46,6 +47,7 @@ export function clearSessionCookies(response: NextResponse) {
 		'refreshToken',
 		PIN_ENABLED_COOKIE,
 		PIN_UNLOCK_COOKIE,
+		PIN_WINDOW_COOKIE,
 	]) {
 		response.cookies.set(name, '', { ...authCookieOptions, maxAge: 0 });
 	}
@@ -60,6 +62,11 @@ export function clearPinCookies(response: NextResponse) {
 	});
 	response.cookies.set(PIN_UNLOCK_COOKIE, '', {
 		...authCookieOptions,
+		maxAge: 0,
+	});
+	response.cookies.set(PIN_WINDOW_COOKIE, '', {
+		...authCookieOptions,
+		httpOnly: false,
 		maxAge: 0,
 	});
 
@@ -83,6 +90,11 @@ export function setPinEnabledCookie(response: NextResponse, enabled: boolean) {
 			...authCookieOptions,
 			maxAge: 0,
 		});
+		response.cookies.set(PIN_WINDOW_COOKIE, '', {
+			...authCookieOptions,
+			httpOnly: false,
+			maxAge: 0,
+		});
 		return;
 	}
 
@@ -94,6 +106,22 @@ export function setPinEnabledCookie(response: NextResponse, enabled: boolean) {
 
 export function setPinUnlockCookie(response: NextResponse, secret: string) {
 	response.cookies.set(PIN_UNLOCK_COOKIE, secret, authCookieOptions);
+	response.cookies.set(PIN_WINDOW_COOKIE, '1', {
+		...authCookieOptions,
+		httpOnly: false,
+	});
+}
+
+export function clearPinUnlockCookie(response: NextResponse) {
+	response.cookies.set(PIN_UNLOCK_COOKIE, '', {
+		...authCookieOptions,
+		maxAge: 0,
+	});
+	response.cookies.set(PIN_WINDOW_COOKIE, '', {
+		...authCookieOptions,
+		httpOnly: false,
+		maxAge: 0,
+	});
 }
 
 export function createPinUnlockSecret() {

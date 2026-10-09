@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useAutofocus } from '../hooks';
 import { cn, lockBody, unlockBody } from '../lib';
 
 interface Props {
@@ -14,7 +15,10 @@ interface Props {
 export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 	const [mounted, setMounted] = useState(false);
 	const [animate, setAnimate] = useState(false);
+	const panelRef = useRef<HTMLDivElement>(null);
 	const keydownListenerRef = useRef<(() => void) | null>(null);
+
+	useAutofocus(mounted && isOpen, panelRef);
 
 	useEffect(() => {
 		setMounted(true);
@@ -82,7 +86,10 @@ export const Sheet: React.FC<Props> = ({ children, isOpen, onClose }) => {
 							<X strokeWidth={2} size={20} />
 						</button>
 
-						<div className='w-100 h-[calc(100vh-40px)] rounded-[16px] bg-[var(--card)] p-5 shadow-xl'>
+						<div
+							ref={panelRef}
+							className='flex h-[calc(100vh-40px)] w-100 flex-col overflow-hidden rounded-[16px] bg-[var(--card)] p-5 shadow-xl'
+						>
 							{children}
 						</div>
 					</div>

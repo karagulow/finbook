@@ -41,7 +41,7 @@ export const Tabs: React.FC<TabsProps> = ({
 						>
 							<span
 								className={cn(
-									'relative z-10 transition-colors duration-300',
+									'relative z-1 transition-colors duration-300',
 									isActive
 										? 'text-[var(--foreground-primary)]'
 										: 'text-[var(--foreground-secondary)] group-hover:text-[var(--foreground-primary)]',

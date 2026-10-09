@@ -5,6 +5,7 @@ import { ChangeCurrency } from './change-currency/change-currency';
 import { Divider } from '@/src/shared/ui';
 import { User } from '../model/types';
 import { ManageCategories } from './manage-categories/manage-categories';
+import { ExportData } from './export-data/export-data';
 
 interface DataSettingsProps {
 	user: User;
@@ -18,6 +19,10 @@ export const DataSettings: React.FC<DataSettingsProps> = ({ user }) => {
 			<Divider />
 
 			<ManageCategories />
+
+			<Divider />
+
+			<ExportData />
 		</SettingsBlockLayout>
 	);
 };

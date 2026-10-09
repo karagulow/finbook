@@ -1,14 +1,20 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import { LandingPage } from '@/src/page-views/landing-page';
+import {
+	openGraphMetadata,
+	siteConfig,
+	twitterMetadata,
+} from '@/src/shared/config/site';
 import { hasSession } from '@/src/shared/lib/has-session';
 
 export const metadata: Metadata = {
 	title: {
-		absolute: 'Финкнижка',
+		absolute: siteConfig.name,
 	},
-	description:
-		'Учёт личных финансов: счета, доходы, расходы и аналитика в одном месте.',
+	description: siteConfig.publicDescription,
+	openGraph: openGraphMetadata(siteConfig.publicDescription, '/'),
+	twitter: twitterMetadata(siteConfig.publicDescription),
 };
 
 export default async function PublicHomePage() {

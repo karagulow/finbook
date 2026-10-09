@@ -5,6 +5,10 @@ import { PinLockScreen } from '@/src/features/pin-code/ui/pin-lock-screen';
 
 export const metadata: Metadata = {
 	title: 'Пин-код',
+	robots: {
+		index: false,
+		follow: false,
+	},
 };
 
 export default function LockPage() {

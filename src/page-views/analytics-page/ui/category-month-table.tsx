@@ -24,7 +24,7 @@ const cardClassName =
 
 const rowBorderClassName = 'border-b border-[var(--border-primary)]';
 const stickyCellClassName =
-	'sticky left-0 z-10 bg-[var(--card)] pl-4 pr-4 shadow-[1px_0_0_var(--border-primary)] sm:pl-7.5';
+	'sticky left-0 z-[1] bg-[var(--card)] pl-4 pr-4 shadow-[1px_0_0_var(--border-primary)] sm:pl-7.5';
 const edgePaddingClassName = 'pr-4 sm:pr-7.5';
 
 const amountClassName = (value: number, tone?: Tone) => {

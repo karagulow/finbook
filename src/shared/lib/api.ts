@@ -15,6 +15,7 @@ const AUTH_ENDPOINTS_WITHOUT_REFRESH = [
 	'/api/auth/logout',
 	'/api/auth/unlock',
 	'/api/auth/pin',
+	'/api/auth/lock',
 	'/api/auth/biometric',
 ];
 
