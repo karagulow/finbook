@@ -12,22 +12,17 @@ export const ogImageSize = {
 export const ogImageContentType = 'image/png';
 
 const ogCopy = {
-	alt: 'Финкнижка — приложение для учёта личных финансов',
-	kicker: 'Личные финансы',
-	title: siteConfig.name,
-	description: 'Счета, операции, аналитика, цели и долги — в одном приложении.',
+	alt: 'Финкнижка — начните лучше понимать свои финансы',
+	title: ['Начните лучше понимать', 'свои финансы.'],
 };
 
 async function loadAssets() {
 	const fontsDir = path.join(process.cwd(), 'src/shared/assets/fonts');
-	const [latin600, cyrillic600, latin500, cyrillic500, icon] =
-		await Promise.all([
-			readFile(path.join(fontsDir, 'latin-600-normal.woff')),
-			readFile(path.join(fontsDir, 'cyrillic-600-normal.woff')),
-			readFile(path.join(fontsDir, 'latin-500-normal.woff')),
-			readFile(path.join(fontsDir, 'cyrillic-500-normal.woff')),
-			readFile(path.join(process.cwd(), 'public/icons/maskable-icon.png')),
-		]);
+	const [medium, semiBold, icon] = await Promise.all([
+		readFile(path.join(fontsDir, 'Manrope-Medium.ttf')),
+		readFile(path.join(fontsDir, 'Manrope-SemiBold.ttf')),
+		readFile(path.join(process.cwd(), 'public/icons/icon-192x192.png')),
+	]);
 
 	const font = (
 		data: Buffer,
@@ -46,12 +41,7 @@ async function loadAssets() {
 
 	return {
 		iconSrc: `data:image/png;base64,${icon.toString('base64')}`,
-		fonts: [
-			font(latin600, 600),
-			font(cyrillic600, 600),
-			font(latin500, 500),
-			font(cyrillic500, 500),
-		],
+		fonts: [font(medium, 500), font(semiBold, 600)],
 	};
 }
 
@@ -61,7 +51,6 @@ export function ogAlt() {
 
 export async function createOgImage() {
 	const { iconSrc, fonts } = await loadAssets();
-	const { kicker, title, description } = ogCopy;
 
 	return new ImageResponse(
 		(
@@ -71,69 +60,31 @@ export async function createOgImage() {
 					height: '100%',
 					display: 'flex',
 					flexDirection: 'column',
-					justifyContent: 'space-between',
-					backgroundColor: '#08090a',
-					color: '#e3e4e6',
-					padding: '68px 72px',
+					backgroundColor: '#f7f7f7',
+					padding: '118px 88px',
 					fontFamily: 'Manrope',
-					position: 'relative',
 				}}
 			>
 				<div
 					style={{
-						position: 'absolute',
-						inset: 0,
-						display: 'flex',
-						justifyContent: 'space-between',
-						padding: '0 36px',
-					}}
-				>
-					{Array.from({ length: 16 }).map((_, index) => (
-						<div
-							key={index}
-							style={{
-								width: 1,
-								height: '100%',
-								backgroundColor: '#1c1e22',
-							}}
-						/>
-					))}
-				</div>
-				<div
-					style={{
-						position: 'absolute',
-						right: -80,
-						bottom: -180,
-						width: 520,
-						height: 520,
-						borderRadius: 520,
-						background:
-							'radial-gradient(circle, rgba(74,126,224,0.38) 0%, rgba(74,126,224,0) 68%)',
-					}}
-				/>
-
-				<div
-					style={{
 						display: 'flex',
 						alignItems: 'center',
-						gap: 16,
 					}}
 				>
 					<img
 						src={iconSrc}
-						width={56}
-						height={56}
-						style={{
-							borderRadius: 14,
-							border: '1px solid rgba(255,255,255,0.14)',
-						}}
+						width={44}
+						height={44}
+						style={{ borderRadius: 12 }}
 					/>
 					<div
 						style={{
 							display: 'flex',
+							marginLeft: 16,
 							fontSize: 28,
-							fontWeight: 600,
-							letterSpacing: -0.6,
+							fontWeight: 500,
+							letterSpacing: -0.4,
+							color: '#6f6f6f',
 						}}
 					>
 						{siteConfig.name}
@@ -144,44 +95,24 @@ export async function createOgImage() {
 					style={{
 						display: 'flex',
 						flexDirection: 'column',
-						gap: 22,
-						maxWidth: 980,
+						marginTop: 40,
 					}}
 				>
-					<div
-						style={{
-							display: 'flex',
-							fontSize: 22,
-							fontWeight: 500,
-							letterSpacing: 0.4,
-							color: '#969799',
-						}}
-					>
-						{kicker}
-					</div>
-					<div
-						style={{
-							display: 'flex',
-							fontSize: 88,
-							fontWeight: 600,
-							lineHeight: 1.05,
-							letterSpacing: -2.2,
-						}}
-					>
-						{title}
-					</div>
-					<div
-						style={{
-							display: 'flex',
-							fontSize: 28,
-							fontWeight: 500,
-							lineHeight: 1.35,
-							color: '#b4b6ba',
-							maxWidth: 820,
-						}}
-					>
-						{description}
-					</div>
+					{ogCopy.title.map(line => (
+						<div
+							key={line}
+							style={{
+								display: 'flex',
+								fontSize: 68,
+								fontWeight: 600,
+								lineHeight: 1.12,
+								letterSpacing: -2.4,
+								color: '#111111',
+							}}
+						>
+							{line}
+						</div>
+					))}
 				</div>
 			</div>
 		),
