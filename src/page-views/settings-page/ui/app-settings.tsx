@@ -8,7 +8,21 @@ import {
 import { PinCode } from './pin-code/pin-code';
 import ThemeSwitcher from './theme-switcher';
 
-export const AppSettings: React.FC = () => {
+interface AppSettingsProps {
+	pinEnabled: boolean;
+	biometricEnabled: boolean;
+	platformBiometric: boolean;
+	pinReady: boolean;
+	onPinChanged: () => void;
+}
+
+export const AppSettings: React.FC<AppSettingsProps> = ({
+	pinEnabled,
+	biometricEnabled,
+	platformBiometric,
+	pinReady,
+	onPinChanged,
+}) => {
 	return (
 		<SettingsBlockLayout title='Приложение'>
 			<SettingsBlockItem>
@@ -23,7 +37,13 @@ export const AppSettings: React.FC = () => {
 
 			<Divider />
 
-			<PinCode />
+			<PinCode
+				enabled={pinEnabled}
+				biometric={biometricEnabled}
+				platformBiometric={platformBiometric}
+				ready={pinReady}
+				onChanged={onPinChanged}
+			/>
 		</SettingsBlockLayout>
 	);
 };

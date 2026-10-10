@@ -1,9 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { canUsePlatformBiometric } from '@/src/features/pin-code/lib/biometric';
-import { api } from '@/src/shared/lib';
 import { Button, Divider } from '@/src/shared/ui';
 import { SettingsBlockItem } from '../settings-block-layout';
 import { BiometricModal } from './biometric-modal';
@@ -12,32 +10,23 @@ import { PinCodeModal } from './pin-code-modal';
 type Mode = 'create' | 'change' | 'disable';
 type BiometricMode = 'enable' | 'disable';
 
-export const PinCode: React.FC = () => {
-	const [enabled, setEnabled] = useState(false);
-	const [biometric, setBiometric] = useState(false);
-	const [platformBiometric, setPlatformBiometric] = useState(false);
-	const [loaded, setLoaded] = useState(false);
+interface PinCodeProps {
+	enabled: boolean;
+	biometric: boolean;
+	platformBiometric: boolean;
+	ready: boolean;
+	onChanged: () => void;
+}
+
+export const PinCode: React.FC<PinCodeProps> = ({
+	enabled,
+	biometric,
+	platformBiometric,
+	ready,
+	onChanged,
+}) => {
 	const [mode, setMode] = useState<Mode | null>(null);
 	const [biometricMode, setBiometricMode] = useState<BiometricMode | null>(null);
-
-	const load = () => {
-		api
-			.get<{ enabled: boolean; biometric: boolean }>('/api/auth/pin')
-			.then(response => {
-				setEnabled(response.data.enabled);
-				setBiometric(response.data.biometric);
-				setLoaded(true);
-			})
-			.catch(() => setLoaded(false));
-	};
-
-	useEffect(() => {
-		canUsePlatformBiometric().then(setPlatformBiometric);
-	}, []);
-
-	useEffect(() => {
-		load();
-	}, []);
 
 	return (
 		<>
@@ -53,7 +42,7 @@ export const PinCode: React.FC = () => {
 				</div>
 
 				<div className='flex flex-col sm:flex-row gap-2 w-full sm:w-fit'>
-					{!loaded ? null : enabled ? (
+					{!ready ? null : enabled ? (
 						<>
 							<Button className='w-full sm:w-fit' onClick={() => setMode('change')}>
 								Изменить
@@ -70,7 +59,7 @@ export const PinCode: React.FC = () => {
 				</div>
 			</SettingsBlockItem>
 
-			{loaded && enabled && (platformBiometric || biometric) && (
+			{ready && enabled && (platformBiometric || biometric) && (
 				<>
 					<Divider />
 					<SettingsBlockItem>
@@ -97,12 +86,12 @@ export const PinCode: React.FC = () => {
 			<PinCodeModal
 				mode={mode}
 				onClose={() => setMode(null)}
-				onChanged={load}
+				onChanged={onChanged}
 			/>
 			<BiometricModal
 				mode={biometricMode}
 				onClose={() => setBiometricMode(null)}
-				onChanged={load}
+				onChanged={onChanged}
 			/>
 		</>
 	);

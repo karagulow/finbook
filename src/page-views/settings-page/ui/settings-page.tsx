@@ -9,6 +9,7 @@ import { useUser } from '../model/use-user';
 import { SettingsBlockSkeleton } from './settings-block-skeleton';
 import { DataSettings } from './data-settings';
 import { DeviceSettings } from './device-settings';
+import { usePinSettings } from '../model/use-pin-settings';
 import { useSessions } from '../model/use-sessions';
 
 export const SettingsPage: React.FC = () => {
@@ -18,8 +19,9 @@ export const SettingsPage: React.FC = () => {
 		isLoading: isLoadingSessions,
 		error: errorSessions,
 	} = useSessions();
+	const pin = usePinSettings();
 
-	const isLoading = isLoadingUser || isLoadingSessions;
+	const isLoading = isLoadingUser || isLoadingSessions || pin.isLoading;
 	const error = errorUser || errorSessions;
 
 	return (
@@ -39,7 +41,13 @@ export const SettingsPage: React.FC = () => {
 					  user && (
 							<div className='flex flex-row gap-[30px]'>
 								<div className='flex flex-col gap-5 w-full'>
-									<AppSettings />
+									<AppSettings
+										pinEnabled={pin.enabled}
+										biometricEnabled={pin.biometric}
+										platformBiometric={pin.platformBiometric}
+										pinReady={pin.isReady}
+										onPinChanged={pin.reload}
+									/>
 									<DataSettings user={user} />
 									<DeviceSettings sessions={sessions} />
 									<UserSettings user={user} />
