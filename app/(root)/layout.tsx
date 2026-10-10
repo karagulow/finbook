@@ -1,10 +1,5 @@
 import type { Metadata } from 'next';
 import { PinSetupPrompt } from '@/src/features/pin-code/ui/pin-setup-prompt';
-import {
-	openGraphMetadata,
-	siteConfig,
-	twitterMetadata,
-} from '@/src/shared/config/site';
 import { Menu } from '@/src/widgets/menu';
 import { Tabbar } from '@/src/widgets/tabbar';
 
@@ -13,8 +8,6 @@ export const metadata: Metadata = {
 		index: false,
 		follow: false,
 	},
-	openGraph: openGraphMetadata(siteConfig.description),
-	twitter: twitterMetadata(siteConfig.description),
 };
 
 export default function UserLayout({

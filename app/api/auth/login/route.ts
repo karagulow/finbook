@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { getDeviceInfo } from '@/src/shared/lib/device-info';
 import { getRequestLocation } from '@/src/shared/lib/request-location';
+import { applySessionHint } from '@/src/shared/lib/pin-constants';
 import { clearPinCookies } from '@/src/shared/lib/pin-session';
 import crypto from 'crypto';
 
@@ -82,6 +83,7 @@ export async function POST(req: Request) {
 		});
 
 		clearPinCookies(response);
+		applySessionHint(response, true);
 
 		return response;
 	} catch (error) {

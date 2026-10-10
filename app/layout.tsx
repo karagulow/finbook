@@ -8,10 +8,12 @@ import {
 	siteConfig,
 	twitterMetadata,
 } from '@/src/shared/config/site';
+import { sessionHintScript } from '@/src/shared/lib/pin-constants';
 import {
 	pwaEntryRedirectScript,
 	pwaPinLockScript,
 } from '@/src/shared/lib/pwa-entry-redirect';
+import { SessionHintSync } from '@/src/shared/lib/session-hint-sync';
 import { SplashScreen, Statusbar } from '@/src/shared/ui';
 
 const manropeSans = Manrope({
@@ -29,8 +31,8 @@ export const metadata: Metadata = {
 	},
 	description: siteConfig.description,
 	applicationName: siteConfig.name,
-	openGraph: openGraphMetadata(siteConfig.description, siteUrl),
-	twitter: twitterMetadata(siteConfig.description),
+	openGraph: openGraphMetadata(),
+	twitter: twitterMetadata(),
 	keywords: [
 		'финансы',
 		'расходы',
@@ -70,6 +72,7 @@ export default function RootLayout({
 					name='apple-mobile-web-app-status-bar-style'
 					content='black-translucent'
 				/>
+				<script dangerouslySetInnerHTML={{ __html: sessionHintScript }} />
 				<script
 					dangerouslySetInnerHTML={{ __html: pwaEntryRedirectScript }}
 				/>
@@ -78,6 +81,7 @@ export default function RootLayout({
 				/>
 			</head>
 			<body className={`${manropeSans.variable} antialiased`}>
+				<SessionHintSync />
 				<Statusbar />
 				<Providers>
 					<div className='bg-[var(--background-primary)] '>

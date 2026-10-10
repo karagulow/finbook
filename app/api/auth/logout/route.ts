@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { applySessionHint } from '@/src/shared/lib/pin-constants';
 import { clearPinCookies } from '@/src/shared/lib/pin-session';
 
 const prisma = new PrismaClient();
@@ -46,6 +47,7 @@ export async function POST(req: Request) {
 		});
 
 		clearPinCookies(response);
+		applySessionHint(response, false);
 
 		return response;
 	} catch (error) {

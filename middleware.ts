@@ -4,6 +4,7 @@ import {
 	PIN_ENABLED_COOKIE,
 	PIN_UNLOCK_COOKIE,
 	PIN_WINDOW_COOKIE,
+	applySessionHint,
 	authCookieOptions,
 } from '@/src/shared/lib/pin-constants';
 
@@ -48,7 +49,10 @@ export async function middleware(request: NextRequest) {
 	const isLockPath = pathname === '/lock' || pathname.startsWith('/lock/');
 
 	if ((isProtectedPath || isLockPath) && !refreshToken) {
-		return NextResponse.redirect(new URL('/login', request.url));
+		return applySessionHint(
+			NextResponse.redirect(new URL('/login', request.url)),
+			false,
+		);
 	}
 
 	if (isProtectedPath && needsPin && !unlocked) {
@@ -59,22 +63,31 @@ export async function middleware(request: NextRequest) {
 
 		response.cookies.set('authToken', '', { ...authCookieOptions, maxAge: 0 });
 
-		return response;
+		return applySessionHint(response, Boolean(refreshToken));
 	}
 
 	if (isLockPath && unlocked) {
-		return NextResponse.redirect(new URL('/home', request.url));
+		return applySessionHint(
+			NextResponse.redirect(new URL('/home', request.url)),
+			Boolean(refreshToken),
+		);
 	}
 
 	if (isGuestPath && refreshToken) {
 		if (needsPin && !unlocked) {
-			return NextResponse.redirect(new URL('/lock', request.url));
+			return applySessionHint(
+				NextResponse.redirect(new URL('/lock', request.url)),
+				true,
+			);
 		}
 
-		return NextResponse.redirect(new URL('/home', request.url));
+		return applySessionHint(
+			NextResponse.redirect(new URL('/home', request.url)),
+			true,
+		);
 	}
 
-	return NextResponse.next();
+	return applySessionHint(NextResponse.next(), Boolean(refreshToken));
 }
 
 export const config = {
