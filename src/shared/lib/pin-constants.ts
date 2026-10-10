@@ -12,6 +12,45 @@ export const authCookieOptions = {
 	path: '/',
 };
 
+export const HAS_SESSION_COOKIE = 'hasSession';
+const SESSION_HINT_MAX_AGE = 30 * 24 * 60 * 60;
+
+type SessionHintResponse = {
+	cookies: {
+		set: (
+			name: string,
+			value: string,
+			options: {
+				httpOnly: boolean;
+				secure: boolean;
+				sameSite: 'strict';
+				path: string;
+				maxAge: number;
+			},
+		) => void;
+	};
+};
+
+export function applySessionHint<T extends SessionHintResponse>(
+	response: T,
+	active: boolean,
+) {
+	response.cookies.set(HAS_SESSION_COOKIE, active ? '1' : '', {
+		httpOnly: false,
+		secure: true,
+		sameSite: 'strict',
+		path: '/',
+		maxAge: active ? SESSION_HINT_MAX_AGE : 0,
+	});
+
+	return response;
+}
+
+export const sessionHintScript = `(function () {
+	var hasSession = document.cookie.split('; ').indexOf('${HAS_SESSION_COOKIE}=1') !== -1;
+	document.documentElement.classList.toggle('has-session', hasSession);
+})();`;
+
 export function isPin(value: unknown): value is string {
 	return typeof value === 'string' && new RegExp(`^\\d{${PIN_LENGTH}}$`).test(value);
 }

@@ -6,6 +6,7 @@ import { getRequestLocation } from '@/src/shared/lib/request-location';
 import {
 	PIN_ENABLED_COOKIE,
 	PIN_UNLOCK_COOKIE,
+	applySessionHint,
 	authCookieOptions,
 	readRequestCookie,
 } from '@/src/shared/lib/pin-constants';
@@ -76,7 +77,7 @@ export async function POST(req: Request) {
 				maxAge: 0,
 			});
 
-			return errorResponse;
+			return applySessionHint(errorResponse, false);
 		}
 
 		payload = decoded;
@@ -102,7 +103,7 @@ export async function POST(req: Request) {
 			maxAge: 0,
 		});
 
-		return errorResponse;
+		return applySessionHint(errorResponse, false);
 	}
 
 	const existing = await prisma.refreshToken.findFirst({
@@ -131,7 +132,7 @@ export async function POST(req: Request) {
 			maxAge: 0,
 		});
 
-		return errorResponse;
+		return applySessionHint(errorResponse, false);
 	}
 
 	const pinUnlock = readRequestCookie(req.headers.get('cookie'), PIN_UNLOCK_COOKIE);
@@ -225,7 +226,7 @@ export async function POST(req: Request) {
 			maxAge: 0,
 		});
 
-		return errorResponse;
+		return applySessionHint(errorResponse, false);
 	}
 
 	const response = NextResponse.json({ message: 'Токены обновлены' });
@@ -258,5 +259,5 @@ export async function POST(req: Request) {
 		});
 	}
 
-	return response;
+	return applySessionHint(response, true);
 }

@@ -66,6 +66,11 @@
 	display: none;
 }
 
+html:not(.has-session) .session-only,
+html.has-session .guest-only {
+	display: none;
+}
+
 body {
 	font-family: 'Manrope', sans-serif;
 

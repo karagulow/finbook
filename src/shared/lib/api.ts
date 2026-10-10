@@ -133,6 +133,8 @@ api.interceptors.response.use(
 					'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
 				document.cookie =
 					'userEmail=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
+				document.cookie =
+					'hasSession=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
 			}
 
 			window.location.href = '/login';

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { verify } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
+import { HAS_SESSION_COOKIE } from '@/src/shared/lib/pin-constants';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -84,6 +85,7 @@ export async function DELETE() {
 		cookieStore.set('authToken', '', expired);
 		cookieStore.set('refreshToken', '', expired);
 		cookieStore.set('userEmail', '', expired);
+		cookieStore.set(HAS_SESSION_COOKIE, '', expired);
 
 		return NextResponse.json({ message: 'Пользователь успешно удалён' });
 	} catch (error) {
