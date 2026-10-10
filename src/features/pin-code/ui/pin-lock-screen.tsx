@@ -25,11 +25,15 @@ export const PinLockScreen: React.FC = () => {
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
 	const biometricAttempt = useRef(0);
+	const biometricActive = useRef(false);
 
 	const unlockWithBiometric = useCallback(async () => {
-		const attempt = ++biometricAttempt.current;
+		if (biometricActive.current) {
+			return;
+		}
 
-		setLoading(true);
+		const attempt = ++biometricAttempt.current;
+		biometricActive.current = true;
 		setError('');
 
 		try {
@@ -44,12 +48,20 @@ export const PinLockScreen: React.FC = () => {
 				return;
 			}
 
+			setLoading(true);
 			await api.post('/api/auth/biometric/authenticate', authentication);
+
+			if (attempt !== biometricAttempt.current) {
+				return;
+			}
+
 			window.location.assign(safeNextPath(searchParams?.get('next') ?? null));
 		} catch (error: unknown) {
 			if (attempt !== biometricAttempt.current) {
 				return;
 			}
+
+			biometricActive.current = false;
 
 			if (!isBiometricCancel(error)) {
 				const message = getPinErrorMessage(error);
@@ -100,12 +112,13 @@ export const PinLockScreen: React.FC = () => {
 		return () => {
 			cancelled = true;
 			biometricAttempt.current += 1;
+			biometricActive.current = false;
 			WebAuthnAbortService.cancelCeremony();
 		};
 	}, [unlockWithBiometric]);
 
 	const unlock = async (value: string) => {
-		if (loading) {
+		if (loading || biometricActive.current) {
 			return;
 		}
 
@@ -127,6 +140,10 @@ export const PinLockScreen: React.FC = () => {
 	};
 
 	const loginWithPassword = async () => {
+		if (loading || biometricActive.current) {
+			return;
+		}
+
 		setLoading(true);
 
 		try {
@@ -141,7 +158,9 @@ export const PinLockScreen: React.FC = () => {
 
 	if (!ready) {
 		return (
-			<p className='text-[13px] text-[var(--foreground-secondary)]'>Загрузка...</p>
+			<p className='text-[13px] text-[var(--foreground-secondary)]'>
+				Загрузка...
+			</p>
 		);
 	}
 
@@ -152,8 +171,11 @@ export const PinLockScreen: React.FC = () => {
 					<h1 className='text-[18px] font-semibold text-[var(--foreground-primary)]'>
 						Финкнижка
 					</h1>
-					<p className='text-[13px] text-[var(--foreground-secondary)]'>
-						Введите пин-код
+					<p
+						className='text-[13px] text-[var(--foreground-secondary)]'
+						aria-live='polite'
+					>
+						{loading ? 'Разблокировка...' : 'Введите пин-код'}
 					</p>
 				</div>
 
@@ -168,23 +190,25 @@ export const PinLockScreen: React.FC = () => {
 					error={error}
 				/>
 
-				{biometric && (
+				<div className='flex flex-col gap-3 w-full'>
+					{biometric && (
+						<Button
+							className='w-full h-10'
+							disabled={loading}
+							onClick={() => void unlockWithBiometric()}
+						>
+							Разблокировать по биометрии
+						</Button>
+					)}
+
 					<Button
 						className='w-full h-10'
 						disabled={loading}
-						onClick={() => void unlockWithBiometric()}
+						onClick={loginWithPassword}
 					>
-						Разблокировать по биометрии
+						Войти с паролем
 					</Button>
-				)}
-
-				<Button
-					className='w-full h-10'
-					disabled={loading}
-					onClick={loginWithPassword}
-				>
-					Войти с паролем
-				</Button>
+				</div>
 			</div>
 		</div>
 	);
