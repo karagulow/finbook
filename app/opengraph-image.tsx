@@ -5,10 +5,10 @@ import {
 	ogImageSize,
 } from '@/src/shared/lib/og-image';
 
-export const alt = ogAlt('app');
+export const alt = ogAlt();
 export const size = ogImageSize;
 export const contentType = ogImageContentType;
 
 export default function OpenGraphImage() {
-	return createOgImage('app');
+	return createOgImage();
 }

@@ -11,25 +11,11 @@ export const ogImageSize = {
 
 export const ogImageContentType = 'image/png';
 
-type OgVariant = 'public' | 'app';
-
-const copy: Record<
-	OgVariant,
-	{ alt: string; kicker: string; title: string; description: string }
-> = {
-	public: {
-		alt: 'Финкнижка — начните лучше понимать свои финансы',
-		kicker: 'Учёт личных финансов',
-		title: 'Начните лучше понимать свои финансы',
-		description: 'Счета, доходы, расходы и аналитика в одном месте.',
-	},
-	app: {
-		alt: 'Финкнижка — приложение для учёта личных финансов',
-		kicker: 'Личные финансы',
-		title: siteConfig.name,
-		description:
-			'Счета, операции, аналитика, цели и долги — в одном приложении.',
-	},
+const ogCopy = {
+	alt: 'Финкнижка — приложение для учёта личных финансов',
+	kicker: 'Личные финансы',
+	title: siteConfig.name,
+	description: 'Счета, операции, аналитика, цели и долги — в одном приложении.',
 };
 
 async function loadAssets() {
@@ -69,14 +55,13 @@ async function loadAssets() {
 	};
 }
 
-export function ogAlt(variant: OgVariant) {
-	return copy[variant].alt;
+export function ogAlt() {
+	return ogCopy.alt;
 }
 
-export async function createOgImage(variant: OgVariant) {
+export async function createOgImage() {
 	const { iconSrc, fonts } = await loadAssets();
-	const { kicker, title, description } = copy[variant];
-	const titleSize = variant === 'public' ? 64 : 88;
+	const { kicker, title, description } = ogCopy;
 
 	return new ImageResponse(
 		(
@@ -177,7 +162,7 @@ export async function createOgImage(variant: OgVariant) {
 					<div
 						style={{
 							display: 'flex',
-							fontSize: titleSize,
+							fontSize: 88,
 							fontWeight: 600,
 							lineHeight: 1.05,
 							letterSpacing: -2.2,

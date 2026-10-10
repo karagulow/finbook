@@ -27,24 +27,21 @@ export const siteConfig = {
 		'Начните лучше понимать свои финансы. Счета, доходы, расходы и аналитика — в одном приложении.',
 } as const;
 
-export function openGraphMetadata(
-	description: string,
-	url: string = getSiteUrl(),
-): Metadata['openGraph'] {
+export function openGraphMetadata(): Metadata['openGraph'] {
 	return {
 		type: 'website',
 		locale: 'ru_RU',
 		siteName: siteConfig.name,
-		title: siteConfig.name,
-		description,
-		url,
+		title: { absolute: siteConfig.name },
+		description: siteConfig.description,
+		url: getSiteUrl(),
 	};
 }
 
-export function twitterMetadata(description: string): Metadata['twitter'] {
+export function twitterMetadata(): Metadata['twitter'] {
 	return {
 		card: 'summary_large_image',
-		title: siteConfig.name,
-		description,
+		title: { absolute: siteConfig.name },
+		description: siteConfig.description,
 	};
 }

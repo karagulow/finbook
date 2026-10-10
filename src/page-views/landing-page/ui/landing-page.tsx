@@ -7,18 +7,14 @@ import { LandingCta } from './cta';
 import { LandingHashScroll } from './hash-scroll';
 import { LandingRevealObserver } from './reveal-observer';
 
-interface Props {
-	authenticated: boolean;
-}
-
-export const LandingPage: React.FC<Props> = ({ authenticated }) => {
+export const LandingPage: React.FC = () => {
 	return (
 		<div className='flex flex-col'>
-			<LandingHero authenticated={authenticated} />
+			<LandingHero />
 			<LandingShowcase />
 			<LandingFeatures />
 			<LandingFaq />
-			<LandingCta authenticated={authenticated} />
+			<LandingCta />
 			<LandingRevealObserver />
 			<LandingHashScroll />
 		</div>

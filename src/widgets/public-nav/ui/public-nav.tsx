@@ -5,16 +5,14 @@ import Link from 'next/link';
 
 import { AppIcon, Container } from '@/src/shared/ui';
 import { lockBody, unlockBody } from '@/src/shared/lib';
+import { useHasSession } from '@/src/shared/lib/use-has-session';
 import { LANDING_SECTIONS } from '@/src/page-views/landing-page/model/sections';
 import { BurgerButton } from './burger-button';
 import { PublicMobileNav } from './public-mobile-nav';
 import { PublicNavLink } from './public-nav-link';
 
-interface Props {
-	authenticated?: boolean;
-}
-
-export const PublicNav: React.FC<Props> = ({ authenticated = false }) => {
+export const PublicNav: React.FC = () => {
+	const authenticated = useHasSession();
 	const [open, setOpen] = useState(false);
 
 	useEffect(() => {

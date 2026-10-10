@@ -1,16 +1,16 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { useHasSession } from '@/src/shared/lib/use-has-session';
 
 interface Props {
-	authenticated: boolean;
 	className?: string;
 }
 
-export const LandingStartLink: React.FC<Props> = ({
-	authenticated,
-	className,
-}) => {
+export const LandingStartLink: React.FC<Props> = ({ className }) => {
+	const authenticated = useHasSession();
 	return (
 		<Link
 			href={authenticated ? '/home' : '/registration'}

@@ -29,8 +29,8 @@ export const metadata: Metadata = {
 	},
 	description: siteConfig.description,
 	applicationName: siteConfig.name,
-	openGraph: openGraphMetadata(siteConfig.description, siteUrl),
-	twitter: twitterMetadata(siteConfig.description),
+	openGraph: openGraphMetadata(),
+	twitter: twitterMetadata(),
 	keywords: [
 		'финансы',
 		'расходы',
