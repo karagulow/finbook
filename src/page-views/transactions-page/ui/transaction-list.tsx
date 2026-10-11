@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import autoAnimate from '@formkit/auto-animate';
 
+import { Loader } from '@/src/shared/ui';
 import { TransactionGroup } from './transaction-group';
 import { TransactionSkeleton } from './transaction-skeleton';
 
@@ -26,17 +27,21 @@ export const TransactionList: React.FC = () => {
 
 		const observer = new IntersectionObserver(
 			entries => {
-				if (entries[0].isIntersecting) {
+				if (entries[0]?.isIntersecting && !isFetchingNextPage) {
 					fetchNextPage();
 				}
 			},
-			{ threshold: 1 }
+			{
+				root: null,
+				rootMargin: '0px 0px 600px 0px',
+				threshold: 0,
+			}
 		);
 
 		observer.observe(loaderRef.current);
 
 		return () => observer.disconnect();
-	}, [hasNextPage, fetchNextPage]);
+	}, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
 	const allGroups = data?.pages.flatMap(page => page.groups) ?? [];
 
@@ -62,8 +67,10 @@ export const TransactionList: React.FC = () => {
 			)}
 
 			{hasNextPage && (
-				<div ref={loaderRef} className='text-center py-4 text-sm text-gray-500'>
-					{isFetchingNextPage ? 'Загрузка...' : ''}
+				<div ref={loaderRef} className='flex justify-center py-4'>
+					{isFetchingNextPage ? (
+						<Loader className='text-[var(--foreground-secondary)]' />
+					) : null}
 				</div>
 			)}
 		</div>
