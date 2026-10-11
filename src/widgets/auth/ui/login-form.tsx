@@ -94,7 +94,7 @@ export const LoginForm: React.FC = () => {
 			</div>
 
 			<Button className='p-0 w-full h-12' type='submit' disabled={loading}>
-				{loading ? 'Загрузка...' : 'Войти'}
+				{loading ? 'Входим...' : 'Войти'}
 			</Button>
 
 			<span className='font-regular text-[13px] text-[var(--foreground-secondary)]'>

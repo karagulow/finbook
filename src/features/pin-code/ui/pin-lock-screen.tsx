@@ -11,7 +11,7 @@ import {
 import { api } from '@/src/shared/lib';
 import { safeNextPath } from '@/src/shared/lib/pin-constants';
 import { useAuthStore } from '@/src/shared/store/authStore';
-import { Button } from '@/src/shared/ui';
+import { Button, Loader } from '@/src/shared/ui';
 import { canUsePlatformBiometric, isBiometricCancel } from '../lib/biometric';
 import { getPinErrorMessage } from '../lib/pin-error';
 import { PinPad } from './pin-pad';
@@ -157,11 +157,7 @@ export const PinLockScreen: React.FC = () => {
 	};
 
 	if (!ready) {
-		return (
-			<p className='text-[13px] text-[var(--foreground-secondary)]'>
-				Загрузка...
-			</p>
-		);
+		return <Loader className='text-[var(--foreground-secondary)]' />;
 	}
 
 	return (

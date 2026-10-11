@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import autoAnimate from '@formkit/auto-animate';
 
+import { Loader } from '@/src/shared/ui';
 import { TransactionGroup } from './transaction-group';
 import { TransactionSkeleton } from './transaction-skeleton';
 
@@ -66,8 +67,10 @@ export const TransactionList: React.FC = () => {
 			)}
 
 			{hasNextPage && (
-				<div ref={loaderRef} className='text-center py-4 text-sm text-gray-500'>
-					{isFetchingNextPage ? 'Загрузка...' : ''}
+				<div ref={loaderRef} className='flex justify-center py-4'>
+					{isFetchingNextPage ? (
+						<Loader className='text-[var(--foreground-secondary)]' />
+					) : null}
 				</div>
 			)}
 		</div>

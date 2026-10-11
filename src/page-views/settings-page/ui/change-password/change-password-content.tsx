@@ -114,7 +114,7 @@ export const ChangePasswordContent: React.FC<Props> = ({ onClose }) => {
 				</div>
 
 				<Button type='submit' disabled={isDisabled}>
-					{loading ? 'Загрузка...' : 'Поменять'}
+					{loading ? 'Меняем...' : 'Поменять'}
 				</Button>
 			</form>
 		</div>
