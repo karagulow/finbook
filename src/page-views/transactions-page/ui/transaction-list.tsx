@@ -26,17 +26,21 @@ export const TransactionList: React.FC = () => {
 
 		const observer = new IntersectionObserver(
 			entries => {
-				if (entries[0].isIntersecting) {
+				if (entries[0]?.isIntersecting && !isFetchingNextPage) {
 					fetchNextPage();
 				}
 			},
-			{ threshold: 1 }
+			{
+				root: null,
+				rootMargin: '0px 0px 600px 0px',
+				threshold: 0,
+			}
 		);
 
 		observer.observe(loaderRef.current);
 
 		return () => observer.disconnect();
-	}, [hasNextPage, fetchNextPage]);
+	}, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
 	const allGroups = data?.pages.flatMap(page => page.groups) ?? [];
 
