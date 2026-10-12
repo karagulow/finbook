@@ -35,6 +35,7 @@ const IncomeExpenseLineChartComponent: React.FC<
 		currency,
 		year,
 		yearExpense: 0,
+		lastDrawnIndex: -1,
 	});
 
 	const cardClassName =
@@ -63,50 +64,76 @@ const IncomeExpenseLineChartComponent: React.FC<
 	const max = Math.max(Math.ceil(rawMax / step) * step, step);
 	const min = rawMin < 0 ? Math.floor(rawMin / step) * step : 0;
 
-	const yearExpense = dataPoints.reduce((sum, point) => sum + point.expense, 0);
+	const now = new Date();
+	const currentMonthIndex = now.getMonth();
+	const isCurrentYear = year === now.getFullYear();
+	const lastDrawnIndex =
+		year > now.getFullYear()
+			? -1
+			: isCurrentYear
+				? Math.min(currentMonthIndex, dataPoints.length - 1)
+				: dataPoints.length - 1;
+	const drawnValue = (value: number, index: number): number | null =>
+		index > lastDrawnIndex ? null : value;
+	const isCurrentPoint = (index: number) =>
+		isCurrentYear && index === currentMonthIndex;
+
+	const yearExpense = dataPoints.reduce((sum, point, index) => {
+		if (index > lastDrawnIndex) return sum;
+		return sum + point.expense;
+	}, 0);
 	tooltipDetails.current = {
 		dataPoints,
 		currency,
 		year,
 		yearExpense,
+		lastDrawnIndex,
 	};
+
+	const seriesPoint = (color: string) => ({
+		borderColor: color,
+		backgroundColor: color,
+		borderWidth: 2,
+		tension: 0.35,
+		spanGaps: false,
+		pointRadius: (ctx: { dataIndex: number }) =>
+			isCurrentPoint(ctx.dataIndex) ? 4 : 0,
+		pointHoverRadius: (ctx: { dataIndex: number }) => {
+			if (ctx.dataIndex > lastDrawnIndex) return 0;
+			return isCurrentPoint(ctx.dataIndex) ? 6 : 4;
+		},
+		pointBorderWidth: (ctx: { dataIndex: number }) =>
+			isCurrentPoint(ctx.dataIndex) ? 2 : 0,
+		pointBorderColor: colors.card,
+		pointHoverBorderWidth: 2,
+		pointHoverBorderColor: colors.card,
+		pointHoverBackgroundColor: color,
+	});
 
 	const data = {
 		labels: dataPoints.map(point => shortMonth(point.label)),
 		datasets: [
 			{
 				label: 'Доходы',
-				data: dataPoints.map(point => point.income),
-				borderColor: colors.income,
-				backgroundColor: colors.income,
-				borderWidth: 2,
-				tension: 0.35,
-				pointRadius: 0,
-				pointHoverRadius: 4,
-				pointHoverBackgroundColor: colors.income,
+				data: dataPoints.map((point, index) =>
+					drawnValue(point.income, index),
+				),
+				...seriesPoint(colors.income),
 			},
 			{
 				label: 'Расходы',
-				data: dataPoints.map(point => point.expense),
-				borderColor: colors.expense,
-				backgroundColor: colors.expense,
-				borderWidth: 2,
-				tension: 0.35,
-				pointRadius: 0,
-				pointHoverRadius: 4,
-				pointHoverBackgroundColor: colors.expense,
+				data: dataPoints.map((point, index) =>
+					drawnValue(point.expense, index),
+				),
+				...seriesPoint(colors.expense),
 			},
 			{
 				label: 'Разница',
-				data: differenceByMonth,
-				borderColor: colors.difference,
-				backgroundColor: colors.difference,
-				borderWidth: 2,
+				data: differenceByMonth.map((value, index) =>
+					drawnValue(value, index),
+				),
 				borderDash: [6, 5],
-				tension: 0.35,
-				pointRadius: 0,
-				pointHoverRadius: 4,
-				pointHoverBackgroundColor: colors.difference,
+				...seriesPoint(colors.difference),
 			},
 		],
 	};
@@ -114,6 +141,10 @@ const IncomeExpenseLineChartComponent: React.FC<
 	const options: ChartOptions<'line'> = {
 		responsive: true,
 		maintainAspectRatio: false,
+		clip: false,
+		layout: {
+			padding: { top: 8, right: 6, bottom: 0, left: 0 },
+		},
 		interaction: {
 			mode: 'index',
 			intersect: false,
@@ -137,13 +168,18 @@ const IncomeExpenseLineChartComponent: React.FC<
 		scales: {
 			x: {
 				ticks: {
-					color: colors.tick,
+					color: context =>
+						isCurrentPoint(context.index) ? colors.foreground : colors.tick,
 					autoSkip: true,
 					autoSkipPadding: 16,
 					maxRotation: 0,
 					minRotation: 0,
 					padding: 8,
-					font: { family: 'Manrope, sans-serif', size: 12 },
+					font: context => ({
+						family: 'Manrope, sans-serif',
+						size: 12,
+						weight: isCurrentPoint(context.index) ? 700 : 400,
+					}),
 				},
 				grid: {
 					display: false,
@@ -212,6 +248,7 @@ const IncomeExpenseLineChartComponent: React.FC<
 						{item.label}
 					</span>
 				))}
+				{isCurrentYear && <span>Точка — текущий месяц</span>}
 			</div>
 		</div>
 	);

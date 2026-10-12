@@ -68,7 +68,12 @@ export const chartColors = (isLight: boolean) => {
 			};
 
 	if (typeof document === 'undefined') {
-		return { ...fallback, zero: lighten(fallback.grid, 0.28) };
+		return {
+			...fallback,
+			foreground: isLight ? '#111111' : '#e3e4e6',
+			card: isLight ? '#f3f2f0' : '#1a1a1a',
+			zero: lighten(fallback.grid, 0.28),
+		};
 	}
 
 	const styles = getComputedStyle(document.documentElement);
@@ -78,6 +83,8 @@ export const chartColors = (isLight: boolean) => {
 
 	return {
 		tick: read('--foreground-secondary', fallback.tick),
+		foreground: read('--foreground-primary', isLight ? '#111111' : '#e3e4e6'),
+		card: read('--card', isLight ? '#f3f2f0' : '#1a1a1a'),
 		grid,
 		zero: lighten(grid, 0.28),
 		income: read('--success', fallback.income),

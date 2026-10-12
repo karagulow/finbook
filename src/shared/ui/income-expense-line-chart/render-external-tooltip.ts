@@ -24,8 +24,6 @@ export const renderExternalTooltip = (
 		return;
 	}
 
-	const monthDifference = point.income - point.expense;
-
 	el.replaceChildren();
 
 	const title = document.createElement('div');
@@ -39,6 +37,24 @@ export const renderExternalTooltip = (
 		line.textContent = text;
 		el.append(line);
 	};
+
+	if (index > details.lastDrawnIndex) {
+		appendLine(
+			'mt-1.5 text-[var(--foreground-secondary)]',
+			'Месяц ещё не наступил',
+		);
+
+		const canvas = chart.canvas;
+		const openToLeft = tooltip.caretX > canvas.clientWidth * 0.62;
+		const x = openToLeft
+			? tooltip.caretX - el.offsetWidth - 14
+			: tooltip.caretX + 14;
+
+		placeChartTooltip(el, x, tooltip.caretY);
+		return;
+	}
+
+	const monthDifference = point.income - point.expense;
 
 	if (point.income <= 0 && point.expense <= 0) {
 		appendLine('mt-1.5 text-[var(--foreground-secondary)]', 'Операций не было');

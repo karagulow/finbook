@@ -13,7 +13,7 @@ import { CreateAccountButton } from './actions/create-account-button';
 import { ViewAllAccountsButton } from './actions/view-all-accounts-button';
 import { ArrowButton } from './actions/arrow-button';
 import { AccountCard } from './account-card';
-import { SliderDots } from './slider-dots';
+import { SliderDots, SliderDotsSkeleton } from './slider-dots';
 import { AccountCardSkeleton } from './account-card-skeleton';
 import { AccountsModal } from '../../accounts-modal';
 import { CreateAccountModal } from '../../create-account-modal';
@@ -153,6 +153,8 @@ export const AccountOverview: React.FC = () => {
 		[],
 	);
 
+	const showSkeleton = loading && extendedAccounts.length <= 1;
+
 	return (
 		<>
 			<div className='flex flex-row gap-2.5 w-full'>
@@ -174,7 +176,7 @@ export const AccountOverview: React.FC = () => {
 							}}
 							ref={containerRef}
 						>
-							{loading && extendedAccounts.length <= 1 ? (
+							{showSkeleton ? (
 								<AccountCardSkeleton />
 							) : (
 								extendedAccounts.map((account, idx) => (
@@ -191,13 +193,17 @@ export const AccountOverview: React.FC = () => {
 						</div>
 					</div>
 
-					{totalItems > itemsPerView && (
-						<SliderDots
-							totalItems={totalItems}
-							itemsPerView={itemsPerView}
-							currentIndex={currentIndex}
-							goTo={goTo}
-						/>
+					{showSkeleton ? (
+						<SliderDotsSkeleton />
+					) : (
+						totalItems > itemsPerView && (
+							<SliderDots
+								totalItems={totalItems}
+								itemsPerView={itemsPerView}
+								currentIndex={currentIndex}
+								goTo={goTo}
+							/>
+						)
 					)}
 				</div>
 

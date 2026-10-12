@@ -95,7 +95,10 @@ export const PinPad: React.FC<PinPadProps> = ({
 	return (
 		<div className='flex flex-col items-center gap-3 w-full'>
 			<div
-				className='flex gap-2'
+				className={cn(
+					'flex gap-2 transition-opacity duration-200',
+					disabled && 'opacity-25',
+				)}
 				onPaste={event => {
 					event.preventDefault();
 					commit(0, event.clipboardData.getData('text'));
@@ -115,7 +118,7 @@ export const PinPad: React.FC<PinPadProps> = ({
 							spellCheck={false}
 							aria-label={`Цифра ${index + 1} из ${PIN_LENGTH}`}
 							className={cn(
-								'size-12 rounded-[8px] border-[0.5px] bg-[var(--input-primary)] text-center text-[22px] leading-[48px] text-transparent caret-[var(--foreground-primary)] outline-none transition focus:border-[var(--border-primary-hover)] disabled:opacity-40',
+								'size-12 rounded-[8px] border-[0.5px] bg-[var(--input-primary)] text-center text-[22px] leading-[48px] text-transparent caret-[var(--foreground-primary)] outline-none transition focus:border-[var(--border-primary-hover)]',
 								error
 									? 'border-[var(--wrong)]'
 									: 'border-[var(--border-primary)]',

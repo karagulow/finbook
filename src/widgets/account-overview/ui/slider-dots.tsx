@@ -36,3 +36,13 @@ const SliderDotsComponent: React.FC<Props> = ({
 SliderDotsComponent.displayName = 'SliderDots';
 
 export const SliderDots = memo(SliderDotsComponent);
+
+export const SliderDotsSkeleton: React.FC = () => {
+	return (
+		<div className='flex justify-center gap-1' aria-hidden>
+			<div className='skeleton-shimmer h-2.5 w-7 rounded-full' />
+			<div className='skeleton-shimmer h-2.5 w-2.5 rounded-full' />
+			<div className='skeleton-shimmer h-2.5 w-2.5 rounded-full' />
+		</div>
+	);
+};

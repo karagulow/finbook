@@ -23,4 +23,5 @@ export type LineChartTooltipDetails = {
 	currency: string;
 	year: number;
 	yearExpense: number;
+	lastDrawnIndex: number;
 };
