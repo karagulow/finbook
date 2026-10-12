@@ -58,7 +58,7 @@ export const PublicNav: React.FC = () => {
 							size={32}
 							priority
 						/>
-						<span className='hidden md:block font-semibold text-[19px] text-[var(--foreground-primary)]'>
+						<span className='hidden lg:block font-semibold text-[19px] text-[var(--foreground-primary)]'>
 							Финкнижка
 						</span>
 					</Link>
@@ -69,7 +69,7 @@ export const PublicNav: React.FC = () => {
 								<PublicNavLink
 									key={section.id}
 									section={section}
-									className='px-3.5 py-1.5 font-medium text-[13px] text-[var(--foreground-secondary)] hover:text-[var(--foreground-primary)] hover:bg-[var(--muted)] rounded-full transition'
+									className='whitespace-nowrap px-2.5 py-1.5 font-medium text-[13px] text-[var(--foreground-secondary)] hover:text-[var(--foreground-primary)] hover:bg-[var(--muted)] rounded-full transition'
 									onClick={() => setOpen(false)}
 								/>
 							))}
