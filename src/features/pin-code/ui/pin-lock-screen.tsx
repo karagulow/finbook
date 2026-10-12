@@ -8,7 +8,7 @@ import {
 	type PublicKeyCredentialRequestOptionsJSON,
 } from '@simplewebauthn/browser';
 
-import { api } from '@/src/shared/lib';
+import { api, cn } from '@/src/shared/lib';
 import { safeNextPath } from '@/src/shared/lib/pin-constants';
 import { useAuthStore } from '@/src/shared/store/authStore';
 import { Button, Loader } from '@/src/shared/ui';
@@ -189,7 +189,7 @@ export const PinLockScreen: React.FC = () => {
 				<div className='flex flex-col gap-3 w-full'>
 					{biometric && (
 						<Button
-							className='w-full h-10'
+							className={cn('w-full h-10', loading && 'opacity-25')}
 							disabled={loading}
 							onClick={() => void unlockWithBiometric()}
 						>
@@ -198,7 +198,7 @@ export const PinLockScreen: React.FC = () => {
 					)}
 
 					<Button
-						className='w-full h-10'
+						className={cn('w-full h-10', loading && 'opacity-25')}
 						disabled={loading}
 						onClick={loginWithPassword}
 					>
