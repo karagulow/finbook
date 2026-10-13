@@ -32,6 +32,25 @@ type FailedQueueItem = {
 
 let failedQueue: FailedQueueItem[] = [];
 
+const refreshSession = async () => {
+	let lastError: unknown;
+
+	for (let attempt = 0; attempt < 2; attempt += 1) {
+		try {
+			return await api.post('/api/auth/refresh');
+		} catch (err) {
+			lastError = err;
+			const status = axios.isAxiosError(err) ? err.response?.status : undefined;
+
+			if (status === 400 || status === 401 || status === 403) {
+				throw err;
+			}
+		}
+	}
+
+	throw lastError;
+};
+
 const processQueue = (error: unknown | null) => {
 	failedQueue.forEach(promise => {
 		if (error) {
@@ -103,7 +122,7 @@ api.interceptors.response.use(
 		isRefreshing = true;
 
 		try {
-			await api.post('/api/auth/refresh');
+			await refreshSession();
 
 			processQueue(null);
 			return api(originalRequest);
@@ -122,7 +141,9 @@ api.interceptors.response.use(
 
 			processQueue(err);
 
-			if (typeof window !== 'undefined') {
+			const status = axios.isAxiosError(err) ? err.response?.status : undefined;
+
+			if (status === 401 && typeof window !== 'undefined') {
 				Cookies.remove('authToken', { path: '/' });
 				Cookies.remove('refreshToken', { path: '/' });
 				Cookies.remove('userEmail', { path: '/' });
@@ -135,9 +156,10 @@ api.interceptors.response.use(
 					'userEmail=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
 				document.cookie =
 					'hasSession=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
+
+				window.location.href = '/login';
 			}
 
-			window.location.href = '/login';
 			return Promise.reject(err);
 		} finally {
 			isRefreshing = false;

@@ -63,7 +63,13 @@ export function readRequestCookie(cookieHeader: string | null, name: string) {
 		return undefined;
 	}
 
-	return item.slice(name.length + 1);
+	const value = item.slice(name.length + 1);
+
+	try {
+		return decodeURIComponent(value);
+	} catch {
+		return value;
+	}
 }
 
 export function safeNextPath(value: string | null) {
