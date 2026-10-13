@@ -17,8 +17,8 @@ export const SHOWCASE_ITEMS = [
 	},
 	{
 		id: 'analytics',
-		title: 'Динамика по месяцам.',
-		text: 'График доходов и расходов и разбивка по категориям — видно, как меняется баланс.',
+		title: 'Куда уходят деньги.',
+		text: 'Смотрите доходы и расходы за выбранный период и сравнивайте с прошлым.',
 		panelClassName:
 			'bg-linear-to-b from-[#96745c] to-[#b08c74] dark:from-[#3c3028] dark:to-[#342c26]',
 		image: '/images/home-iphone-analytics.png',
