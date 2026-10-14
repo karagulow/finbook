@@ -39,6 +39,9 @@ model RefreshToken {
   biometricChallenge     String?
   biometricChallengeExp  DateTime?
   biometricChallengeKind String?
+  /// Предыдущий токен той же сессии. Пока graceUntil не истёк, повтор с ним получает уже выпущенную замену.
+  replacedById           String?   @unique @db.Uuid
+  graceUntil             DateTime?
 
   user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   biometricCredential BiometricCredential?

@@ -38,7 +38,7 @@ export async function GET() {
 		}
 
 		const sessions = await prisma.refreshToken.findMany({
-			where: { userId },
+			where: { userId, revoked: false, replacedById: null },
 			orderBy: { createdAt: 'desc' },
 		});
 
@@ -94,6 +94,7 @@ export async function POST() {
 		const otherSessions = {
 			userId,
 			revoked: false,
+			replacedById: null,
 			NOT: { id: currentId ?? '' },
 		};
 

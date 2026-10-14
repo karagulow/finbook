@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import { RefreshToken } from '@prisma/client';
 import { prisma } from '@/prisma/prisma-client';
 import {
 	PIN_ENABLED_COOKIE,
@@ -17,6 +18,7 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 const SESSION_MAX_AGE = 30 * 24 * 60 * 60;
 const ACCESS_MAX_AGE = 900;
+export const REFRESH_GRACE_MS = 30 * 1000;
 
 type RefreshPayload = {
 	userId: string;
@@ -182,11 +184,103 @@ export async function getDeviceSession(req: Request) {
 		where: { token: refreshToken, userId: payload.userId },
 	});
 
-	if (!session || session.revoked || session.expiresAt < new Date()) {
+	if (!session) {
 		return { error: clearSessionCookies(invalidSessionResponse()) };
 	}
 
-	return { session, email: payload.email };
+	const resolved = await resolveLiveRefreshSession(session);
+
+	if (resolved.status === 'reused') {
+		await revokeRefreshChain(session.id);
+		return { error: clearSessionCookies(invalidSessionResponse()) };
+	}
+
+	if (resolved.status === 'invalid') {
+		return { error: clearSessionCookies(invalidSessionResponse()) };
+	}
+
+	return { session: resolved.session, email: payload.email };
+}
+
+export async function resolveLiveRefreshSession(session: RefreshToken): Promise<
+	| { status: 'live'; session: RefreshToken }
+	| { status: 'reused' }
+	| { status: 'invalid' }
+> {
+	if (!session.replacedById) {
+		if (session.revoked || session.expiresAt < new Date()) {
+			return { status: 'invalid' };
+		}
+
+		return { status: 'live', session };
+	}
+
+	let current = session;
+	const seen = new Set<string>();
+
+	while (current.replacedById && !seen.has(current.id)) {
+		seen.add(current.id);
+
+		const graceOpen = Boolean(
+			current.graceUntil && current.graceUntil.getTime() >= Date.now(),
+		);
+		const next = await prisma.refreshToken.findUnique({
+			where: { id: current.replacedById },
+		});
+
+		if (!graceOpen) {
+			if (next && !next.revoked && next.expiresAt >= new Date()) {
+				return { status: 'reused' };
+			}
+
+			return { status: 'invalid' };
+		}
+
+		if (!next) {
+			return { status: 'invalid' };
+		}
+
+		current = next;
+	}
+
+	if (current.revoked || current.expiresAt < new Date()) {
+		return { status: 'invalid' };
+	}
+
+	return { status: 'live', session: current };
+}
+
+export async function revokeRefreshChain(startId: string) {
+	const ids: string[] = [];
+	const seen = new Set<string>();
+	let id: string | null = startId;
+
+	while (id && !seen.has(id)) {
+		seen.add(id);
+		ids.push(id);
+
+		const row: { replacedById: string | null } | null =
+			await prisma.refreshToken.findUnique({
+				where: { id },
+				select: { replacedById: true },
+			});
+
+		id = row?.replacedById ?? null;
+	}
+
+	if (ids.length === 0) {
+		return;
+	}
+
+	await prisma.$transaction([
+		prisma.biometricCredential.deleteMany({
+			where: { sessionId: { in: ids } },
+		}),
+		prisma.refreshToken.updateMany({
+			where: { id: { in: ids } },
+			data: { revoked: true },
+		}),
+	]);
 }
 
 function invalidSessionResponse() {
