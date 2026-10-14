@@ -231,3 +231,27 @@ body::-webkit-scrollbar-thumb:hover {
 		filter: blur(4px);
 	}
 }
+
+@keyframes emoji-exit {
+	from {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	to {
+		opacity: 0;
+		transform: scale(0.4);
+	}
+}
+
+@keyframes emoji-enter {
+	from {
+		opacity: 0;
+		transform: scale(0.4);
+	}
+
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
