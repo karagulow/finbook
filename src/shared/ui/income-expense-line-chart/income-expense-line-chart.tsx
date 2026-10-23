@@ -19,7 +19,13 @@ import type {
 	LineChartTooltipDetails,
 } from './types';
 
-ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Tooltip);
+ChartJS.register(
+	LineElement,
+	PointElement,
+	CategoryScale,
+	LinearScale,
+	Tooltip,
+);
 
 const IncomeExpenseLineChartComponent: React.FC<
 	IncomeExpenseLineChartProps
@@ -115,9 +121,7 @@ const IncomeExpenseLineChartComponent: React.FC<
 		datasets: [
 			{
 				label: 'Доходы',
-				data: dataPoints.map((point, index) =>
-					drawnValue(point.income, index),
-				),
+				data: dataPoints.map((point, index) => drawnValue(point.income, index)),
 				...seriesPoint(colors.income),
 			},
 			{
@@ -129,9 +133,7 @@ const IncomeExpenseLineChartComponent: React.FC<
 			},
 			{
 				label: 'Разница',
-				data: differenceByMonth.map((value, index) =>
-					drawnValue(value, index),
-				),
+				data: differenceByMonth.map((value, index) => drawnValue(value, index)),
 				borderDash: [6, 5],
 				...seriesPoint(colors.difference),
 			},
@@ -248,7 +250,6 @@ const IncomeExpenseLineChartComponent: React.FC<
 						{item.label}
 					</span>
 				))}
-				{isCurrentYear && <span>Точка — текущий месяц</span>}
 			</div>
 		</div>
 	);
