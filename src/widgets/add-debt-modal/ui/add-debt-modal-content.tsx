@@ -69,10 +69,9 @@ export const AddDebtModalContent: React.FC<AddDebtModalContentProps> = ({
 							items={[...debtTabs]}
 							activeItem={tabByDebtType[field.value]}
 							setActiveItem={item =>
-								field.onChange(
-									debtTypeByTab[item as (typeof debtTabs)[number]],
-								)
+								field.onChange(debtTypeByTab[item as (typeof debtTabs)[number]])
 							}
+							className='shrink-0'
 							tabName='add-debt-type'
 						/>
 					)}
