@@ -17,11 +17,7 @@ const schema: yup.ObjectSchema<CreateGoalFormValues> = yup.object({
 	targetAmount: yup
 		.string()
 		.required('Введите сумму')
-		.test(
-			'positive',
-			'Сумма должна быть больше 0',
-			value => Number(value) > 0,
-		),
+		.test('positive', 'Сумма должна быть больше 0', value => Number(value) > 0),
 	deadline: yup
 		.date()
 		.typeError('Выберите дату окончания')
@@ -41,7 +37,7 @@ export const useCreateGoalForm = (onClose: () => void) => {
 		resolver: yupResolver(schema),
 		defaultValues: {
 			name: '',
-			icon: '',
+			icon: '🎯',
 			targetAmount: '',
 			deadline: endOfMonth(new Date()),
 			description: '',
