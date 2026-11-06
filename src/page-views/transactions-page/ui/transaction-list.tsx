@@ -11,7 +11,7 @@ import { useTransactions } from '../hooks/use-transactions';
 
 export const TransactionList: React.FC = () => {
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-		useTransactions(25);
+		useTransactions(50);
 
 	const loaderRef = useRef<HTMLDivElement | null>(null);
 	const listRef = useRef<HTMLDivElement | null>(null);
@@ -33,9 +33,9 @@ export const TransactionList: React.FC = () => {
 			},
 			{
 				root: null,
-				rootMargin: '0px 0px 600px 0px',
+				rootMargin: '0px 0px 1000px 0px',
 				threshold: 0,
-			}
+			},
 		);
 
 		observer.observe(loaderRef.current);
@@ -62,7 +62,7 @@ export const TransactionList: React.FC = () => {
 							key={`${group.date}-${pageIndex}-${groupIndex}`}
 							data={group}
 						/>
-					))
+					)),
 				)
 			)}
 
