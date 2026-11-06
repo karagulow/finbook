@@ -36,7 +36,7 @@ function groupTransactionsByDay(transactions: Transaction[]): DayGroup[] {
 	return Object.values(groups).sort((a, b) => b.date.localeCompare(a.date));
 }
 
-export function useTransactions(limit = 25) {
+export function useTransactions(limit = 50) {
 	return useInfiniteQuery<
 		PaginatedDayGroups,
 		Error,
