@@ -19,6 +19,7 @@ import { goalsQueryOptions } from '@/src/entities/goal/hooks/use-goals';
 import { userQueryOptions } from '@/src/entities/user/model/use-user';
 import { pinSettingsQueryOptions } from '@/src/entities/user/model/use-pin-settings';
 import { sessionsQueryOptions } from '@/src/entities/session/model/use-sessions';
+import { categoriesQueryOptions } from '@/src/page-views/settings-page/model/use-categories';
 import { prefetchHomePage } from '@/src/page-views/home-page/lib/prefetch-home-page';
 import { prefetchAnalyticsPage } from '@/src/page-views/analytics-page/lib/prefetch-analytics-page';
 
@@ -42,6 +43,7 @@ const prefetchSettings = (queryClient: QueryClient) => {
 		queryClient.prefetchQuery(userQueryOptions()),
 		queryClient.prefetchQuery(pinSettingsQueryOptions()),
 		queryClient.prefetchQuery(sessionsQueryOptions()),
+		queryClient.prefetchQuery(categoriesQueryOptions()),
 	]);
 };
 

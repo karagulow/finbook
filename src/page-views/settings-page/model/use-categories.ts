@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import { api } from '@/src/shared/lib';
 
 export interface Category {
@@ -12,18 +12,24 @@ export interface Category {
 	subcategories: { id: string; name: string }[];
 }
 
+export const categoriesQueryOptions = () =>
+	queryOptions({
+		queryKey: ['categories'],
+		queryFn: async () => {
+			const res = await api.get('/api/categories');
+			return res.data as Category[];
+		},
+		staleTime: 60_000,
+	});
+
 export const useCategories = () => {
 	const {
 		data: categories = [],
 		isLoading,
 		isError,
 		error,
-	} = useQuery<Category[]>({
-		queryKey: ['categories'],
-		queryFn: async () => {
-			const res = await api.get('/api/categories');
-			return res.data;
-		},
+	} = useQuery({
+		...categoriesQueryOptions(),
 		refetchOnWindowFocus: false,
 	});
 

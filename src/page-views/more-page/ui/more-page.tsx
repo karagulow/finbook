@@ -11,6 +11,7 @@ import { goalsQueryOptions } from '@/src/entities/goal/hooks/use-goals';
 import { userQueryOptions } from '@/src/entities/user/model/use-user';
 import { pinSettingsQueryOptions } from '@/src/entities/user/model/use-pin-settings';
 import { sessionsQueryOptions } from '@/src/entities/session/model/use-sessions';
+import { categoriesQueryOptions } from '../../settings-page/model/use-categories';
 
 export const MorePage: React.FC = () => {
 	const STROKE_WIDTH = 1;
@@ -28,6 +29,7 @@ export const MorePage: React.FC = () => {
 			queryClient.prefetchQuery(userQueryOptions()),
 			queryClient.prefetchQuery(pinSettingsQueryOptions()),
 			queryClient.prefetchQuery(sessionsQueryOptions()),
+			queryClient.prefetchQuery(categoriesQueryOptions()),
 		]);
 	};
 
