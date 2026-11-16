@@ -6,7 +6,7 @@ import { api } from '@/src/shared/lib';
 import toast from 'react-hot-toast';
 
 import { Button, Select } from '@/src/shared/ui';
-import { Currency } from '../../model/types';
+import { Currency } from '../../../../entities/user/model/types';
 
 interface Props {
 	currency: Currency;
@@ -19,7 +19,7 @@ export const ChangeCurrencyContent: React.FC<Props> = ({
 }) => {
 	const [currencies, setCurrencies] = useState<Currency[]>([]);
 	const [selectedCurrencyId, setSelectedCurrencyId] = useState<string>(
-		currency.id
+		currency.id,
 	);
 	const [loading, setLoading] = useState(false);
 

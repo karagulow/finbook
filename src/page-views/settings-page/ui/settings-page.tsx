@@ -5,12 +5,12 @@ import React from 'react';
 import { StickyHeader } from '@/src/shared/ui';
 import { AppSettings } from './app-settings';
 import { UserSettings } from './user-settings';
-import { useUser } from '../model/use-user';
 import { SettingsBlockSkeleton } from './settings-block-skeleton';
 import { DataSettings } from './data-settings';
 import { DeviceSettings } from './device-settings';
-import { usePinSettings } from '../model/use-pin-settings';
-import { useSessions } from '../model/use-sessions';
+import { useUser } from '@/src/entities/user/model/use-user';
+import { useSessions } from '@/src/entities/session/model/use-sessions';
+import { usePinSettings } from '@/src/entities/user/model/use-pin-settings';
 
 export const SettingsPage: React.FC = () => {
 	const { user, isLoading: isLoadingUser, error: errorUser } = useUser();
@@ -36,9 +36,9 @@ export const SettingsPage: React.FC = () => {
 				{isLoading
 					? [...Array(3)].map((_, index) => (
 							<SettingsBlockSkeleton key={index} />
-					  ))
+						))
 					: !error &&
-					  user && (
+						user && (
 							<div className='flex flex-row gap-[30px]'>
 								<div className='flex flex-col gap-5 w-full'>
 									<AppSettings
@@ -53,7 +53,7 @@ export const SettingsPage: React.FC = () => {
 									<UserSettings user={user} />
 								</div>
 							</div>
-					  )}
+						)}
 			</div>
 		</>
 	);

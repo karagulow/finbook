@@ -1,6 +1,4 @@
-'use client';
-
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { canUsePlatformBiometric } from '@/src/features/pin-code/lib/biometric';
 import { api } from '@/src/shared/lib';
@@ -10,18 +8,23 @@ type PinStatus = {
 	biometric: boolean;
 };
 
-export function usePinSettings() {
-	const queryClient = useQueryClient();
-
-	const pin = useQuery({
+export const pinSettingsQueryOptions = () =>
+	queryOptions({
 		queryKey: ['pin-settings'],
 		queryFn: async () => {
 			const { data } = await api.get<PinStatus>('/api/auth/pin');
 			return data;
 		},
-		refetchOnWindowFocus: false,
 		staleTime: 5 * 60 * 1000,
 		gcTime: 10 * 60 * 1000,
+	});
+
+export function usePinSettings() {
+	const queryClient = useQueryClient();
+
+	const pin = useQuery({
+		...pinSettingsQueryOptions(),
+		refetchOnWindowFocus: false,
 	});
 
 	const platformBiometric = useQuery({

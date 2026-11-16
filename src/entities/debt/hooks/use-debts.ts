@@ -1,16 +1,22 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import { api } from '@/src/shared/lib';
 import { DebtsResponse } from '../model/types';
 
-export const useDebts = () => {
-	const { data, isLoading, isError } = useQuery<DebtsResponse>({
+export const debtsQueryOptions = () =>
+	queryOptions({
 		queryKey: ['debts'],
 		queryFn: async () => {
 			const res = await api.get('/api/debts');
-			return res.data;
+			return res.data as DebtsResponse;
 		},
+		staleTime: 60_000,
+	});
+
+export const useDebts = () => {
+	const { data, isLoading, isError } = useQuery({
+		...debtsQueryOptions(),
 		refetchOnWindowFocus: false,
 	});
 

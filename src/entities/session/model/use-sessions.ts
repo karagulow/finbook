@@ -1,6 +1,10 @@
-'use client';
+import {
+	queryOptions,
+	useQuery,
+	useMutation,
+	useQueryClient,
+} from '@tanstack/react-query';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/src/shared/lib';
 
 export type Session = {
@@ -11,18 +15,23 @@ export type Session = {
 	isCurrent: boolean;
 };
 
+export const sessionsQueryOptions = () =>
+	queryOptions({
+		queryKey: ['sessions'],
+		queryFn: async () => {
+			const { data } = await api.get<Session[]>('/api/sessions');
+			return data;
+		},
+		staleTime: 5 * 60 * 1000,
+		gcTime: 10 * 60 * 1000,
+	});
+
 export function useSessions() {
 	const queryClient = useQueryClient();
 
 	const { data, isLoading, error, isError } = useQuery({
-		queryKey: ['sessions'],
-		queryFn: async () => {
-			const { data } = await api.get('/api/sessions');
-			return data;
-		},
+		...sessionsQueryOptions(),
 		refetchOnWindowFocus: false,
-		staleTime: 5 * 60 * 1000,
-		gcTime: 10 * 60 * 1000,
 	});
 
 	const deleteSession = useMutation({
@@ -47,7 +56,6 @@ export function useSessions() {
 		sessions: data ?? [],
 		isLoading,
 		error: isError ? error : null,
-
 		deleteSession: deleteSession.mutateAsync,
 		deleteOtherSessions: deleteOtherSessions.mutateAsync,
 	};

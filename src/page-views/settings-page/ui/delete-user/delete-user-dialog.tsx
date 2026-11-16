@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 import { Button, Dialog, Input } from '@/src/shared/ui';
-import { User } from '../../model/types';
+import { User } from '../../../../entities/user/model/types';
 
 interface Props {
 	isOpen: boolean;

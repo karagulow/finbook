@@ -6,7 +6,7 @@ import {
 } from './settings-block-layout';
 import { Button, Divider } from '@/src/shared/ui';
 
-import { User } from '../model/types';
+import { User } from '../../../entities/user/model/types';
 import { ChangePassword } from './change-password/change-password';
 import { LogoutButton } from './logout-button';
 import { DeleteUser } from './delete-user/delete-user';

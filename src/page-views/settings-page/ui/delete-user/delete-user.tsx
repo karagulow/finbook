@@ -4,7 +4,7 @@ import { SettingsBlockItem } from '../settings-block-layout';
 import { Button } from '@/src/shared/ui';
 import { Trash } from 'lucide-react';
 import { DeleteUserDialog } from './delete-user-dialog';
-import { User } from '../../model/types';
+import { User } from '../../../../entities/user/model/types';
 
 interface DeleteUserProps {
 	user: User;
