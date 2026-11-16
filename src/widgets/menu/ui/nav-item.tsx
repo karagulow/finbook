@@ -46,6 +46,3 @@ export const NavItem: React.FC<NavItemProps> = ({
 		</Link>
 	);
 };
-function prefetch(): void {
-	throw new Error('Function not implemented.');
-}

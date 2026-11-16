@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import { api } from '@/src/shared/lib';
 
 interface BalanceResponse {
@@ -9,13 +9,19 @@ interface BalanceResponse {
 	currencySymbol: string | null;
 }
 
-export const useBalance = () => {
-	const { data, isLoading, isFetching } = useQuery<BalanceResponse>({
+export const balanceQueryOptions = () =>
+	queryOptions({
 		queryKey: ['balance'],
 		queryFn: async () => {
-			const res = await api.get('/api/balance');
+			const res = await api.get<BalanceResponse>('/api/balance');
 			return res.data;
 		},
+		staleTime: 60_000,
+	});
+
+export const useBalance = () => {
+	const { data, isLoading, isFetching } = useQuery({
+		...balanceQueryOptions(),
 		refetchOnWindowFocus: false,
 	});
 

@@ -7,6 +7,7 @@ import { AlignJustify, ChartPie, LayoutGrid, ReceiptText } from 'lucide-react';
 
 import { TabbarItem } from './tabbar-item';
 import { transactionsQueryOptions } from '@/src/page-views/transactions-page/hooks/use-transactions';
+import { prefetchHomePage } from '@/src/page-views/home-page/lib/prefetch-home-page';
 
 const ICON_SIZE = 20;
 const ICON_STROKE_WIDTH = 1.5;
@@ -22,6 +23,7 @@ export const Tabbar: React.FC = () => {
 				path='/home'
 				icon={<LayoutGrid size={ICON_SIZE} strokeWidth={ICON_STROKE_WIDTH} />}
 				label='Главная'
+				prefetch={prefetchHomePage}
 			/>
 			<TabbarItem
 				path='/transactions'

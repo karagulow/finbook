@@ -19,6 +19,7 @@ import { goalsQueryOptions } from '@/src/entities/goal/hooks/use-goals';
 import { userQueryOptions } from '@/src/entities/user/model/use-user';
 import { pinSettingsQueryOptions } from '@/src/entities/user/model/use-pin-settings';
 import { sessionsQueryOptions } from '@/src/entities/session/model/use-sessions';
+import { prefetchHomePage } from '@/src/page-views/home-page/lib/prefetch-home-page';
 
 const ICON_SIZE = 16;
 const ICON_STROKE_WIDTH = 1.5;
@@ -50,6 +51,7 @@ export const Navigation: React.FC = () => {
 				path='/home'
 				icon={<LayoutGrid size={ICON_SIZE} strokeWidth={ICON_STROKE_WIDTH} />}
 				label='Главная'
+				prefetch={prefetchHomePage}
 			/>
 			<NavItem
 				path='/transactions'

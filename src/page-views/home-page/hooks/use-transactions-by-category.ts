@@ -1,6 +1,6 @@
 'use client';
 
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import { getTransactionsByMonth } from '../lib/get-transactions-by-month';
 import { useSelectedAccount } from '@/src/widgets/account-overview/hooks/use-selected-account';
 
@@ -11,19 +11,15 @@ export type CategoryStat = {
 	color: string;
 };
 
-export const useTransactionsByCategory = () => {
-	const { selectedAccountId } = useSelectedAccount();
-
-	const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-	const { data, isLoading } = useQuery<{
-		incomes: CategoryStat[];
-		expenses: CategoryStat[];
-	}>({
-		queryKey: ['transactions', selectedAccountId, timeZone],
+export const transactionsByCategoryQueryOptions = (
+	accountId: string | null,
+	timeZone: string,
+) =>
+	queryOptions({
+		queryKey: ['transactions', accountId, timeZone],
 		queryFn: async () => {
 			const transactions = await getTransactionsByMonth({
-				accountId: selectedAccountId,
+				accountId,
 				timeZone,
 			});
 
@@ -37,8 +33,9 @@ export const useTransactionsByCategory = () => {
 					tx.type === 'INCOME'
 						? incomeMap
 						: tx.type === 'EXPENSE'
-						? expenseMap
-						: null;
+							? expenseMap
+							: null;
+
 				if (!targetMap) continue;
 
 				const prev = targetMap.get(tx.category.id) ?? {
@@ -59,8 +56,17 @@ export const useTransactionsByCategory = () => {
 				expenses: Array.from(expenseMap.values()),
 			};
 		},
+		staleTime: 60_000,
+	});
+
+export const useTransactionsByCategory = () => {
+	const { selectedAccountId } = useSelectedAccount();
+	const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+	const { data, isLoading } = useQuery({
+		...transactionsByCategoryQueryOptions(selectedAccountId, timeZone),
 		refetchOnWindowFocus: false,
-		placeholderData: keepPreviousData,
+		placeholderData: previousData => previousData,
 	});
 
 	return {
