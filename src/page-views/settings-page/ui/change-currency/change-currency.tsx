@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { SettingsBlockItem } from '../settings-block-layout';
 import { Button } from '@/src/shared/ui';
 import { ChangeCurrencyModal } from './change-currency-modal';
-import { Currency } from '../../model/types';
+import { Currency } from '../../../../entities/user/model/types';
 
 interface ChangeCurrencyProps {
 	currency: Currency;

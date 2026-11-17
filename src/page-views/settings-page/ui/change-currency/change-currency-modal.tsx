@@ -3,7 +3,7 @@ import React from 'react';
 import { useMediaQuery } from '@/src/shared/hooks';
 import { Drawer, Sheet } from '@/src/shared/ui';
 import { ChangeCurrencyContent } from './change-currency-content';
-import { Currency } from '../../model/types';
+import { Currency } from '../../../../entities/user/model/types';
 
 interface Props {
 	isOpen: boolean;

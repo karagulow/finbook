@@ -1,16 +1,22 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import { api } from '@/src/shared/lib';
 import { GoalsResponse } from '../model/types';
 
-export const useGoals = () => {
-	const { data, isLoading, isError } = useQuery<GoalsResponse>({
+export const goalsQueryOptions = () =>
+	queryOptions({
 		queryKey: ['goals'],
 		queryFn: async () => {
 			const res = await api.get('/api/goals');
-			return res.data;
+			return res.data as GoalsResponse;
 		},
+		staleTime: 60_000,
+	});
+
+export const useGoals = () => {
+	const { data, isLoading, isError } = useQuery({
+		...goalsQueryOptions(),
 		refetchOnWindowFocus: false,
 	});
 

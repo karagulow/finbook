@@ -49,13 +49,13 @@ const AmountCells: React.FC<{
 		{months.map((value, index) => (
 			<td
 				key={MONTH_LABELS[index]}
-				className={`${rowBorderClassName} h-9 min-w-[76px] pl-3 text-right text-[13px] tabular-nums ${amountClassName(value, tone)}`}
+				className={`${rowBorderClassName} h-9 min-w-[76px] pl-3 text-right text-[13px] tabular-nums group-hover:bg-[var(--muted)] ${amountClassName(value, tone)}`}
 			>
 				{formatAmount(value)}
 			</td>
 		))}
 		<td
-			className={`${rowBorderClassName} ${edgePaddingClassName} h-9 min-w-[96px] pl-3 text-right text-[13px] tabular-nums ${amountClassName(total, tone)}`}
+			className={`${rowBorderClassName} ${edgePaddingClassName} h-9 min-w-[96px] pl-3 text-right text-[13px] tabular-nums group-hover:bg-[var(--muted)] ${amountClassName(total, tone)}`}
 		>
 			{formatAmount(total)}
 		</td>
@@ -63,10 +63,10 @@ const AmountCells: React.FC<{
 );
 
 const CategoryRow: React.FC<{ row: CategoryMonthRow }> = ({ row }) => (
-	<tr>
+	<tr className='group'>
 		<th
 			scope='row'
-			className={`${stickyCellClassName} ${rowBorderClassName} h-9 text-left font-normal`}
+			className={`${stickyCellClassName} ${rowBorderClassName} group-hover:bg-[var(--muted)] h-9 text-left font-normal`}
 		>
 			<span className='flex w-[148px] items-center gap-2.5 sm:w-[164px]'>
 				<span
@@ -134,7 +134,10 @@ export const CategoryMonthTable: React.FC<CategoryMonthTableProps> = ({
 	const hasData = table.incomes.length > 0 || table.expenses.length > 0;
 
 	return (
-		<section className={cardClassName} aria-labelledby='category-month-table-title'>
+		<section
+			className={cardClassName}
+			aria-labelledby='category-month-table-title'
+		>
 			<div className='flex items-baseline justify-between gap-4'>
 				<h2
 					id='category-month-table-title'

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Dialog } from '@/src/shared/ui';
-import { useSessions } from '../../model/use-sessions';
+import { useSessions } from '../../../../entities/session/model/use-sessions';
 
 interface Props {
 	isOpen: boolean;

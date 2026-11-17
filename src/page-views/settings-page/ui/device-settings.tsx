@@ -4,7 +4,7 @@ import {
 	SettingsBlockLayout,
 } from './settings-block-layout';
 import { Button, Divider } from '@/src/shared/ui';
-import { Session } from '../model/use-sessions';
+import { Session } from '../../../entities/session/model/use-sessions';
 import { DeleteSessionDialog } from './manage-sessions/delete-session-dialog';
 import { DeleteOtherSessionsDialog } from './manage-sessions/delete-other-sessions-modal';
 
@@ -19,7 +19,7 @@ export const DeviceSettings: React.FC<DeviceSettingsProps> = ({ sessions }) => {
 		useState(false);
 
 	const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
-		null
+		null,
 	);
 
 	const openDeleteSessionModal = (id: string) => {

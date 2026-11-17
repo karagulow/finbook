@@ -1,6 +1,6 @@
 'use client';
 
-import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, infiniteQueryOptions } from '@tanstack/react-query';
 import { DayGroup, Transaction } from '../model/types';
 import { api } from '@/src/shared/lib';
 
@@ -36,19 +36,16 @@ function groupTransactionsByDay(transactions: Transaction[]): DayGroup[] {
 	return Object.values(groups).sort((a, b) => b.date.localeCompare(a.date));
 }
 
-export function useTransactions(limit = 50) {
-	return useInfiniteQuery<
-		PaginatedDayGroups,
-		Error,
-		InfiniteData<PaginatedDayGroups>,
-		readonly string[],
-		string | null
-	>({
-		queryKey: ['transactions'],
-		queryFn: async ({ pageParam = null }) => {
+export function transactionsQueryOptions(limit = 50) {
+	return infiniteQueryOptions({
+		queryKey: ['transactions'] as const,
+		queryFn: async ({ pageParam }) => {
 			const params = new URLSearchParams();
 			params.set('limit', String(limit));
-			if (pageParam) params.set('cursor', String(pageParam));
+
+			if (pageParam) {
+				params.set('cursor', String(pageParam));
+			}
 
 			const res = await api.get(`/api/transactions?${params.toString()}`);
 			const data: ApiResponse = res.data;
@@ -58,8 +55,15 @@ export function useTransactions(limit = 50) {
 				nextCursor: data.nextCursor,
 			};
 		},
+		getNextPageParam: (lastPage: PaginatedDayGroups) => lastPage.nextCursor,
+		initialPageParam: null as string | null,
+		staleTime: 60_000,
+	});
+}
+
+export function useTransactions(limit = 50) {
+	return useInfiniteQuery({
+		...transactionsQueryOptions(limit),
 		refetchOnWindowFocus: false,
-		getNextPageParam: lastPage => lastPage.nextCursor ?? null,
-		initialPageParam: null,
 	});
 }

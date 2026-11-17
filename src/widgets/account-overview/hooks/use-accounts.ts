@@ -1,45 +1,29 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import { getAccounts } from '../lib/get-accounts';
-import { api } from '@/src/shared/lib';
+import { useBalance } from '@/src/entities/balance';
 
-export type Account = {
-	id: string;
-	name: string;
-	balance: number;
-	currency: string;
-	currencyId: string;
-};
-
-interface BalanceResponse {
-	total: number;
-	currencyCode: string;
-	currencySymbol: string | null;
-}
+export const accountsQueryOptions = () =>
+	queryOptions({
+		queryKey: ['accounts'],
+		queryFn: getAccounts,
+		staleTime: 60_000,
+	});
 
 export const useAccounts = () => {
 	const { data, isLoading, isFetching } = useQuery({
-		queryKey: ['accounts'],
-		queryFn: async () => {
-			const accountsData = await getAccounts();
-			const balanceData = await api.get<BalanceResponse>('/api/balance');
-
-			return {
-				accounts: accountsData,
-				totalBalance: balanceData.data.total,
-				currencyCode: balanceData.data.currencyCode,
-				currencySymbol: balanceData.data.currencySymbol,
-			};
-		},
+		...accountsQueryOptions(),
 		refetchOnWindowFocus: false,
 	});
 
+	const balance = useBalance();
+
 	return {
-		accounts: data?.accounts ?? [],
-		totalBalance: data?.totalBalance ?? 0,
-		currencyCode: data?.currencyCode ?? '',
-		currencySymbol: data?.currencySymbol ?? null,
-		loading: isLoading || isFetching,
+		accounts: data ?? [],
+		totalBalance: balance.total,
+		currencyCode: balance.currencyCode,
+		currencySymbol: balance.currencySymbol,
+		loading: isLoading || isFetching || balance.loading,
 	};
 };

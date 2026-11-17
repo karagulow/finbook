@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { api } from '@/src/shared/lib';
 import toast from 'react-hot-toast';
+import { useQuery } from '@tanstack/react-query';
 
 import { Button, Select } from '@/src/shared/ui';
-import { Currency } from '../../model/types';
+import { Currency } from '@/src/entities/user/model/types';
+import { currenciesQueryOptions } from '@/src/entities/currency/model/queries';
+import { api } from '@/src/shared/lib';
 
 interface Props {
 	currency: Currency;
@@ -17,27 +19,15 @@ export const ChangeCurrencyContent: React.FC<Props> = ({
 	currency,
 	onClose,
 }) => {
-	const [currencies, setCurrencies] = useState<Currency[]>([]);
-	const [selectedCurrencyId, setSelectedCurrencyId] = useState<string>(
-		currency.id
-	);
+	const [selectedCurrencyId, setSelectedCurrencyId] = useState(currency.id);
 	const [loading, setLoading] = useState(false);
 
-	const isDisabled = loading || selectedCurrencyId === currency.id;
+	const { data: currencies = [], isLoading: isCurrenciesLoading } = useQuery(
+		currenciesQueryOptions(),
+	);
 
-	useEffect(() => {
-		const fetchCurrencies = async () => {
-			try {
-				const { data } = await api.get<Currency[]>('/api/currencies');
-				setCurrencies(data);
-			} catch (error) {
-				console.error(error);
-				toast.error('Не удалось загрузить список валют');
-			}
-		};
-
-		fetchCurrencies();
-	}, []);
+	const isDisabled =
+		loading || isCurrenciesLoading || selectedCurrencyId === currency.id;
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -49,9 +39,11 @@ export const ChangeCurrencyContent: React.FC<Props> = ({
 
 		try {
 			setLoading(true);
+
 			await api.post('/api/user/change-currency', {
 				currencyId: selectedCurrencyId,
 			});
+
 			toast.success('Валюта успешно изменена');
 			onClose();
 		} catch (error: unknown) {
