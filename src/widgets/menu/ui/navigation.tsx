@@ -20,6 +20,7 @@ import { userQueryOptions } from '@/src/entities/user/model/use-user';
 import { pinSettingsQueryOptions } from '@/src/entities/user/model/use-pin-settings';
 import { sessionsQueryOptions } from '@/src/entities/session/model/use-sessions';
 import { categoriesQueryOptions } from '@/src/page-views/settings-page/model/use-categories';
+import { currenciesQueryOptions } from '@/src/entities/currency/model/queries';
 import { prefetchHomePage } from '@/src/page-views/home-page/lib/prefetch-home-page';
 import { prefetchAnalyticsPage } from '@/src/page-views/analytics-page/lib/prefetch-analytics-page';
 
@@ -44,6 +45,7 @@ const prefetchSettings = (queryClient: QueryClient) => {
 		queryClient.prefetchQuery(pinSettingsQueryOptions()),
 		queryClient.prefetchQuery(sessionsQueryOptions()),
 		queryClient.prefetchQuery(categoriesQueryOptions()),
+		queryClient.prefetchQuery(currenciesQueryOptions()),
 	]);
 };
 
