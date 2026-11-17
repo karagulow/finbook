@@ -17,7 +17,10 @@ import { transactionsQueryOptions } from '@/src/page-views/transactions-page/hoo
 import { debtsQueryOptions } from '@/src/entities/debt/hooks/use-debts';
 import { goalsQueryOptions } from '@/src/entities/goal/hooks/use-goals';
 import { userQueryOptions } from '@/src/entities/user/model/use-user';
-import { pinSettingsQueryOptions } from '@/src/entities/user/model/use-pin-settings';
+import {
+	pinSettingsQueryOptions,
+	platformBiometricQueryOptions,
+} from '@/src/entities/user/model/use-pin-settings';
 import { sessionsQueryOptions } from '@/src/entities/session/model/use-sessions';
 import { categoriesQueryOptions } from '@/src/page-views/settings-page/model/use-categories';
 import { currenciesQueryOptions } from '@/src/entities/currency/model/queries';
@@ -46,6 +49,7 @@ const prefetchSettings = (queryClient: QueryClient) => {
 		queryClient.prefetchQuery(sessionsQueryOptions()),
 		queryClient.prefetchQuery(categoriesQueryOptions()),
 		queryClient.prefetchQuery(currenciesQueryOptions()),
+		queryClient.prefetchQuery(platformBiometricQueryOptions()),
 	]);
 };
 

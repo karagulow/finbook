@@ -19,6 +19,14 @@ export const pinSettingsQueryOptions = () =>
 		gcTime: 10 * 60 * 1000,
 	});
 
+export const platformBiometricQueryOptions = () =>
+	queryOptions({
+		queryKey: ['platform-biometric'],
+		queryFn: canUsePlatformBiometric,
+		staleTime: Infinity,
+		gcTime: 30 * 60 * 1000,
+	});
+
 export function usePinSettings() {
 	const queryClient = useQueryClient();
 
@@ -28,11 +36,8 @@ export function usePinSettings() {
 	});
 
 	const platformBiometric = useQuery({
-		queryKey: ['platform-biometric'],
-		queryFn: canUsePlatformBiometric,
+		...platformBiometricQueryOptions(),
 		refetchOnWindowFocus: false,
-		staleTime: Infinity,
-		gcTime: 30 * 60 * 1000,
 	});
 
 	const reload = () => {
@@ -43,7 +48,7 @@ export function usePinSettings() {
 		enabled: pin.data?.enabled ?? false,
 		biometric: pin.data?.biometric ?? false,
 		platformBiometric: platformBiometric.data ?? false,
-		isLoading: pin.isLoading || platformBiometric.isLoading,
+		isLoading: pin.isLoading,
 		isReady: pin.isSuccess && platformBiometric.isSuccess,
 		reload,
 	};

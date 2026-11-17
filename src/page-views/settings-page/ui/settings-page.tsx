@@ -21,7 +21,7 @@ export const SettingsPage: React.FC = () => {
 	} = useSessions();
 	const pin = usePinSettings();
 
-	const isLoading = isLoadingUser || isLoadingSessions || pin.isLoading;
+	const isLoading = isLoadingUser || isLoadingSessions;
 	const error = errorUser || errorSessions;
 
 	return (

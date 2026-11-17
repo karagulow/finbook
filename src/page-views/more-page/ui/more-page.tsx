@@ -9,7 +9,10 @@ import { LinkItem } from './link-item';
 import { debtsQueryOptions } from '@/src/entities/debt/hooks/use-debts';
 import { goalsQueryOptions } from '@/src/entities/goal/hooks/use-goals';
 import { userQueryOptions } from '@/src/entities/user/model/use-user';
-import { pinSettingsQueryOptions } from '@/src/entities/user/model/use-pin-settings';
+import {
+	pinSettingsQueryOptions,
+	platformBiometricQueryOptions,
+} from '@/src/entities/user/model/use-pin-settings';
 import { sessionsQueryOptions } from '@/src/entities/session/model/use-sessions';
 import { categoriesQueryOptions } from '../../settings-page/model/use-categories';
 import { currenciesQueryOptions } from '@/src/entities/currency/model/queries';
@@ -32,6 +35,7 @@ export const MorePage: React.FC = () => {
 			queryClient.prefetchQuery(sessionsQueryOptions()),
 			queryClient.prefetchQuery(categoriesQueryOptions()),
 			queryClient.prefetchQuery(currenciesQueryOptions()),
+			queryClient.prefetchQuery(platformBiometricQueryOptions()),
 		]);
 	};
 
